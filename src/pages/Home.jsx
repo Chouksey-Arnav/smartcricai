@@ -15,6 +15,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
+import DailyFact from '@/components/daily/DailyFact';
 
 const quickActions = [
   { 
@@ -164,24 +165,52 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Tip of the Day */}
+        {/* Daily Cricket Fact */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-4"
         >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center shrink-0">
-              <span className="text-lg">💡</span>
-            </div>
-            <div>
-              <h3 className="font-semibold text-amber-800 mb-1">Tip of the Day</h3>
-              <p className="text-sm text-amber-700">
-                Focus on watching the ball from the bowler's hand until it hits your bat. 
-                This simple habit can dramatically improve your timing!
-              </p>
-            </div>
+          <DailyFact />
+        </motion.div>
+
+        {/* New Features Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="bg-white rounded-2xl shadow-lg p-4"
+        >
+          <h2 className="font-semibold text-slate-800 mb-4">Explore More</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Link to={createPageUrl('PlayerLookup')}>
+              <div className="bg-blue-50 hover:bg-blue-100 rounded-xl p-4 transition-colors">
+                <div className="text-3xl mb-2">🏏</div>
+                <h3 className="font-semibold text-slate-800 text-sm">Player Lookup</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Learn from pros</p>
+              </div>
+            </Link>
+            <Link to={createPageUrl('MiniMatch')}>
+              <div className="bg-purple-50 hover:bg-purple-100 rounded-xl p-4 transition-colors">
+                <div className="text-3xl mb-2">⚡</div>
+                <h3 className="font-semibold text-slate-800 text-sm">Mini-Match</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Game situations</p>
+              </div>
+            </Link>
+            <Link to={createPageUrl('SkillPaths')}>
+              <div className="bg-emerald-50 hover:bg-emerald-100 rounded-xl p-4 transition-colors">
+                <div className="text-3xl mb-2">🎯</div>
+                <h3 className="font-semibold text-slate-800 text-sm">Skill Paths</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Level up journey</p>
+              </div>
+            </Link>
+            <Link to={createPageUrl('TeamMode')}>
+              <div className="bg-amber-50 hover:bg-amber-100 rounded-xl p-4 transition-colors">
+                <div className="text-3xl mb-2">👥</div>
+                <h3 className="font-semibold text-slate-800 text-sm">Team Mode</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Connect & train</p>
+              </div>
+            </Link>
           </div>
         </motion.div>
 
