@@ -4,6 +4,11 @@ import Drills from './pages/Drills';
 import DrillDetail from './pages/DrillDetail';
 import MentalCoaching from './pages/MentalCoaching';
 import MentalRoutinePlayer from './pages/MentalRoutinePlayer';
+import Quizzes from './pages/Quizzes';
+import QuizPlayer from './pages/QuizPlayer';
+import Progress from './pages/Progress';
+import Settings from './pages/Settings';
+import Onboarding from './pages/Onboarding';
 
 
 export const PAGES = {
@@ -13,6 +18,11 @@ export const PAGES = {
     "DrillDetail": DrillDetail,
     "MentalCoaching": MentalCoaching,
     "MentalRoutinePlayer": MentalRoutinePlayer,
+    "Quizzes": Quizzes,
+    "QuizPlayer": QuizPlayer,
+    "Progress": Progress,
+    "Settings": Settings,
+    "Onboarding": Onboarding,
 }
 
 export const pagesConfig = {
