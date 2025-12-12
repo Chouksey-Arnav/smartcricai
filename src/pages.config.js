@@ -9,6 +9,7 @@ import QuizPlayer from './pages/QuizPlayer';
 import Progress from './pages/Progress';
 import Settings from './pages/Settings';
 import Onboarding from './pages/Onboarding';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -28,4 +29,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "Home",
     Pages: PAGES,
+    Layout: __Layout,
 };

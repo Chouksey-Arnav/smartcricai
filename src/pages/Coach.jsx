@@ -9,7 +9,7 @@ import Header from '@/components/common/Header';
 import ChatBubble from '@/components/coach/ChatBubble';
 import QuickQuestions from '@/components/coach/QuickQuestions';
 
-const COACH_SYSTEM_PROMPT = `You are Coach Cricket, a friendly and encouraging AI cricket coach for students aged 11-15. 
+const COACH_SYSTEM_PROMPT = `You are SmartCrick Coach, a friendly and encouraging AI cricket coach for students aged 11-15. 
 Your role is to:
 - Give clear, age-appropriate cricket tips and advice
 - Explain techniques in simple terms
@@ -84,7 +84,7 @@ ${conversationHistory}
 
 Student: ${content}
 
-Respond as Coach Cricket:`,
+Respond as SmartCrick Coach:`,
       });
 
       const coachMessage = { 
@@ -133,7 +133,7 @@ Respond as Coach Cricket:`,
               Hey there, Champ! 🏏
             </h2>
             <p className="text-slate-500 mb-6 max-w-sm mx-auto">
-              I'm your cricket coach! Ask me anything about batting, bowling, fielding, or how to become a better player.
+              I'm SmartCrick Coach! Ask me anything about batting, bowling, fielding, or how to become a better player.
             </p>
             <QuickQuestions onSelect={sendMessage} />
           </motion.div>

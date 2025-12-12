@@ -53,7 +53,7 @@ export default function Onboarding() {
 
   const steps = [
     {
-      title: "Welcome to Cricket Coach! 🏏",
+      title: "Welcome to SmartCrick Coach! 🏏",
       content: (
         <div className="space-y-6">
           <p className="text-slate-600 text-center">

@@ -194,7 +194,7 @@ export default function Settings() {
 
         {/* App Info */}
         <div className="text-center text-sm text-slate-400 pt-4">
-          <p>Cricket Coach AI v1.0</p>
+          <p>SmartCrick Coach v1.0</p>
           <p>Made with 🏏 for young cricketers</p>
         </div>
       </div>
