@@ -12,7 +12,8 @@ import {
   Flame,
   BookOpen,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Star
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
@@ -76,11 +77,12 @@ export default function Home() {
   const displayName = progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 pb-24">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-500 px-6 pt-8 pb-16">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-24 -translate-x-24" />
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 px-6 pt-8 pb-20">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-24 -translate-x-24" />
+        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
         
         <div className="relative max-w-lg mx-auto">
           <motion.div
@@ -104,24 +106,36 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="grid grid-cols-3 gap-3"
           >
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
+            >
+              <div className="text-3xl mb-1">🎯</div>
               <p className="text-2xl font-bold text-white">
                 {progress?.completed_drills?.length || 0}
               </p>
-              <p className="text-xs text-emerald-100">Drills Done</p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
+              <p className="text-xs text-emerald-50 font-medium">Drills</p>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
+            >
+              <div className="text-3xl mb-1">⏱️</div>
               <p className="text-2xl font-bold text-white">
                 {progress?.total_practice_minutes || 0}
               </p>
-              <p className="text-xs text-emerald-100">Minutes</p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center">
+              <p className="text-xs text-emerald-50 font-medium">Minutes</p>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
+            >
+              <div className="text-3xl mb-1">🏆</div>
               <p className="text-2xl font-bold text-white">
                 {progress?.badges?.length || 0}
               </p>
-              <p className="text-xs text-emerald-100">Badges</p>
-            </div>
+              <p className="text-xs text-emerald-50 font-medium">Badges</p>
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -133,14 +147,14 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-4"
+          className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-2xl shadow-slate-300/50 p-6 border border-white/50"
         >
-          <h2 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-500" />
+          <h2 className="font-bold text-slate-800 mb-5 flex items-center gap-2 text-lg">
+            <Sparkles className="w-6 h-6 text-amber-500" />
             Let's Train!
           </h2>
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {quickActions.map((action, index) => (
               <Link
                 key={action.name}
@@ -150,15 +164,15 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 * index }}
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-slate-50 hover:bg-slate-100 rounded-xl p-4 transition-colors"
+                  className="bg-gradient-to-br from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl border border-slate-100"
                 >
-                  <div className={`w-10 h-10 ${action.color} rounded-lg flex items-center justify-center mb-3`}>
-                    <action.icon className="w-5 h-5 text-white" />
+                  <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center mb-3 shadow-md`}>
+                    <action.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-slate-800 text-sm">{action.name}</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">{action.description}</p>
+                  <h3 className="font-bold text-slate-800 text-sm mb-1">{action.name}</h3>
+                  <p className="text-xs text-slate-600">{action.description}</p>
                 </motion.div>
               </Link>
             ))}
@@ -179,37 +193,56 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="bg-white rounded-2xl shadow-lg p-4"
+          className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-2xl shadow-slate-300/50 p-6 border border-white/50"
         >
-          <h2 className="font-semibold text-slate-800 mb-4">Explore More</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <h2 className="font-bold text-slate-800 mb-5 text-lg flex items-center gap-2">
+            <Star className="w-6 h-6 text-purple-500" />
+            Explore More
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
             <Link to={createPageUrl('PlayerLookup')}>
-              <div className="bg-blue-50 hover:bg-blue-100 rounded-xl p-4 transition-colors">
-                <div className="text-3xl mb-2">🏏</div>
-                <h3 className="font-semibold text-slate-800 text-sm">Player Lookup</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Learn from pros</p>
-              </div>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <div className="text-4xl mb-2">🏏</div>
+                <h3 className="font-bold text-white text-sm mb-1">Player Lookup</h3>
+                <p className="text-xs text-blue-50">Search any player</p>
+              </motion.div>
             </Link>
             <Link to={createPageUrl('MiniMatch')}>
-              <div className="bg-purple-50 hover:bg-purple-100 rounded-xl p-4 transition-colors">
-                <div className="text-3xl mb-2">⚡</div>
-                <h3 className="font-semibold text-slate-800 text-sm">Mini-Match</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Game situations</p>
-              </div>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <div className="text-4xl mb-2">⚡</div>
+                <h3 className="font-bold text-white text-sm mb-1">Mini-Match</h3>
+                <p className="text-xs text-purple-50">Test your IQ</p>
+              </motion.div>
             </Link>
             <Link to={createPageUrl('SkillPaths')}>
-              <div className="bg-emerald-50 hover:bg-emerald-100 rounded-xl p-4 transition-colors">
-                <div className="text-3xl mb-2">🎯</div>
-                <h3 className="font-semibold text-slate-800 text-sm">Skill Paths</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Level up journey</p>
-              </div>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <div className="text-4xl mb-2">🎯</div>
+                <h3 className="font-bold text-white text-sm mb-1">Skill Paths</h3>
+                <p className="text-xs text-emerald-50">Level up now</p>
+              </motion.div>
             </Link>
             <Link to={createPageUrl('TeamMode')}>
-              <div className="bg-amber-50 hover:bg-amber-100 rounded-xl p-4 transition-colors">
-                <div className="text-3xl mb-2">👥</div>
-                <h3 className="font-semibold text-slate-800 text-sm">Team Mode</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Connect & train</p>
-              </div>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <div className="text-4xl mb-2">👥</div>
+                <h3 className="font-bold text-white text-sm mb-1">Team Mode</h3>
+                <p className="text-xs text-amber-50">Join your team</p>
+              </motion.div>
             </Link>
           </div>
         </motion.div>
@@ -221,20 +254,24 @@ export default function Home() {
           transition={{ delay: 0.4 }}
         >
           <Link to={createPageUrl('Progress')}>
-            <div className="bg-white rounded-2xl shadow-lg shadow-slate-200/50 p-4 flex items-center justify-between hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-emerald-600" />
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl shadow-2xl p-6 flex items-center justify-between hover:shadow-2xl transition-all border border-emerald-400"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
+                  <Trophy className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-800">Your Progress</h3>
-                  <p className="text-sm text-slate-500">
-                    {progress?.badges?.length || 0} badges earned
+                  <h3 className="font-bold text-white text-lg">Your Progress</h3>
+                  <p className="text-sm text-emerald-50 font-medium">
+                    {progress?.badges?.length || 0} badges • {progress?.completed_drills?.length || 0} drills
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-slate-400" />
-            </div>
+              <ChevronRight className="w-6 h-6 text-white" />
+            </motion.div>
           </Link>
         </motion.div>
       </div>
