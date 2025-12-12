@@ -9,6 +9,8 @@ import QuizPlayer from './pages/QuizPlayer';
 import Progress from './pages/Progress';
 import Settings from './pages/Settings';
 import Onboarding from './pages/Onboarding';
+import PlayerLookup from './pages/PlayerLookup';
+import MiniMatch from './pages/MiniMatch';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +26,8 @@ export const PAGES = {
     "Progress": Progress,
     "Settings": Settings,
     "Onboarding": Onboarding,
+    "PlayerLookup": PlayerLookup,
+    "MiniMatch": MiniMatch,
 }
 
 export const pagesConfig = {
