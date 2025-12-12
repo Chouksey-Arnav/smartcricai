@@ -1,0 +1,74 @@
+import React from 'react';
+import { Clock, Play, Heart, Target, RefreshCw, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+
+const categoryConfig = {
+  confidence: { 
+    icon: Sparkles, 
+    color: 'bg-amber-500',
+    bgColor: 'bg-amber-50 border-amber-100'
+  },
+  focus: { 
+    icon: Target, 
+    color: 'bg-blue-500',
+    bgColor: 'bg-blue-50 border-blue-100'
+  },
+  recovery: { 
+    icon: RefreshCw, 
+    color: 'bg-emerald-500',
+    bgColor: 'bg-emerald-50 border-emerald-100'
+  },
+  'pre-performance': { 
+    icon: Heart, 
+    color: 'bg-purple-500',
+    bgColor: 'bg-purple-50 border-purple-100'
+  },
+};
+
+export default function MentalRoutineCard({ routine, onClick }) {
+  const config = categoryConfig[routine.category] || categoryConfig.focus;
+  const Icon = config.icon;
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={cn(
+        "p-4 rounded-2xl border-2 cursor-pointer transition-all",
+        config.bgColor
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <div className={cn(
+          "w-12 h-12 rounded-xl flex items-center justify-center text-white",
+          config.color
+        )}>
+          <Icon className="w-6 h-6" />
+        </div>
+        
+        <div className="flex-1">
+          <h3 className="font-semibold text-slate-800 mb-1">{routine.title}</h3>
+          <p className="text-sm text-slate-500 mb-2 line-clamp-2">
+            {routine.description}
+          </p>
+          
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1 text-sm text-slate-500">
+              <Clock className="w-4 h-4" />
+              {Math.round(routine.duration_seconds / 60)} min
+            </span>
+            
+            <div className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center text-white",
+              config.color
+            )}>
+              <Play className="w-4 h-4 ml-0.5" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
