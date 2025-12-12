@@ -11,6 +11,8 @@ import Settings from './pages/Settings';
 import Onboarding from './pages/Onboarding';
 import PlayerLookup from './pages/PlayerLookup';
 import MiniMatch from './pages/MiniMatch';
+import SkillPaths from './pages/SkillPaths';
+import TeamMode from './pages/TeamMode';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +30,8 @@ export const PAGES = {
     "Onboarding": Onboarding,
     "PlayerLookup": PlayerLookup,
     "MiniMatch": MiniMatch,
+    "SkillPaths": SkillPaths,
+    "TeamMode": TeamMode,
 }
 
 export const pagesConfig = {
