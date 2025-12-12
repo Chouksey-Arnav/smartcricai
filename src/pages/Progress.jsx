@@ -13,6 +13,7 @@ import {
 import Header from '@/components/common/Header';
 import BadgeDisplay from '@/components/common/BadgeDisplay';
 import StreakDisplay from '@/components/common/StreakDisplay';
+import ProgressTracker from '@/components/progress/ProgressTracker';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -128,11 +129,26 @@ export default function Progress() {
           </motion.div>
         )}
 
-        {/* Badges Section */}
+        {/* Interactive Progress Tracker */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <TrendingUp className="w-5 h-5 text-purple-500" />
+            <h2 className="font-bold text-slate-800">Your Milestones</h2>
+          </div>
+          
+          <ProgressTracker progress={progress} />
+        </motion.div>
+
+        {/* Badges Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
           className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
         >
           <div className="flex items-center gap-2 mb-4">
@@ -148,7 +164,7 @@ export default function Progress() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
             className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
           >
             <h2 className="font-bold text-slate-800 mb-4">Recent Quiz Scores</h2>
