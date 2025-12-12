@@ -15,20 +15,27 @@ export default function PlayerLookup() {
     
     setLoading(true);
     
-    const prompt = `Give me a kid-friendly player profile for cricket player: ${searchQuery}
+    const prompt = `Search for cricket player: ${searchQuery}
     
-Include:
+Search sources to include:
+1. International cricket databases (ICC, ESPN Cricinfo)
+2. CricClubs player database for local/club players
+3. Domestic cricket records
+4. Youth cricket achievements
+
+Give me a kid-friendly player profile including:
 - Full name
-- Country/team
+- Country/team (include if playing for a club found on CricClubs)
 - Playing role (batter/bowler/all-rounder/keeper)
 - Batting style & bowling style
-- Career format (ODI/Test/T20/domestic)
+- Career format (ODI/Test/T20/domestic/club)
 - 3-4 key stats (simplified, kid-friendly)
 - 2-3 recent performance highlights (simple)
 - 2 fun facts or signature strengths
 - 1 tip for young players watching this player
+- If found on CricClubs: club name and level
 
-Make it simple, positive, and inspiring for kids aged 8-14.`;
+Make it simple, positive, and inspiring for kids aged 8-14. Search broadly - include professional, semi-professional, and club players.`;
 
     const result = await base44.integrations.Core.InvokeLLM({
       prompt: prompt,
@@ -42,6 +49,7 @@ Make it simple, positive, and inspiring for kids aged 8-14.`;
           batting_style: { type: "string" },
           bowling_style: { type: "string" },
           career_format: { type: "string" },
+          club_info: { type: "string" },
           key_stats: {
             type: "array",
             items: { 
@@ -178,6 +186,14 @@ Make it simple, positive, and inspiring for kids aged 8-14.`;
                     </div>
                   )}
                 </div>
+
+                {/* Club Info */}
+                {playerData.club_info && (
+                  <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-xl p-4 mb-6">
+                    <p className="text-xs text-indigo-600 font-semibold mb-1">🏏 CLUB INFO</p>
+                    <p className="text-slate-800 font-medium">{playerData.club_info}</p>
+                  </div>
+                )}
 
                 {/* Key Stats */}
                 {playerData.key_stats && playerData.key_stats.length > 0 && (
