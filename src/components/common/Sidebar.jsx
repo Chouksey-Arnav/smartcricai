@@ -18,6 +18,7 @@ import {
   Calendar,
   Video,
   Settings,
+  TrendingDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,7 @@ const menuItems = [
   { name: 'Team Mode', icon: Users, page: 'TeamMode', color: 'text-red-500' },
   { name: 'Schedule', icon: Calendar, page: 'Schedule', color: 'text-violet-500' },
   { name: 'Video Analysis', icon: Video, page: 'VideoAnalysis', color: 'text-rose-500' },
+  { name: 'Why Did I Get Out?', icon: TrendingDown, page: 'WhyDidIGetOut', color: 'text-red-600' },
   { name: 'Settings', icon: Settings, page: 'Settings', color: 'text-slate-500' },
 ];
 

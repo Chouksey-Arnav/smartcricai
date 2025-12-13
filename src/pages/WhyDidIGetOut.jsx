@@ -1,0 +1,294 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingDown, Target, Lightbulb, Dumbbell, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Header from '@/components/common/Header';
+
+export default function WhyDidIGetOut() {
+  const [shotPlayed, setShotPlayed] = useState('');
+  const [ballType, setBallType] = useState('');
+  const [fieldSetup, setFieldSetup] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+
+  const shots = [
+    'Drive', 'Cut', 'Pull', 'Hook', 'Sweep', 'Reverse Sweep',
+    'Cover Drive', 'Straight Drive', 'Square Cut', 'Late Cut',
+    'Flick', 'Glance', 'Defensive Push', 'Block', 'Leave'
+  ];
+
+  const balls = [
+    'Fast Full', 'Fast Short', 'Yorker', 'Bouncer',
+    'Off Spin', 'Leg Spin', 'Googly', 'Doosra',
+    'Inswinger', 'Outswinger', 'Slower Ball', 'Knuckleball'
+  ];
+
+  const fields = [
+    'Attacking (3 slips)', 'Defensive (All around)', 'Leg Side Heavy',
+    'Off Side Packed', 'Deep Field', 'Up Close Catchers', 'Standard ODI'
+  ];
+
+  const analyzeWicket = async () => {
+    if (!shotPlayed || !ballType || !fieldSetup) return;
+
+    setAnalyzing(true);
+    setAnalysis(null);
+
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `A young cricket player (11-15 years) got out. Analyze this dismissal:
+
+**Shot Played:** ${shotPlayed}
+**Ball Type:** ${ballType}
+**Field Setup:** ${fieldSetup}
+
+Provide a detailed but kid-friendly analysis including:
+
+1. **What Went Wrong**: Explain the technical mistake (was it shot selection, timing, footwork, head position, etc?)
+2. **Why This Happened**: The root cause (e.g., didn't watch ball, wrong foot, too early/late)
+3. **What To Do Next Time**: 3 specific actionable tips
+4. **Recommended Drill**: Suggest ONE specific drill with brief description to fix this exact issue
+5. **Match Awareness Tip**: How to read this situation better in future
+6. **Positive Note**: One encouraging thing to remember
+
+Be specific, technical but simple, and constructive. Help them learn and improve.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            what_went_wrong: { type: "string" },
+            why_it_happened: { type: "string" },
+            what_to_do_next_time: {
+              type: "array",
+              items: { type: "string" }
+            },
+            recommended_drill: {
+              type: "object",
+              properties: {
+                drill_name: { type: "string" },
+                how_it_helps: { type: "string" },
+                quick_steps: { type: "string" }
+              }
+            },
+            match_awareness_tip: { type: "string" },
+            positive_note: { type: "string" },
+            danger_rating: { type: "number" }
+          }
+        }
+      });
+
+      setAnalysis(result);
+    } catch (err) {
+      console.error('Analysis failed:', err);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-red-50 to-white pb-24">
+      <Header title="Why Did I Get Out?" showSettings={false} />
+
+      <div className="px-6 py-4 max-w-lg mx-auto">
+        {/* Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-red-500 to-orange-500 rounded-3xl p-6 text-white mb-6"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+              <TrendingDown className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">Dismissal Analyzer</h2>
+              <p className="text-red-100 text-sm">Learn from every wicket</p>
+            </div>
+          </div>
+          <p className="text-red-100 text-sm">
+            Understanding why you got out is the key to never making that mistake again!
+          </p>
+        </motion.div>
+
+        {/* Input Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-3xl shadow-xl p-6 mb-6"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                What shot did you play?
+              </label>
+              <Select value={shotPlayed} onValueChange={setShotPlayed}>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select shot" />
+                </SelectTrigger>
+                <SelectContent>
+                  {shots.map(shot => (
+                    <SelectItem key={shot} value={shot}>{shot}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                What type of ball was it?
+              </label>
+              <Select value={ballType} onValueChange={setBallType}>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select ball type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {balls.map(ball => (
+                    <SelectItem key={ball} value={ball}>{ball}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                What was the field setup?
+              </label>
+              <Select value={fieldSetup} onValueChange={setFieldSetup}>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select field" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fields.map(field => (
+                    <SelectItem key={field} value={field}>{field}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={analyzeWicket}
+              disabled={!shotPlayed || !ballType || !fieldSetup || analyzing}
+              className="w-full h-12 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-base font-semibold"
+            >
+              {analyzing ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Target className="w-5 h-5 mr-2" />
+                  Analyze My Dismissal
+                </>
+              )}
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Analysis Results */}
+        <AnimatePresence>
+          {analysis && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4"
+            >
+              {/* Danger Rating */}
+              <div className="bg-white rounded-2xl shadow-lg p-5 border-l-4 border-red-500">
+                <h3 className="font-bold text-slate-800 mb-2">Shot Selection Risk</h3>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-yellow-400 to-red-500"
+                      style={{ width: `${analysis.danger_rating * 10}%` }}
+                    />
+                  </div>
+                  <span className="font-bold text-red-600">{analysis.danger_rating}/10</span>
+                </div>
+              </div>
+
+              {/* What Went Wrong */}
+              <div className="bg-gradient-to-br from-red-500 to-orange-500 rounded-3xl p-6 text-white">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                  <TrendingDown className="w-5 h-5" />
+                  What Went Wrong
+                </h3>
+                <p className="text-red-50 leading-relaxed">{analysis.what_went_wrong}</p>
+              </div>
+
+              {/* Why It Happened */}
+              <div className="bg-white rounded-3xl shadow-xl p-6">
+                <h3 className="font-bold text-lg text-orange-600 mb-3">🔍 Root Cause</h3>
+                <p className="text-slate-700 leading-relaxed">{analysis.why_it_happened}</p>
+              </div>
+
+              {/* What To Do Next Time */}
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl shadow-xl p-6 border-2 border-emerald-200">
+                <h3 className="font-bold text-lg text-emerald-700 mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5" />
+                  What To Do Next Time
+                </h3>
+                <div className="space-y-3">
+                  {analysis.what_to_do_next_time?.map((tip, i) => (
+                    <div key={i} className="bg-white rounded-xl p-4 flex gap-3">
+                      <span className="font-bold text-emerald-600 shrink-0">{i + 1}.</span>
+                      <p className="text-slate-700">{tip}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recommended Drill */}
+              <div className="bg-gradient-to-br from-purple-500 to-indigo-500 rounded-3xl p-6 text-white">
+                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <Dumbbell className="w-5 h-5" />
+                  Drill to Fix This
+                </h3>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5">
+                  <h4 className="font-bold text-xl mb-3">{analysis.recommended_drill?.drill_name}</h4>
+                  <p className="text-purple-100 mb-4">{analysis.recommended_drill?.how_it_helps}</p>
+                  <div className="bg-white/10 rounded-xl p-4">
+                    <p className="text-sm text-purple-100">{analysis.recommended_drill?.quick_steps}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Match Awareness */}
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5">
+                <h4 className="font-bold text-blue-800 mb-2">🧠 Match Awareness Tip</h4>
+                <p className="text-blue-700">{analysis.match_awareness_tip}</p>
+              </div>
+
+              {/* Positive Note */}
+              <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-3xl p-6 text-center text-white">
+                <p className="text-lg font-medium mb-2">💪 Remember This</p>
+                <p className="text-pink-100 italic">"{analysis.positive_note}"</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Empty State */}
+        {!analysis && !analyzing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Target className="w-12 h-12 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-700 mb-2">
+              Analyze Your Dismissal
+            </h3>
+            <p className="text-slate-500 text-sm">
+              Fill in the details above to understand what went wrong and how to improve!
+            </p>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}

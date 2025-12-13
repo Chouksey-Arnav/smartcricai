@@ -15,6 +15,7 @@ import SkillPaths from './pages/SkillPaths';
 import TeamMode from './pages/TeamMode';
 import Schedule from './pages/Schedule';
 import VideoAnalysis from './pages/VideoAnalysis';
+import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import __Layout from './Layout.jsx';
 
 
@@ -36,6 +37,7 @@ export const PAGES = {
     "TeamMode": TeamMode,
     "Schedule": Schedule,
     "VideoAnalysis": VideoAnalysis,
+    "WhyDidIGetOut": WhyDidIGetOut,
 }
 
 export const pagesConfig = {
