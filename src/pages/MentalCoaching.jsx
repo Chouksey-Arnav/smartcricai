@@ -17,6 +17,44 @@ const categories = [
   { id: 'pre-performance', label: 'Pre-Match', icon: Heart },
 ];
 
+const mindfulnessQuotes = [
+  "The mind is everything. What you think, you become.",
+  "Stay present. The ball is in your hands right now.",
+  "Breathe in confidence, breathe out doubt.",
+  "Every moment is a fresh start. Reset and refocus.",
+  "Your thoughts create your reality on the field.",
+  "Calmness is a superpower in cricket.",
+  "Focus on the process, not the outcome.",
+  "Champions train their minds as hard as their bodies.",
+  "In stillness, you find your greatest strength.",
+  "Let go of the last ball, focus on this one.",
+  "Your breath is your anchor in pressure moments.",
+  "Confidence comes from preparation and presence.",
+  "The space between your ears is your biggest asset.",
+  "Visualize success, then make it happen.",
+  "Patience and persistence break through any defense.",
+  "Trust your training when doubt creeps in.",
+  "Mental toughness is choosing to stay positive.",
+  "Your attitude determines your altitude in cricket.",
+  "Embrace the pressure - it's your chance to shine.",
+  "The greatest battles are won in the mind first.",
+];
+
+function getMindfulnessQuote() {
+  const today = new Date().toDateString();
+  const stored = localStorage.getItem('mindfulness_quote_date');
+  const storedQuote = localStorage.getItem('mindfulness_quote');
+  
+  if (stored === today && storedQuote) {
+    return storedQuote;
+  }
+  
+  const randomQuote = mindfulnessQuotes[Math.floor(Math.random() * mindfulnessQuotes.length)];
+  localStorage.setItem('mindfulness_quote_date', today);
+  localStorage.setItem('mindfulness_quote', randomQuote);
+  return randomQuote;
+}
+
 export default function MentalCoaching() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -32,13 +70,29 @@ export default function MentalCoaching() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
-      <Header title="Mind Training" showSettings={false} />
+      <Header title="Mental Training" showSettings={false} />
       
       {/* Hero */}
       <div className="px-6 py-6 max-w-lg mx-auto">
+        {/* Mindfulness Quote of the Day */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-2xl p-5 text-white mb-4 border-2 border-amber-300"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-5 h-5" />
+            <h3 className="font-bold text-sm">Mindfulness Quote of the Day</h3>
+          </div>
+          <p className="text-white italic text-sm font-medium leading-relaxed">
+            "{getMindfulnessQuote()}"
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-6 text-white mb-6"
         >
           <div className="flex items-center gap-3 mb-3">
