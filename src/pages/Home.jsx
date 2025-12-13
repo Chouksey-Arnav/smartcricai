@@ -34,7 +34,7 @@ const quickActions = [
     description: 'Start a drill session'
   },
   { 
-    name: 'Mind Training', 
+    name: 'Mental Training', 
     icon: Brain, 
     color: 'bg-purple-500',
     page: 'MentalCoaching',
@@ -48,6 +48,39 @@ const quickActions = [
     description: 'Test your knowledge'
   },
 ];
+
+const cricketJokes = [
+  "Why did the cricket team go to the bank? To get their bowler!",
+  "What do you call a cricket match in winter? A snow bowl!",
+  "Why don't cricketers ever get lost? They always follow the pitch!",
+  "What's a cricketer's favorite type of music? Swing!",
+  "Why did the batsman bring string to the match? To tie the score!",
+  "What do you call a cricket player who's always cold? A chilly fielder!",
+  "Why was the cricket pitch so wet? The bowlers kept throwing wides!",
+  "What's a cricketer's favorite drink? Root beer - for the perfect stance!",
+  "Why did the ball go to school? To get better at its spin!",
+  "What do you call a dinosaur playing cricket? A Tyrannosaurus Rex-tra cover drive!",
+  "Why don't cricketers tell secrets? Because too many people are in the field!",
+  "What's a ghost's favorite cricket shot? The boo-ncer!",
+  "Why was the cricketer always calm? They knew how to handle the pressure!",
+  "What do you call a cricket ball that won't stop talking? A chatterbox!",
+  "Why did the wicket keeper go to art class? To work on their catches!",
+];
+
+function getCricketJoke() {
+  const today = new Date().toDateString();
+  const stored = localStorage.getItem('cricket_joke_date');
+  const storedJoke = localStorage.getItem('cricket_joke');
+  
+  if (stored === today && storedJoke) {
+    return storedJoke;
+  }
+  
+  const randomJoke = cricketJokes[Math.floor(Math.random() * cricketJokes.length)];
+  localStorage.setItem('cricket_joke_date', today);
+  localStorage.setItem('cricket_joke', randomJoke);
+  return randomJoke;
+}
 
 export default function Home() {
   const [greeting, setGreeting] = useState('');
@@ -85,9 +118,23 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
         
         <div className="relative max-w-lg mx-auto">
+          {/* Joke of the Day */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-4"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">😄</span>
+              <h3 className="font-bold text-white text-sm">Cricket Joke of the Day</h3>
+            </div>
+            <p className="text-white/90 text-sm leading-relaxed">{getCricketJoke()}</p>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
             className="flex items-center justify-between mb-6"
           >
             <div>
