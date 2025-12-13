@@ -13,7 +13,8 @@ import {
   BookOpen,
   ChevronRight,
   Sparkles,
-  Star
+  Star,
+  TrendingDown
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
@@ -289,6 +290,28 @@ export default function Home() {
                 <div className="text-4xl mb-2">👥</div>
                 <h3 className="font-bold text-white text-sm mb-1">Team Mode</h3>
                 <p className="text-xs text-amber-50">Join your team</p>
+              </motion.div>
+            </Link>
+            <Link to={createPageUrl('WhyDidIGetOut')}>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <div className="text-4xl mb-2">🔍</div>
+                <h3 className="font-bold text-white text-sm mb-1">Why Got Out?</h3>
+                <p className="text-xs text-red-50">Analyze dismissals</p>
+              </motion.div>
+            </Link>
+            <Link to={createPageUrl('VideoAnalysis')}>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <div className="text-4xl mb-2">🎥</div>
+                <h3 className="font-bold text-white text-sm mb-1">Video Analysis</h3>
+                <p className="text-xs text-rose-50">Upload & analyze</p>
               </motion.div>
             </Link>
           </div>
