@@ -13,6 +13,8 @@ import PlayerLookup from './pages/PlayerLookup';
 import MiniMatch from './pages/MiniMatch';
 import SkillPaths from './pages/SkillPaths';
 import TeamMode from './pages/TeamMode';
+import Schedule from './pages/Schedule';
+import VideoAnalysis from './pages/VideoAnalysis';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +34,8 @@ export const PAGES = {
     "MiniMatch": MiniMatch,
     "SkillPaths": SkillPaths,
     "TeamMode": TeamMode,
+    "Schedule": Schedule,
+    "VideoAnalysis": VideoAnalysis,
 }
 
 export const pagesConfig = {
