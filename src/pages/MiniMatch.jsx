@@ -2,79 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, CheckCircle, XCircle, Brain, Trophy, ArrowRight } from 'lucide-react';
+import { Zap, CheckCircle, XCircle, Brain, Trophy, ArrowRight, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const scenarios = [
-  {
-    id: 'batting_pressure_1',
-    category: 'Batting',
-    situation: "You need 10 runs from 4 balls. A medium pacer is bowling outside off-stump. What's the smartest shot?",
-    options: [
-      { id: 'a', text: 'Drive through covers', correct: true, explanation: "Great choice! A controlled drive keeps the ball along the ground and gives you a boundary chance while being smart." },
-      { id: 'b', text: 'Go for a big slog', correct: false, explanation: "Too risky! With 4 balls left, you have time. A wild slog increases the chance of getting out." },
-      { id: 'c', text: 'Take a calm single', correct: false, explanation: "Singles are good, but you need 10 from 4 - you need boundaries too!" },
-      { id: 'd', text: 'Step across for a paddle', correct: false, explanation: "Creative, but outside off-stump isn't ideal for a paddle. Play to the ball's line." }
-    ]
-  },
-  {
-    id: 'bowling_strategy_1',
-    category: 'Bowling',
-    situation: "You're bowling the last over. The batter needs 12 runs. They love hitting straight. Where should you bowl?",
-    options: [
-      { id: 'a', text: 'Yorker outside off', correct: true, explanation: "Perfect! If they love straight shots, bowl wide and full to take away their strength." },
-      { id: 'b', text: 'Bouncer at the body', correct: false, explanation: "Risky - a bouncer can go for 6 runs if they're expecting it in the last over." },
-      { id: 'c', text: 'Full on middle stump', correct: false, explanation: "That's exactly where they want it for straight hitting!" },
-      { id: 'd', text: 'Slow loopy ball', correct: false, explanation: "In the last over, batters are waiting for this. They'll launch it!" }
-    ]
-  },
-  {
-    id: 'fielding_placement_1',
-    category: 'Fielding',
-    situation: "The batter keeps hitting through the covers. You're the captain. What do you do?",
-    options: [
-      { id: 'a', text: 'Move a fielder to cover the gap', correct: true, explanation: "Smart captaincy! If they keep hitting one area, protect it." },
-      { id: 'b', text: 'Keep the field the same', correct: false, explanation: "That's letting them score easy runs. Adapt to their shots!" },
-      { id: 'c', text: 'Bring everyone close', correct: false, explanation: "Too aggressive - they'll just hit over the fielders." },
-      { id: 'd', text: 'Set a deep field everywhere', correct: false, explanation: "That gives them easy singles. Be smarter about which area to protect." }
-    ]
-  },
-  {
-    id: 'batting_situation_2',
-    category: 'Batting',
-    situation: "First ball of your innings. Fast bowler steaming in. What's your mindset?",
-    options: [
-      { id: 'a', text: 'Watch the ball carefully, play safe', correct: true, explanation: "Perfect! The first ball is about getting your eye in. Stay calm and focused." },
-      { id: 'b', text: 'Try to smash it for 6', correct: false, explanation: "Too aggressive! You haven't seen the pace or bounce yet. Settle in first." },
-      { id: 'c', text: 'Close your eyes and swing', correct: false, explanation: "Never close your eyes! Watch the ball all the way." },
-      { id: 'd', text: 'Step way back and defend', correct: false, explanation: "Going too far back gives you less time to react. Stay balanced in your stance." }
-    ]
-  },
-  {
-    id: 'running_awareness_1',
-    category: 'Running',
-    situation: "You hit the ball towards mid-on. Your partner shouts 'Wait!' but you see the fielder is slow. What do you do?",
-    options: [
-      { id: 'a', text: 'Listen to your partner and wait', correct: true, explanation: "Great teamwork! Your partner has a better view. Trust your teammate." },
-      { id: 'b', text: 'Run anyway - you saw the gap', correct: false, explanation: "This causes mix-ups and run-outs! Always communicate and decide together." },
-      { id: 'c', text: 'Run halfway then stop', correct: false, explanation: "Terrible idea! This is how run-outs happen. Make clear decisions." },
-      { id: 'd', text: 'Argue with your partner', correct: false, explanation: "Never argue on the field! Clear communication wins matches." }
-    ]
-  },
-  {
-    id: 'pressure_mental_1',
-    category: 'Mental Game',
-    situation: "You just dropped an easy catch. Your team looks disappointed. What's the best thing to do?",
-    options: [
-      { id: 'a', text: 'Take a deep breath, refocus, move on', correct: true, explanation: "Perfect mindset! Everyone makes mistakes. Champions refocus quickly." },
-      { id: 'b', text: 'Keep thinking about the drop', correct: false, explanation: "Dwelling on mistakes hurts your next chance. Let it go!" },
-      { id: 'c', text: 'Hide away from the ball', correct: false, explanation: "Never hide! Show courage. The next chance is yours to take." },
-      { id: 'd', text: 'Make excuses to teammates', correct: false, explanation: "Just say sorry if needed and move forward. Excuses don't help." }
-    ]
-  }
-];
+import { Switch } from '@/components/ui/switch';
+import { scenarioDatabase, getRandomScenarios } from '@/components/match/ScenarioDatabase';
 
 export default function MiniMatch() {
+  const [gameStarted, setGameStarted] = useState(false);
+  const [timerEnabled, setTimerEnabled] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(5);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResult, setShowResult] = useState(false);
@@ -102,10 +38,6 @@ export default function MiniMatch() {
       queryClient.invalidateQueries({ queryKey: ['scenarioCompletions'] });
     },
   });
-
-  useEffect(() => {
-    pickRandomScenario();
-  }, []);
 
   // Timer logic
   useEffect(() => {
@@ -143,15 +75,20 @@ export default function MiniMatch() {
   };
 
   const handleSubmit = () => {
-    if (!selectedOption) return;
+    if (!selectedOption && timerEnabled) {
+      // Time ran out, mark as incorrect
+      setSelectedOption(currentScenario.options[0]);
+    }
+    if (!selectedOption && !timerEnabled) return;
+    
     setShowResult(true);
 
     if (user?.email) {
       saveCompletion.mutate({
         user_email: user.email,
         scenario_id: currentScenario.id,
-        choice_made: selectedOption.text,
-        was_correct: selectedOption.correct,
+        choice_made: selectedOption?.text || 'Time ran out',
+        was_correct: selectedOption?.correct || false,
         completed_date: new Date().toISOString()
       });
     }
@@ -164,159 +101,258 @@ export default function MiniMatch() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 pb-24 pt-6">
       <div className="max-w-lg mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            ⚡ Mini-Match Situations
-          </h1>
-          <p className="text-slate-600">
-            Face realistic cricket moments and make smart decisions!
-          </p>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg p-4 mb-6"
-        >
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">{completedCount}</p>
-              <p className="text-xs text-slate-500">Completed</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-emerald-600">{correctCount}</p>
-              <p className="text-xs text-slate-500">Correct</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{accuracy}%</p>
-              <p className="text-xs text-slate-500">Accuracy</p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Scenario Card */}
-        <AnimatePresence mode="wait">
-          {currentScenario && (
+        {!gameStarted ? (
+          /* Game Setup Screen */
+          <div className="space-y-6">
             <motion.div
-              key={currentScenario.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-6 text-white"
             >
-              {/* Category Badge */}
-              <div className="flex items-center gap-2">
-                <Brain className="w-5 h-5 text-purple-600" />
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                  {currentScenario.category}
-                </span>
-              </div>
-
-              {/* Situation */}
-              <div className="bg-white rounded-2xl shadow-xl p-6">
-                <h2 className="text-lg font-semibold text-slate-800 mb-4">
-                  {currentScenario.situation}
-                </h2>
-
-                {/* Options */}
-                <div className="space-y-3">
-                  {currentScenario.options.map((option) => (
-                    <motion.button
-                      key={option.id}
-                      onClick={() => handleOptionSelect(option)}
-                      disabled={showResult}
-                      whileHover={{ scale: showResult ? 1 : 1.02 }}
-                      whileTap={{ scale: showResult ? 1 : 0.98 }}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                        selectedOption?.id === option.id
-                          ? showResult
-                            ? option.correct
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-red-500 bg-red-50'
-                            : 'border-purple-500 bg-purple-50'
-                          : showResult && option.correct
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-800 font-medium">{option.text}</span>
-                        {showResult && (
-                          <>
-                            {option.correct && (
-                              <CheckCircle className="w-5 h-5 text-emerald-600" />
-                            )}
-                            {selectedOption?.id === option.id && !option.correct && (
-                              <XCircle className="w-5 h-5 text-red-600" />
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </motion.button>
-                  ))}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Zap className="w-6 h-6" />
                 </div>
+                <div>
+                  <h2 className="font-bold text-lg">Cricket IQ Challenge</h2>
+                  <p className="text-orange-100 text-sm">1000+ scenarios to test your mind</p>
+                </div>
+              </div>
+              <p className="text-orange-100 text-sm mb-4">
+                Make smart decisions under pressure. Every choice counts!
+              </p>
+              <div className="bg-white/10 rounded-xl p-4 border border-white/20">
+                <p className="text-sm font-semibold mb-2">📊 Database: {scenarioDatabase.length}+ scenarios</p>
+                <p className="text-xs text-orange-50">Batting • Bowling • Fielding • Captaincy • Pressure</p>
+              </div>
+            </motion.div>
 
-                {/* Submit Button */}
-                {!showResult && (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!selectedOption}
-                    className="w-full mt-6 h-12 bg-purple-600 hover:bg-purple-700"
-                  >
-                    Submit Answer
-                  </Button>
+            {/* Timer Toggle */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-3xl shadow-xl p-6 border-2 border-orange-200"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <Timer className="w-6 h-6 text-orange-600" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-slate-800">⚡ Real-Time Decision Mode</h3>
+                    <Switch
+                      checked={timerEnabled}
+                      onCheckedChange={setTimerEnabled}
+                    />
+                  </div>
+                  <p className="text-sm text-slate-600 mb-3">
+                    Get only 5 seconds per decision. No pausing, no undo. Simulates real match pressure.
+                  </p>
+                  {timerEnabled && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-xs text-red-700 font-medium">
+                        ⚠️ Warning: Timer starts immediately. If time runs out, answer is marked wrong!
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Start Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Button
+                onClick={startGame}
+                className="w-full h-14 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-lg font-bold"
+              >
+                <Brain className="w-6 h-6 mr-2" />
+                Start Challenge
+              </Button>
+            </motion.div>
+          </div>
+        ) : (
+          /* Game Screen */
+          <>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <h1 className="text-3xl font-bold text-slate-800 mb-2">
+                ⚡ Mini-Match Situations
+              </h1>
+              <p className="text-slate-600">
+                Face realistic cricket moments and make smart decisions!
+              </p>
+            </motion.div>
+
+            {/* Stats & Timer */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl shadow-lg p-4 mb-6"
+            >
+              <div className={`grid ${timerEnabled && !showResult ? 'grid-cols-4' : 'grid-cols-3'} gap-4`}>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-purple-600">{completedCount}</p>
+                  <p className="text-xs text-slate-500">Completed</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-emerald-600">{correctCount}</p>
+                  <p className="text-xs text-slate-500">Correct</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-blue-600">{accuracy}%</p>
+                  <p className="text-xs text-slate-500">Accuracy</p>
+                </div>
+                {timerEnabled && !showResult && (
+                  <div className={`text-center p-2 rounded-xl ${timeLeft <= 2 ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
+                    <p className={`text-2xl font-bold ${timeLeft <= 2 ? 'text-red-600' : 'text-blue-600'}`}>{timeLeft}s</p>
+                    <p className="text-xs text-slate-500">Time</p>
+                  </div>
                 )}
               </div>
-
-              {/* Result */}
-              <AnimatePresence>
-                {showResult && selectedOption && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`rounded-2xl p-6 ${
-                      selectedOption.correct
-                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                        : 'bg-gradient-to-r from-orange-500 to-red-500'
-                    } text-white`}
-                  >
-                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
-                      {selectedOption.correct ? (
-                        <>
-                          <Trophy className="w-6 h-6" />
-                          Great Choice! 🎉
-                        </>
-                      ) : (
-                        <>
-                          <Brain className="w-6 h-6" />
-                          Learning Moment!
-                        </>
-                      )}
-                    </h3>
-                    <p className="text-white/90 mb-4">
-                      {selectedOption.explanation}
-                    </p>
-                    <Button
-                      onClick={pickRandomScenario}
-                      variant="secondary"
-                      className="w-full h-12 bg-white text-slate-800 hover:bg-white/90"
-                    >
-                      Next Situation
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
-          )}
-        </AnimatePresence>
+
+            {/* Scenario Card */}
+            <AnimatePresence mode="wait">
+              {currentScenario && (
+                <motion.div
+                  key={currentScenario.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-4"
+                >
+                  {/* Category Badge */}
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-purple-600" />
+                    <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium capitalize">
+                      {currentScenario.category}
+                    </span>
+                    {currentScenario.difficulty && (
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        currentScenario.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
+                        currentScenario.difficulty === 'medium' ? 'bg-amber-100 text-amber-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {currentScenario.difficulty}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Situation */}
+                  <div className="bg-white rounded-2xl shadow-xl p-6">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-4">
+                      {currentScenario.situation}
+                    </h2>
+                    {currentScenario.question && (
+                      <p className="text-slate-600 mb-4 font-medium">
+                        {currentScenario.question}
+                      </p>
+                    )}
+
+                    {/* Options */}
+                    <div className="space-y-3">
+                      {currentScenario.options.map((option, idx) => (
+                        <motion.button
+                          key={idx}
+                          onClick={() => handleOptionSelect(option)}
+                          disabled={showResult}
+                          whileHover={{ scale: showResult ? 1 : 1.02 }}
+                          whileTap={{ scale: showResult ? 1 : 0.98 }}
+                          className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                            selectedOption?.text === option.text
+                              ? showResult
+                                ? option.correct
+                                  ? 'border-emerald-500 bg-emerald-50'
+                                  : 'border-red-500 bg-red-50'
+                                : 'border-purple-500 bg-purple-50'
+                              : showResult && option.correct
+                              ? 'border-emerald-500 bg-emerald-50'
+                              : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-800 font-medium">{option.text}</span>
+                            {showResult && (
+                              <>
+                                {option.correct && (
+                                  <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                )}
+                                {selectedOption?.text === option.text && !option.correct && (
+                                  <XCircle className="w-5 h-5 text-red-600" />
+                                )}
+                              </>
+                            )}
+                          </div>
+                          {showResult && (selectedOption?.text === option.text || option.correct) && (
+                            <p className="text-sm text-slate-600 mt-2">
+                              {option.explanation}
+                            </p>
+                          )}
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    {/* Submit Button */}
+                    {!showResult && (
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={!selectedOption}
+                        className="w-full mt-6 h-12 bg-purple-600 hover:bg-purple-700"
+                      >
+                        Submit Answer
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Result */}
+                  <AnimatePresence>
+                    {showResult && selectedOption && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`rounded-2xl p-6 ${
+                          selectedOption.correct
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
+                            : 'bg-gradient-to-r from-orange-500 to-red-500'
+                        } text-white`}
+                      >
+                        <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                          {selectedOption.correct ? (
+                            <>
+                              <Trophy className="w-6 h-6" />
+                              Great Choice! 🎉
+                            </>
+                          ) : (
+                            <>
+                              <Brain className="w-6 h-6" />
+                              Learning Moment!
+                            </>
+                          )}
+                        </h3>
+                        <Button
+                          onClick={pickRandomScenario}
+                          variant="secondary"
+                          className="w-full h-12 bg-white text-slate-800 hover:bg-white/90 mt-4"
+                        >
+                          Next Situation
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </>
         )}
       </div>
