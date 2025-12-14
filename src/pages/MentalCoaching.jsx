@@ -68,6 +68,11 @@ export default function MentalCoaching() {
     ? routines 
     : routines.filter(r => r.category === selectedCategory);
 
+  // Sort by duration (easier/shorter first)
+  const sortedRoutines = [...filteredRoutines].sort((a, b) => 
+    (a.duration_seconds || 0) - (b.duration_seconds || 0)
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
       <Header title="Mental Training" showSettings={false} />
@@ -150,7 +155,7 @@ export default function MentalCoaching() {
               <p className="text-slate-500">No routines found in this category.</p>
             </motion.div>
           ) : (
-            filteredRoutines.map((routine, index) => (
+            sortedRoutines.map((routine, index) => (
               <motion.div
                 key={routine.id}
                 initial={{ opacity: 0, y: 20 }}
