@@ -18,6 +18,7 @@ import VideoAnalysis from './pages/VideoAnalysis';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import MatchTracker from './pages/MatchTracker';
 import WorkoutBuilder from './pages/WorkoutBuilder';
+import Profile from './pages/Profile';
 import __Layout from './Layout.jsx';
 
 
@@ -42,6 +43,7 @@ export const PAGES = {
     "WhyDidIGetOut": WhyDidIGetOut,
     "MatchTracker": MatchTracker,
     "WorkoutBuilder": WorkoutBuilder,
+    "Profile": Profile,
 }
 
 export const pagesConfig = {

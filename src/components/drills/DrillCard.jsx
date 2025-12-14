@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Dumbbell, ChevronRight } from 'lucide-react';
+import { Clock, Dumbbell, ChevronRight, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -52,7 +52,12 @@ export default function DrillCard({ drill, onClick, isCompleted }) {
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-slate-800 mb-1">{drill.title}</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-slate-800">{drill.title}</h3>
+            {drill.video_url && (
+              <Video className="w-4 h-4 text-red-500 shrink-0" />
+            )}
+          </div>
           
           <div className="flex items-center gap-3 text-sm text-slate-500">
             <span className="flex items-center gap-1">

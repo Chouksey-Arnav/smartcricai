@@ -38,6 +38,7 @@ const menuItems = [
   { name: 'Why Did I Get Out?', icon: TrendingDown, page: 'WhyDidIGetOut', color: 'text-red-600' },
   { name: 'Match Tracker', icon: Trophy, page: 'MatchTracker', color: 'text-green-600' },
   { name: 'Workout Builder', icon: Dumbbell, page: 'WorkoutBuilder', color: 'text-purple-600' },
+  { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
   { name: 'Settings', icon: Settings, page: 'Settings', color: 'text-slate-500' },
 ];
 

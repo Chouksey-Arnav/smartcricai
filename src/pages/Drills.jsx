@@ -41,13 +41,45 @@ export default function Drills() {
     return matchesCategory && matchesSearch;
   });
 
+  // Group by difficulty
+  const beginnerDrills = filteredDrills.filter(d => d.skill_level === 'beginner');
+  const intermediateDrills = filteredDrills.filter(d => d.skill_level === 'intermediate');
+  const advancedDrills = filteredDrills.filter(d => d.skill_level === 'advanced');
+
   const completedDrillIds = progress?.completed_drills || [];
+
+  const renderDrillGroup = (title, drills, color) => {
+    if (drills.length === 0) return null;
+    
+    return (
+      <div className="space-y-3">
+        <div className={`flex items-center gap-2 px-2`}>
+          <div className={`h-1 w-8 rounded-full ${color}`} />
+          <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">{title}</h3>
+        </div>
+        {drills.map((drill, index) => (
+          <motion.div
+            key={drill.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <DrillCard
+              drill={drill}
+              onClick={() => navigate(createPageUrl(`DrillDetail?id=${drill.id}`))}
+              isCompleted={completedDrillIds.includes(drill.id)}
+            />
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white pb-24">
       <Header title="Practice Drills" showSettings={false} />
       
-      <div className="px-4 py-4 max-w-lg mx-auto space-y-4">
+      <div className="px-4 py-4 max-w-lg mx-auto space-y-6">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -62,39 +94,28 @@ export default function Drills() {
         {/* Categories */}
         <CategoryFilter selected={category} onChange={setCategory} />
 
-        {/* Drills List */}
-        <div className="space-y-3">
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-slate-100 rounded-2xl animate-pulse" />
-              ))}
-            </div>
-          ) : filteredDrills.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <p className="text-slate-500">No drills found. Try a different category!</p>
-            </motion.div>
-          ) : (
-            filteredDrills.map((drill, index) => (
-              <motion.div
-                key={drill.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <DrillCard
-                  drill={drill}
-                  onClick={() => navigate(createPageUrl(`DrillDetail?id=${drill.id}`))}
-                  isCompleted={completedDrillIds.includes(drill.id)}
-                />
-              </motion.div>
-            ))
-          )}
-        </div>
+        {/* Drills List - Organized by Difficulty */}
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-24 bg-slate-100 rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        ) : filteredDrills.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <p className="text-slate-500">No drills found. Try a different category!</p>
+          </motion.div>
+        ) : (
+          <div className="space-y-8">
+            {renderDrillGroup('Beginner', beginnerDrills, 'bg-green-500')}
+            {renderDrillGroup('Intermediate', intermediateDrills, 'bg-amber-500')}
+            {renderDrillGroup('Advanced', advancedDrills, 'bg-red-500')}
+          </div>
+        )}
       </div>
     </div>
   );

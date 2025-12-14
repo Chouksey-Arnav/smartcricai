@@ -10,7 +10,8 @@ import {
   CheckCircle2, 
   Play,
   ChevronLeft,
-  Lightbulb
+  Lightbulb,
+  Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -175,6 +176,28 @@ export default function DrillDetail() {
         >
           {!isStarted ? (
             <>
+              {/* Video Tutorial */}
+              {drill.video_url && (
+                <div className="mb-6">
+                  <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                    <Video className="w-5 h-5 text-red-500" />
+                    Video Tutorial
+                  </h3>
+                  <div className="aspect-video rounded-xl overflow-hidden bg-slate-100">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={drill.video_url.replace('watch?v=', 'embed/')}
+                      title="Drill Tutorial"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Equipment */}
               {equipment.length > 0 && (
                 <div className="mb-6">

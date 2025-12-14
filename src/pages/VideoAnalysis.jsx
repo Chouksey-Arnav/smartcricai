@@ -28,17 +28,56 @@ export default function VideoAnalysis() {
 
       // Analyze with AI
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this cricket practice video and provide detailed feedback for a young player (11-15 years old).
+        prompt: `You are an expert cricket coach analyzing a young player's technique video. Provide extremely detailed, technical feedback.
 
-Focus on:
-1. **Technique Analysis**: What's good and what needs improvement
-2. **Body Position**: Stance, balance, head position, footwork
-3. **Specific Tips**: 3-4 actionable improvements they can make
-4. **What They're Doing Well**: Positive reinforcement (2-3 points)
-5. **Practice Drills**: Suggest 2 specific drills to improve their weaknesses
-6. **Safety Reminders**: Any safety concerns to address
+**Analysis Framework:**
 
-Be encouraging, specific, and age-appropriate. Format as clear sections.`,
+1. **DETAILED TECHNIQUE BREAKDOWN**
+   - Grip: Finger position, wrist angle, firmness
+   - Stance: Feet placement, shoulder alignment, weight distribution
+   - Backlift: Height, direction, timing, elbow position
+   - Downswing: Bat path, speed, acceleration point
+   - Point of Contact: Bat angle, body position, head stability
+   - Follow-through: Completeness, balance, finish position
+
+2. **BIOMECHANICS & BODY POSITION**
+   - Weight transfer sequence
+   - Hip rotation timing
+   - Shoulder alignment through shot
+   - Head stability (critical - is it moving?)
+   - Front elbow position
+   - Back foot balance
+   - Core engagement
+
+3. **TIMING & RHYTHM**
+   - Trigger movements
+   - Foot movement timing
+   - Hand-eye coordination quality
+   - Shot selection appropriateness
+
+4. **COMMON TECHNICAL ERRORS DETECTED**
+   - List specific flaws (e.g., "head falling away at contact", "bat coming down at 45° instead of straight")
+   - Explain why each error happens
+   - Rate severity of each (1-10)
+
+5. **WHAT THEY'RE DOING EXCEPTIONALLY WELL** (be specific!)
+   - Highlight 3-4 technical strengths with detail
+   - Explain why these are good
+
+6. **IMMEDIATE ACTION PLAN**
+   - Top 3 fixes to practice TODAY
+   - Exact cues to remember (e.g., "Watch ball till it hits bat")
+
+7. **RECOMMENDED DRILLS** (2-3 drills)
+   - Drill name
+   - Exactly what it fixes
+   - How to perform it (brief steps)
+
+8. **SAFETY & INJURY PREVENTION**
+   - Any concerning movements that could cause injury
+   - Protective gear recommendations
+
+Be brutally honest but encouraging. Use cricket-specific terminology. This player wants to improve seriously.`,
         file_urls: [file_url],
         response_json_schema: {
           type: "object",
