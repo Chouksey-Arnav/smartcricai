@@ -16,6 +16,8 @@ import TeamMode from './pages/TeamMode';
 import Schedule from './pages/Schedule';
 import VideoAnalysis from './pages/VideoAnalysis';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
+import MatchTracker from './pages/MatchTracker';
+import WorkoutBuilder from './pages/WorkoutBuilder';
 import __Layout from './Layout.jsx';
 
 
@@ -38,6 +40,8 @@ export const PAGES = {
     "Schedule": Schedule,
     "VideoAnalysis": VideoAnalysis,
     "WhyDidIGetOut": WhyDidIGetOut,
+    "MatchTracker": MatchTracker,
+    "WorkoutBuilder": WorkoutBuilder,
 }
 
 export const pagesConfig = {
