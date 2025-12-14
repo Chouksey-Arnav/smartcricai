@@ -49,12 +49,12 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Menu Button */}
+      {/* Menu Button - Always Visible */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-4 left-4 z-40 p-2 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all"
+        className="fixed top-4 left-4 z-50 p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-200"
       >
-        <Menu className="w-6 h-6 text-slate-700" />
+        <Menu className="w-6 h-6 text-white" />
       </button>
 
       {/* Overlay */}
@@ -78,7 +78,8 @@ export default function Sidebar() {
             animate={{ x: 0 }}
             exit={{ x: -300 }}
             transition={{ type: 'spring', damping: 25 }}
-            className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 overflow-y-auto"
+            className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+            style={{ maxHeight: '100vh' }}
           >
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-emerald-500 to-teal-500 p-6 flex items-center justify-between">
@@ -101,21 +102,23 @@ export default function Sidebar() {
                   key={item.page}
                   to={createPageUrl(item.page)}
                   onClick={() => setIsOpen(false)}
+                  className="group"
                 >
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.03 }}
-                    whileHover={{ x: 4 }}
+                    whileHover={{ x: 4, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl transition-all",
-                      "hover:bg-slate-50 active:bg-slate-100"
+                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                      "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:shadow-md active:bg-slate-100"
                     )}
                   >
-                    <div className={cn("p-2 rounded-lg bg-slate-50", item.color)}>
-                      <item.icon className="w-5 h-5" />
+                    <div className={cn("p-2 rounded-lg bg-slate-50 transition-colors duration-200 group-hover:bg-white", item.color)}>
+                      <item.icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
                     </div>
-                    <span className="font-medium text-slate-700">{item.name}</span>
+                    <span className="font-medium text-slate-700 group-hover:text-slate-900 transition-colors">{item.name}</span>
                   </motion.div>
                 </Link>
               ))}
