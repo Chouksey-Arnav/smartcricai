@@ -26,58 +26,157 @@ export default function VideoAnalysis() {
       setUploading(false);
       setAnalyzing(true);
 
-      // Analyze with AI
+      // Analyze with AI - COMPREHENSIVE ANALYSIS
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert cricket coach analyzing a young player's technique video. Provide extremely detailed, technical feedback.
+        prompt: `You are an elite cricket coach with 30+ years of experience analyzing technique videos at international level. Analyze this cricket video with EXTREME detail.
 
-**Analysis Framework:**
+**CRITICAL: Identify what type of cricket action this is first:**
+- Batting (if yes: which shot? Drive/pull/cut/sweep/defense?)
+- Bowling (if yes: pace/spin? Which delivery?)
+- Fielding (if yes: catching/throwing/diving?)
+- Wicketkeeping
+- General practice/nets
 
-1. **DETAILED TECHNIQUE BREAKDOWN**
-   - Grip: Finger position, wrist angle, firmness
-   - Stance: Feet placement, shoulder alignment, weight distribution
-   - Backlift: Height, direction, timing, elbow position
-   - Downswing: Bat path, speed, acceleration point
-   - Point of Contact: Bat angle, body position, head stability
-   - Follow-through: Completeness, balance, finish position
+**Then provide MASTER-LEVEL analysis:**
 
-2. **BIOMECHANICS & BODY POSITION**
-   - Weight transfer sequence
-   - Hip rotation timing
-   - Shoulder alignment through shot
-   - Head stability (critical - is it moving?)
-   - Front elbow position
-   - Back foot balance
-   - Core engagement
+═══════════════════════════════════════
+📹 VIDEO BREAKDOWN (Frame-by-Frame)
+═══════════════════════════════════════
 
-3. **TIMING & RHYTHM**
-   - Trigger movements
-   - Foot movement timing
-   - Hand-eye coordination quality
-   - Shot selection appropriateness
+**1. INITIAL SETUP (0-1 sec)**
+- Stance width & balance
+- Weight distribution (front/back foot %)
+- Head position relative to shoulders
+- Grip details: V's alignment, finger placement
+- Bat position: angle, height, distance from body
+- Eye line and focus point
 
-4. **COMMON TECHNICAL ERRORS DETECTED**
-   - List specific flaws (e.g., "head falling away at contact", "bat coming down at 45° instead of straight")
-   - Explain why each error happens
-   - Rate severity of each (1-10)
+**2. TRIGGER/PRE-MOVEMENT (1-2 sec)**
+- Trigger movement quality (smooth/jerky)
+- Weight shift timing
+- Head movement (critical!)
+- Back lift path and height
+- Front foot positioning
+- Body coil/loading phase
 
-5. **WHAT THEY'RE DOING EXCEPTIONALLY WELL** (be specific!)
-   - Highlight 3-4 technical strengths with detail
-   - Explain why these are good
+**3. EXECUTION PHASE (2-3 sec)**
+- Bat path geometry (angles, arc)
+- Contact point relative to body
+- Head position at impact (MOST IMPORTANT)
+- Front elbow height and bend
+- Back elbow position
+- Hip rotation degree and timing
+- Weight transfer completion
+- Foot movement pattern
+- Balance at contact
 
-6. **IMMEDIATE ACTION PLAN**
-   - Top 3 fixes to practice TODAY
-   - Exact cues to remember (e.g., "Watch ball till it hits bat")
+**4. FOLLOW-THROUGH (3-4 sec)**
+- Bat finish position
+- Body balance
+- Head position (still watching contact point?)
+- Back foot position
+- Overall shape and control
 
-7. **RECOMMENDED DRILLS** (2-3 drills)
-   - Drill name
-   - Exactly what it fixes
-   - How to perform it (brief steps)
+═══════════════════════════════════════
+🔴 CRITICAL ERRORS (Must Fix Immediately)
+═══════════════════════════════════════
 
-8. **SAFETY & INJURY PREVENTION**
-   - Any concerning movements that could cause injury
-   - Protective gear recommendations
+List 3-5 errors with:
+- Error name
+- Severity: 🔴 Critical / 🟡 Moderate / 🟢 Minor
+- Why it's happening (biomechanical reason)
+- Consequence (what this leads to)
+- Fix (specific correction)
 
-Be brutally honest but encouraging. Use cricket-specific terminology. This player wants to improve seriously.`,
+Example format:
+🔴 HEAD FALLING AWAY (Severity: Critical 9/10)
+- Cause: Looking up too early, poor balance
+- Consequence: Edges, mistimed shots, gets bowled
+- Fix: "Watch ball onto bat. Keep head still till after contact. Practice with ball suspended on string."
+
+═══════════════════════════════════════
+✅ TECHNICAL STRENGTHS (What's Good)
+═══════════════════════════════════════
+
+List 3-4 things they're doing RIGHT with detail:
+- What they're doing
+- Why it's good
+- How it helps their game
+
+═══════════════════════════════════════
+🎯 IMMEDIATE ACTION PLAN (Today's Focus)
+═══════════════════════════════════════
+
+Priority 1: [Specific fix]
+- Cue to remember: "[Short phrase]"
+- Drill: [Drill name + 2-3 steps]
+
+Priority 2: [Specific fix]
+- Cue to remember: "[Short phrase]"
+- Drill: [Drill name + 2-3 steps]
+
+Priority 3: [Specific fix]
+- Cue to remember: "[Short phrase]"
+- Drill: [Drill name + 2-3 steps]
+
+═══════════════════════════════════════
+🏋️ TECHNICAL DRILLS (Detailed)
+═══════════════════════════════════════
+
+Drill 1: [Name]
+Purpose: Fixes [specific issue]
+Setup: [Equipment needed]
+Method: 
+1. [Step]
+2. [Step]
+3. [Step]
+Key focus: [What to concentrate on]
+Reps: [How many]
+
+Drill 2: [Name]
+[Same format]
+
+Drill 3: [Name]
+[Same format]
+
+═══════════════════════════════════════
+⚠️ INJURY RISK ASSESSMENT
+═══════════════════════════════════════
+
+- Any movements causing injury risk?
+- Back/shoulder/elbow concerns?
+- Overuse patterns?
+- Protective gear needed?
+
+═══════════════════════════════════════
+📊 TECHNIQUE RATING BREAKDOWN
+═══════════════════════════════════════
+
+Stance: [X/10] - [Brief reason]
+Backlift: [X/10] - [Brief reason]
+Footwork: [X/10] - [Brief reason]
+Head Position: [X/10] - [Brief reason]
+Contact Point: [X/10] - [Brief reason]
+Follow-through: [X/10] - [Brief reason]
+Overall: [X/10]
+
+═══════════════════════════════════════
+💪 MOTIVATIONAL MESSAGE
+═══════════════════════════════════════
+
+[Personal, specific, encouraging message based on their video. Reference their specific strengths. Give them confidence while being honest about areas to work on.]
+
+═══════════════════════════════════════
+
+**ANALYSIS STYLE:**
+- Be brutally honest but supportive
+- Use technical terms (explain if complex)
+- Give specific frame references if possible
+- Compare to pro techniques where relevant
+- Assume they want serious improvement
+- No generic advice - everything must be SPECIFIC to their video
+
+This player is serious about cricket. Give them professional-level feedback.`,
         file_urls: [file_url],
         response_json_schema: {
           type: "object",

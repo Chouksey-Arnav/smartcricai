@@ -107,11 +107,34 @@ export default function MiniMatch() {
     pickRandomScenario();
   }, []);
 
+  // Timer logic
+  useEffect(() => {
+    if (!timerEnabled || !gameStarted || showResult || !currentScenario) return;
+    
+    if (timeLeft === 0) {
+      // Auto-submit when time runs out
+      handleSubmit();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, timerEnabled, showResult, currentScenario, gameStarted]);
+
   const pickRandomScenario = () => {
-    const randomIndex = Math.floor(Math.random() * scenarios.length);
-    setCurrentScenario(scenarios[randomIndex]);
+    const random = getRandomScenarios(1)[0];
+    setCurrentScenario(random);
     setSelectedOption(null);
     setShowResult(false);
+    setTimeLeft(5); // Reset timer
+  };
+
+  const startGame = () => {
+    setGameStarted(true);
+    pickRandomScenario();
   };
 
   const handleOptionSelect = (option) => {
@@ -294,6 +317,8 @@ export default function MiniMatch() {
             </motion.div>
           )}
         </AnimatePresence>
+          </>
+        )}
       </div>
     </div>
   );
