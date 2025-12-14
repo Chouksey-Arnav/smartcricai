@@ -19,6 +19,8 @@ import {
   Video,
   Settings,
   TrendingDown,
+  Dumbbell,
+  User,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
