@@ -207,16 +207,40 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
       window.speechSynthesis.cancel();
       
       setIsSpeaking(true);
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.95; // Slightly slower for clarity
-      utterance.pitch = 1;
-      utterance.volume = 1;
       
-      utterance.onend = () => {
-        setIsSpeaking(false);
+      // Wait for voices to load
+      const speak = () => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        
+        // Try to use a better voice
+        const voices = window.speechSynthesis.getVoices();
+        const englishVoice = voices.find(v => v.lang.includes('en'));
+        if (englishVoice) {
+          utterance.voice = englishVoice;
+        }
+        
+        utterance.onend = () => {
+          setIsSpeaking(false);
+        };
+        
+        utterance.onerror = () => {
+          setIsSpeaking(false);
+        };
+        
+        window.speechSynthesis.speak(utterance);
       };
       
-      window.speechSynthesis.speak(utterance);
+      // Load voices if not loaded
+      if (window.speechSynthesis.getVoices().length > 0) {
+        speak();
+      } else {
+        window.speechSynthesis.onvoiceschanged = () => {
+          speak();
+        };
+      }
     }
   };
 
