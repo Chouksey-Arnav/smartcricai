@@ -79,8 +79,7 @@ export default function Sidebar() {
             animate={{ x: 0 }}
             exit={{ x: -300 }}
             transition={{ type: 'spring', damping: 25 }}
-            className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
-            style={{ maxHeight: '100vh' }}
+            className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-emerald-500 to-teal-500 p-6 flex items-center justify-between">
@@ -96,8 +95,8 @@ export default function Sidebar() {
               </button>
             </div>
 
-            {/* Menu Items */}
-            <div className="p-4 space-y-2">
+            {/* Menu Items - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2" style={{ maxHeight: 'calc(100vh - 80px)' }}>
               {menuItems.map((item, index) => (
                 <Link
                   key={item.page}

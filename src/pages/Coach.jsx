@@ -15,6 +15,7 @@ export default function Coach() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -163,6 +164,9 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
 
       setMessages(prev => [...prev, coachMessage]);
 
+      // Speak the response (voice mode always on)
+      speakText(response);
+
       if (suggestedDrill) {
         const drillMessage = {
           role: 'coach',
@@ -197,6 +201,32 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
     setInput(question);
   };
 
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      setIsSpeaking(true);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95; // Slightly slower for clarity
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white pb-24">
       <Header title="AI Coach" showSettings={false} />
@@ -218,9 +248,19 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
             </div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center gap-2 text-sm">
-              <Volume2 className="w-4 h-4" />
-              <span>Voice-like responses • Drill recommendations • Mental tips</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm">
+                <Volume2 className="w-4 h-4" />
+                <span>Voice Mode: Always On</span>
+              </div>
+              {isSpeaking && (
+                <button
+                  onClick={stopSpeaking}
+                  className="px-3 py-1 bg-white/20 rounded-lg text-xs font-medium hover:bg-white/30"
+                >
+                  Stop
+                </button>
+              )}
             </div>
           </div>
         </motion.div>

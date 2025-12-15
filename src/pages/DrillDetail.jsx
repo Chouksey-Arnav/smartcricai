@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,7 +11,8 @@ import {
   Play,
   ChevronLeft,
   Lightbulb,
-  Video
+  Video,
+  Volume2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -39,6 +40,7 @@ export default function DrillDetail() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [audioElement, setAudioElement] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -135,6 +137,31 @@ export default function DrillDetail() {
   const steps = drill.steps || [];
   const equipment = drill.equipment || [];
 
+  // Play soundtrack when drill starts
+  useEffect(() => {
+    if (isStarted && !isCompleted && drill.soundtrack_url && !audioElement) {
+      const audio = new Audio(drill.soundtrack_url);
+      audio.loop = true;
+      audio.volume = 0.3;
+      audio.play();
+      setAudioElement(audio);
+    }
+    
+    return () => {
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
+      }
+    };
+  }, [isStarted, isCompleted]);
+
+  // Stop audio when completed
+  useEffect(() => {
+    if (isCompleted && audioElement) {
+      audioElement.pause();
+    }
+  }, [isCompleted]);
+
   return (
     <div className="min-h-screen bg-white pb-24">
       {/* Header */}
@@ -163,8 +190,14 @@ export default function DrillDetail() {
           )}>
             {drill.skill_level}
           </span>
-        </div>
-      </div>
+          </div>
+          {drill.soundtrack_url && (
+          <div className="flex items-center gap-2 text-white/80 mt-2">
+            <Volume2 className="w-4 h-4" />
+            <span className="text-xs">Focus soundtrack included</span>
+          </div>
+          )}
+          </div>
 
       {/* Content */}
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
