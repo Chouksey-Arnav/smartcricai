@@ -19,6 +19,9 @@ import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import MatchTracker from './pages/MatchTracker';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import Profile from './pages/Profile';
+import Social from './pages/Social';
+import PlayerProfile from './pages/PlayerProfile';
+import Chat from './pages/Chat';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +47,9 @@ export const PAGES = {
     "MatchTracker": MatchTracker,
     "WorkoutBuilder": WorkoutBuilder,
     "Profile": Profile,
+    "Social": Social,
+    "PlayerProfile": PlayerProfile,
+    "Chat": Chat,
 }
 
 export const pagesConfig = {

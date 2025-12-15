@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   { name: 'Home', icon: Home, page: 'Home', color: 'text-emerald-500' },
+  { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
   { name: 'Drills', icon: Target, page: 'Drills', color: 'text-purple-500' },
   { name: 'Mental Training', icon: Brain, page: 'MentalCoaching', color: 'text-indigo-500' },
