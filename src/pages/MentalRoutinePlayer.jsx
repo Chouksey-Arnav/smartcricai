@@ -23,6 +23,7 @@ export default function MentalRoutinePlayer() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [stepTimeRemaining, setStepTimeRemaining] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [audioElement, setAudioElement] = useState(null);
   const intervalRef = useRef(null);
 
   const { data: routine, isLoading } = useQuery({

@@ -1,207 +1,309 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Sparkles } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Send, Sparkles, Target, Brain, TrendingUp, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Header from '@/components/common/Header';
+import { Textarea } from '@/components/ui/textarea';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import ChatBubble from '@/components/coach/ChatBubble';
 import QuickQuestions from '@/components/coach/QuickQuestions';
-
-const COACH_SYSTEM_PROMPT = `You are SmartCrick Coach - an expert AI cricket coach with deep knowledge of cricket at all levels (professional, domestic, club, youth). 
-
-COMPREHENSIVE CRICKET KNOWLEDGE:
-- Technical skills: batting (all shots), bowling (pace, spin, variations), fielding (all positions), wicket-keeping
-- Strategy & tactics: match situations, field placements, bowling plans, batting partnerships
-- Rules: laws of cricket, DRS, match formats (Test, ODI, T20, club cricket)
-- History: legendary players, historic moments, records, cricket evolution
-- Mental game: pressure handling, confidence building, focus techniques, recovery from mistakes
-- Fitness: strength training, flexibility, endurance, injury prevention
-- Equipment: bats, balls, protective gear, maintenance
-- Match preparation: warm-ups, practice routines, diet, sleep
-- Career guidance: pathways to professional cricket, coaching, umpiring
-- Cricket culture: spirit of the game, sportsmanship, team dynamics
-
-COACHING STYLE for ages 11-15:
-- Clear, age-appropriate explanations with examples
-- Encouraging and positive tone
-- Break down complex concepts into simple steps
-- Use analogies and cricket stories
-- Keep responses focused but thorough (2-4 paragraphs)
-- Remember previous conversations and build on them
-- Personalize advice based on student's level and goals
-- Never provide unsafe advice
-
-You can answer ANY cricket question - from basic rules to advanced techniques, from local club cricket to international strategies. Be their complete cricket mentor!`;
+import Header from '@/components/common/Header';
 
 export default function Coach() {
-  const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
-  const queryClient = useQueryClient();
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
   });
 
+  const { data: drills } = useQuery({
+    queryKey: ['drills'],
+    queryFn: () => base44.entities.Drill.list(),
+  });
+
+  const { data: progress } = useQuery({
+    queryKey: ['userProgress', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      return results[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
   const { data: chatHistory } = useQuery({
-    queryKey: ['chatHistory', user?.email],
+    queryKey: ['chatMessages', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      const results = await base44.entities.ChatMessage.filter(
-        { user_email: user.email },
-        '-created_date',
-        50
-      );
-      return results.reverse();
+      return await base44.entities.ChatMessage.filter({ user_email: user.email });
     },
     enabled: !!user?.email,
   });
 
   useEffect(() => {
-    if (chatHistory) {
-      setMessages(chatHistory);
+    if (chatHistory && chatHistory.length > 0) {
+      const formattedHistory = chatHistory.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: new Date(msg.created_date),
+      }));
+      setMessages(formattedHistory);
+    } else {
+      setMessages([
+        {
+          role: 'coach',
+          content: "Hey champ! 👋 I'm your AI cricket coach. Ask me anything about batting, bowling, fielding, or mental game. I'm here to help you improve!",
+          timestamp: new Date(),
+        },
+      ]);
     }
   }, [chatHistory]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const recommendDrill = (userMessage) => {
+    const lower = userMessage.toLowerCase();
+    
+    if (lower.includes('batting') || lower.includes('bat') || lower.includes('shot')) {
+      return drills?.filter(d => d.category === 'batting')?.[0];
+    }
+    if (lower.includes('bowling') || lower.includes('bowl')) {
+      return drills?.filter(d => d.category === 'bowling')?.[0];
+    }
+    if (lower.includes('fielding') || lower.includes('catch')) {
+      return drills?.filter(d => d.category === 'fielding')?.[0];
+    }
+    if (lower.includes('fitness') || lower.includes('strength')) {
+      return drills?.filter(d => d.category === 'fitness')?.[0];
+    }
+    
+    // Default: recommend based on least practiced category
+    if (progress && drills) {
+      const categoryCount = drills.reduce((acc, drill) => {
+        const completed = progress.completed_drills?.includes(drill.id);
+        if (!acc[drill.category]) acc[drill.category] = 0;
+        if (!completed) acc[drill.category]++;
+        return acc;
+      }, {});
+      
+      const leastPracticed = Object.entries(categoryCount)
+        .sort((a, b) => b[1] - a[1])[0]?.[0];
+      
+      return drills.filter(d => d.category === leastPracticed)?.[0];
+    }
+    
+    return null;
+  };
 
-  const sendMessage = async (content) => {
-    if (!content.trim() || isLoading) return;
+  const handleSend = async () => {
+    if (!input.trim() || isTyping) return;
 
-    const userMessage = { role: 'user', content, user_email: user?.email };
+    const userMessage = {
+      role: 'user',
+      content: input,
+      timestamp: new Date(),
+    };
+
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
+    setIsTyping(true);
 
     try {
       // Save user message
       if (user?.email) {
-        await base44.entities.ChatMessage.create(userMessage);
+        await base44.entities.ChatMessage.create({
+          user_email: user.email,
+          role: 'user',
+          content: input,
+        });
       }
 
-      // Build conversation history for context (last 10 messages for better memory)
-      const conversationHistory = messages.slice(-10).map(m => 
-        `${m.role === 'user' ? 'Student' : 'Coach'}: ${m.content}`
-      ).join('\n');
+      // Get context about user
+      const userContext = progress ? `
+        User's skill level: ${progress.skill_level || 'beginner'}
+        Completed drills: ${progress.completed_drills?.length || 0}
+        Current streak: ${progress.current_streak || 0} days
+        Practice time: ${progress.total_practice_minutes || 0} minutes
+      ` : '';
 
+      // Get AI response with drill recommendation
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${COACH_SYSTEM_PROMPT}
+        prompt: `You are a friendly, motivating cricket coach for young players (ages 11-17). 
+        
+${userContext}
 
-Previous conversation:
-${conversationHistory}
+User question: "${input}"
 
-Student: ${content}
+Provide a SHORT, CLEAR, and ACTIONABLE response (max 2-3 sentences). 
+- Use simple language
+- Be encouraging and positive
+- Give specific tips they can practice RIGHT NOW
+- If relevant, suggest they try a specific drill
 
-Respond as SmartCrick Coach:`,
+Focus on:
+- Technique tips for batting/bowling/fielding
+- Mental game advice
+- Motivation and confidence building
+- Match situation strategies
+
+Keep it conversational, friendly, and like a real coach talking to a player.`,
       });
 
-      const coachMessage = { 
-        role: 'coach', 
+      const coachMessage = {
+        role: 'coach',
         content: response,
-        user_email: user?.email 
+        timestamp: new Date(),
       };
-      
+
+      // Check if we should recommend a drill
+      const suggestedDrill = recommendDrill(input);
+
       setMessages(prev => [...prev, coachMessage]);
 
-      // Save coach response
+      if (suggestedDrill) {
+        const drillMessage = {
+          role: 'coach',
+          content: `💡 I recommend trying the **${suggestedDrill.title}** drill. It's perfect for what you're working on!`,
+          timestamp: new Date(),
+          drill: suggestedDrill,
+        };
+        setMessages(prev => [...prev, drillMessage]);
+      }
+
+      // Save coach message
       if (user?.email) {
-        await base44.entities.ChatMessage.create(coachMessage);
+        await base44.entities.ChatMessage.create({
+          user_email: user.email,
+          role: 'coach',
+          content: response,
+        });
       }
     } catch (error) {
-      console.error('Error getting response:', error);
-      setMessages(prev => [...prev, {
+      const errorMessage = {
         role: 'coach',
-        content: "Oops! I had a little trouble there. Could you try asking again?",
-      }]);
+        content: "Sorry, I'm having trouble responding right now. Please try again!",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false);
+      setIsTyping(false);
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    sendMessage(input);
+  const handleQuickQuestion = (question) => {
+    setInput(question);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col pb-20">
-      <Header title="Cricket Coach" showSettings={false} />
-      
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {messages.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-8"
-          >
-            <div className="w-20 h-20 bg-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Sparkles className="w-10 h-10 text-emerald-600" />
-            </div>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">
-              Hey there, Champ! 🏏
-            </h2>
-            <p className="text-slate-500 mb-6 max-w-sm mx-auto">
-              I'm SmartCrick Coach! Ask me anything about batting, bowling, fielding, or how to become a better player.
-            </p>
-            <QuickQuestions onSelect={sendMessage} />
-          </motion.div>
-        ) : (
-          <>
-            <AnimatePresence>
-              {messages.map((msg, index) => (
-                <ChatBubble 
-                  key={index} 
-                  message={msg} 
-                  isUser={msg.role === 'user'} 
-                />
-              ))}
-            </AnimatePresence>
-            
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-2 text-slate-400"
-              >
-                <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                  <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
-                </div>
-                <span className="text-sm">Coach is typing...</span>
-              </motion.div>
-            )}
-          </>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white pb-24">
+      <Header title="AI Coach" showSettings={false} />
 
-      {/* Input Area */}
-      <div className="fixed bottom-20 left-0 right-0 bg-white border-t border-slate-100 px-4 py-3">
-        <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask your cricket question..."
-            className="flex-1 rounded-full border-slate-200 focus:border-emerald-400 focus:ring-emerald-400"
-            disabled={isLoading}
-          />
-          <Button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className="rounded-full w-12 h-12 bg-emerald-500 hover:bg-emerald-600"
-          >
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
+      <div className="px-6 py-4 max-w-2xl mx-auto">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-6 text-white mb-6"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">Your Personal Coach</h2>
+              <p className="text-emerald-100 text-sm">Ask anything about cricket</p>
+            </div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center gap-2 text-sm">
+              <Volume2 className="w-4 h-4" />
+              <span>Voice-like responses • Drill recommendations • Mental tips</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Quick Questions */}
+        <QuickQuestions onSelect={handleQuickQuestion} />
+
+        {/* Chat Messages */}
+        <div className="space-y-4 mb-24">
+          <AnimatePresence>
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <ChatBubble message={message} />
+                
+                {/* Drill Recommendation Card */}
+                {message.drill && (
+                  <Link to={createPageUrl('DrillDetail', `id=${message.drill.id}`)}>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="mt-3 ml-12 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                          <Target className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-slate-800">{message.drill.title}</p>
+                          <p className="text-xs text-slate-600 capitalize">{message.drill.category} • {message.drill.duration_minutes} min</p>
+                        </div>
+                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
+                          Start →
+                        </Button>
+                      </div>
+                    </motion.div>
+                  </Link>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {isTyping && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2 text-slate-500 text-sm ml-12"
+            >
+              <Brain className="w-4 h-4 animate-pulse" />
+              <span>Coach is typing...</span>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Input Box */}
+        <div className="fixed bottom-20 left-0 right-0 bg-white border-t border-slate-200 p-4">
+          <div className="max-w-2xl mx-auto flex gap-3">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder="Ask me anything about cricket..."
+              className="flex-1 min-h-[48px] max-h-32 resize-none"
+              disabled={isTyping}
+            />
+            <Button
+              onClick={handleSend}
+              disabled={!input.trim() || isTyping}
+              className="bg-emerald-500 hover:bg-emerald-600 h-12 w-12 p-0"
+            >
               <Send className="w-5 h-5" />
-            )}
-          </Button>
-        </form>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
