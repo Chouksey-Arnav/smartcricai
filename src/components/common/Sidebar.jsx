@@ -32,6 +32,7 @@ const menuItems = [
   { name: 'Mental Training', icon: Brain, page: 'MentalCoaching', color: 'text-indigo-500' },
   { name: 'Quizzes', icon: BookOpen, page: 'Quizzes', color: 'text-amber-500' },
   { name: 'Progress', icon: Trophy, page: 'Progress', color: 'text-pink-500' },
+  { name: 'Cricket Hub', icon: Zap, page: 'CricketHub', color: 'text-red-600' },
   { name: 'Player Lookup', icon: Search, page: 'PlayerLookup', color: 'text-cyan-500' },
   { name: 'Mini-Match', icon: Zap, page: 'MiniMatch', color: 'text-orange-500' },
   { name: 'Skill Paths', icon: TrendingUp, page: 'SkillPaths', color: 'text-teal-500' },

@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Sparkles, Target, Brain, TrendingUp, Volume2 } from 'lucide-react';
+import { Send, Sparkles, Target, Brain, TrendingUp, Volume2, Mic, Info, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import ChatBubble from '@/components/coach/ChatBubble';
 import QuickQuestions from '@/components/coach/QuickQuestions';
 import Header from '@/components/common/Header';
 
 export default function Coach() {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showInfoTooltip, setShowInfoTooltip] = useState(true);
+  const messagesEndRef = useRef(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -65,6 +68,11 @@ export default function Coach() {
     }
   }, [chatHistory]);
 
+  // Auto-scroll to latest message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const recommendDrill = (userMessage) => {
     const lower = userMessage.toLowerCase();
     
@@ -101,6 +109,17 @@ export default function Coach() {
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
+
+    // Check for mode triggers
+    const lowerInput = input.toLowerCase();
+    if (lowerInput.includes('open voice mode') || lowerInput.includes('voice mode')) {
+      navigate(createPageUrl('CoachVoiceMode'));
+      return;
+    }
+    if (lowerInput.includes('open mental mode') || lowerInput.includes('mental mode')) {
+      navigate(createPageUrl('CoachVoiceMode') + '?mode=mental');
+      return;
+    }
 
     const userMessage = {
       role: 'user',
@@ -149,6 +168,8 @@ Focus on:
 - Mental game advice
 - Motivation and confidence building
 - Match situation strategies
+
+At the end, occasionally remind them: "Type 'Open Voice Mode' to talk with me live, or 'Open Mental Mode' for mental coaching!"
 
 Keep it conversational, friendly, and like a real coach talking to a player.`,
       });
@@ -256,6 +277,34 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
       <Header title="AI Coach" showSettings={false} />
 
       <div className="px-6 py-4 max-w-2xl mx-auto">
+        {/* Info Tooltip */}
+        <AnimatePresence>
+          {showInfoTooltip && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl p-4 text-white mb-4 relative"
+            >
+              <button
+                onClick={() => setShowInfoTooltip(false)}
+                className="absolute top-3 right-3 p-1 hover:bg-white/20 rounded-full"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-start gap-3 pr-8">
+                <Info className="w-5 h-5 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold mb-1">🎙️ New Interactive Modes!</p>
+                  <p className="text-sm text-blue-100">
+                    Type <span className="font-bold">'Open Voice Mode'</span> to speak with me like a real coach, or <span className="font-bold">'Open Mental Mode'</span> to work on the mental side of your game with voice guidance!
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -271,21 +320,25 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
               <p className="text-emerald-100 text-sm">Ask anything about cricket</p>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm">
-                <Volume2 className="w-4 h-4" />
-                <span>Voice Mode: Always On</span>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => navigate(createPageUrl('CoachVoiceMode'))}
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all"
+            >
+              <div className="flex items-center gap-2 text-sm justify-center">
+                <Mic className="w-4 h-4" />
+                <span className="font-medium">Voice Mode</span>
               </div>
-              {isSpeaking && (
-                <button
-                  onClick={stopSpeaking}
-                  className="px-3 py-1 bg-white/20 rounded-lg text-xs font-medium hover:bg-white/30"
-                >
-                  Stop
-                </button>
-              )}
-            </div>
+            </button>
+            <button
+              onClick={() => navigate(createPageUrl('CoachVoiceMode') + '?mode=mental')}
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all"
+            >
+              <div className="flex items-center gap-2 text-sm justify-center">
+                <Brain className="w-4 h-4" />
+                <span className="font-medium">Mental Mode</span>
+              </div>
+            </button>
           </div>
         </motion.div>
 
@@ -341,6 +394,7 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
               <span>Coach is typing...</span>
             </motion.div>
           )}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input Box */}

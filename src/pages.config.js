@@ -22,6 +22,8 @@ import Profile from './pages/Profile';
 import Social from './pages/Social';
 import PlayerProfile from './pages/PlayerProfile';
 import Chat from './pages/Chat';
+import CricketHub from './pages/CricketHub';
+import CoachVoiceMode from './pages/CoachVoiceMode';
 import __Layout from './Layout.jsx';
 
 
@@ -50,6 +52,8 @@ export const PAGES = {
     "Social": Social,
     "PlayerProfile": PlayerProfile,
     "Chat": Chat,
+    "CricketHub": CricketHub,
+    "CoachVoiceMode": CoachVoiceMode,
 }
 
 export const pagesConfig = {
