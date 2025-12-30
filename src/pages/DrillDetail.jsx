@@ -131,20 +131,9 @@ export default function DrillDetail() {
     },
   });
 
-  if (isLoading || !drill) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  const steps = drill.steps || [];
-  const equipment = drill.equipment || [];
-
   // Play soundtrack when drill starts
   useEffect(() => {
-    if (isStarted && !isCompleted && drill.soundtrack_url && !audioElement) {
+    if (isStarted && !isCompleted && drill?.soundtrack_url && !audioElement) {
       const audio = new Audio(drill.soundtrack_url);
       audio.loop = true;
       audio.volume = 0.3;
@@ -158,14 +147,25 @@ export default function DrillDetail() {
         audioElement.src = '';
       }
     };
-  }, [isStarted, isCompleted]);
+  }, [isStarted, isCompleted, drill]);
 
   // Stop audio when completed
   useEffect(() => {
     if (isCompleted && audioElement) {
       audioElement.pause();
     }
-  }, [isCompleted]);
+  }, [isCompleted, audioElement]);
+
+  if (isLoading || !drill) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const steps = drill.steps || [];
+  const equipment = drill.equipment || [];
 
   return (
     <div className="min-h-screen bg-white pb-24">
