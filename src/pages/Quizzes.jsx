@@ -13,28 +13,36 @@ const categoryConfig = {
   techniques: { icon: Brain, color: 'bg-emerald-500', bgColor: 'bg-emerald-50' },
   history: { icon: Clock, color: 'bg-amber-500', bgColor: 'bg-amber-50' },
   strategy: { icon: Trophy, color: 'bg-purple-500', bgColor: 'bg-purple-50' },
+  tactics: { icon: Brain, color: 'bg-indigo-500', bgColor: 'bg-indigo-50' },
+  'match-awareness': { icon: BookOpen, color: 'bg-teal-500', bgColor: 'bg-teal-50' },
+  'decision-making': { icon: Trophy, color: 'bg-rose-500', bgColor: 'bg-rose-50' },
 };
 
 const difficultyColors = {
   easy: 'bg-green-100 text-green-700',
   medium: 'bg-amber-100 text-amber-700',
   hard: 'bg-red-100 text-red-700',
+  pro: 'bg-purple-100 text-purple-700',
 };
 
 export default function Quizzes() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
 
   const { data: quizzes = [], isLoading } = useQuery({
     queryKey: ['quizzes'],
     queryFn: () => base44.entities.Quiz.list(),
   });
 
-  const filteredQuizzes = selectedCategory === 'all'
-    ? quizzes
-    : quizzes.filter(q => q.category === selectedCategory);
+  const filteredQuizzes = quizzes.filter(q => {
+    const matchesCategory = selectedCategory === 'all' || q.category === selectedCategory;
+    const matchesDifficulty = selectedDifficulty === 'all' || q.difficulty === selectedDifficulty;
+    return matchesCategory && matchesDifficulty;
+  });
 
-  const categories = ['all', 'rules', 'techniques', 'history', 'strategy'];
+  const categories = ['all', 'rules', 'techniques', 'history', 'strategy', 'tactics', 'match-awareness', 'decision-making'];
+  const difficulties = ['all', 'easy', 'medium', 'hard', 'pro'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white pb-24">
@@ -59,21 +67,41 @@ export default function Quizzes() {
         </motion.div>
 
         {/* Category Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium capitalize whitespace-nowrap transition-all",
-                selectedCategory === cat
-                  ? "bg-amber-500 text-white"
-                  : "bg-white border border-slate-200 text-slate-600"
-              )}
-            >
-              {cat === 'all' ? 'All Quizzes' : cat}
-            </button>
-          ))}
+        <div className="space-y-3">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium capitalize whitespace-nowrap transition-all",
+                  selectedCategory === cat
+                    ? "bg-amber-500 text-white"
+                    : "bg-white border border-slate-200 text-slate-600"
+                )}
+              >
+                {cat === 'all' ? 'All Categories' : cat.replace('-', ' ')}
+              </button>
+            ))}
+          </div>
+          
+          {/* Difficulty Filter */}
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {difficulties.map((diff) => (
+              <button
+                key={diff}
+                onClick={() => setSelectedDifficulty(diff)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium capitalize whitespace-nowrap transition-all",
+                  selectedDifficulty === diff
+                    ? "bg-purple-500 text-white"
+                    : "bg-white border border-slate-200 text-slate-600"
+                )}
+              >
+                {diff === 'all' ? 'All Levels' : diff}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Quiz List */}

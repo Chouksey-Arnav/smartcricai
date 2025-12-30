@@ -26,6 +26,26 @@ export default function MentalRoutinePlayer() {
   const [audioElement, setAudioElement] = useState(null);
   const intervalRef = useRef(null);
 
+  // Initialize and play audio when routine starts
+  useEffect(() => {
+    if (isPlaying && routine?.calming_sound && !audioElement) {
+      const audio = new Audio(routine.calming_sound);
+      audio.loop = true;
+      audio.volume = 0.4;
+      audio.play().catch(err => console.warn('Audio play failed:', err));
+      setAudioElement(audio);
+    } else if (!isPlaying && audioElement) {
+      audioElement.pause();
+    }
+
+    return () => {
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
+      }
+    };
+  }, [isPlaying, routine]);
+
   const { data: routine, isLoading } = useQuery({
     queryKey: ['mentalRoutine', routineId],
     queryFn: async () => {
@@ -56,6 +76,9 @@ export default function MentalRoutinePlayer() {
             } else {
               setIsPlaying(false);
               setIsCompleted(true);
+              if (audioElement) {
+                audioElement.pause();
+              }
               return 0;
             }
           }
@@ -98,6 +121,10 @@ export default function MentalRoutinePlayer() {
     setStepTimeRemaining(steps[0]?.duration_seconds || 10);
     setIsCompleted(false);
     setIsPlaying(false);
+    if (audioElement) {
+      audioElement.currentTime = 0;
+      audioElement.pause();
+    }
   };
 
   if (isLoading || !routine) {

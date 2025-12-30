@@ -11,10 +11,13 @@ import { cn } from '@/lib/utils';
 
 const categories = [
   { id: 'all', label: 'All', icon: Brain },
-  { id: 'confidence', label: 'Confidence', icon: Sparkles },
   { id: 'focus', label: 'Focus', icon: Target },
+  { id: 'confidence', label: 'Confidence', icon: Sparkles },
+  { id: 'pressure', label: 'Pressure', icon: Heart },
   { id: 'recovery', label: 'Recovery', icon: RefreshCw },
-  { id: 'pre-performance', label: 'Pre-Match', icon: Heart },
+  { id: 'match-day-calm', label: 'Match Day', icon: Brain },
+  { id: 'visualization', label: 'Visualization', icon: Target },
+  { id: 'pro-mental', label: 'Pro', icon: Sparkles },
 ];
 
 const mindfulnessQuotes = [

@@ -52,6 +52,7 @@ export default function Drills() {
   const beginnerDrills = filteredDrills.filter(d => d.skill_level === 'beginner');
   const intermediateDrills = filteredDrills.filter(d => d.skill_level === 'intermediate');
   const advancedDrills = filteredDrills.filter(d => d.skill_level === 'advanced');
+  const proDrills = filteredDrills.filter(d => d.skill_level === 'pro');
 
   const completedDrillIds = progress?.completed_drills || [];
 
@@ -121,6 +122,7 @@ export default function Drills() {
             {renderDrillGroup('Beginner', beginnerDrills, 'bg-green-500')}
             {renderDrillGroup('Intermediate', intermediateDrills, 'bg-amber-500')}
             {renderDrillGroup('Advanced', advancedDrills, 'bg-red-500')}
+            {renderDrillGroup('Pro', proDrills, 'bg-purple-600')}
           </div>
         )}
       </div>
