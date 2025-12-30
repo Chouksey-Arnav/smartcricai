@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { motion } from 'framer-motion';
-import { Plus, X, Save, GripVertical } from 'lucide-react';
+import { Plus, X, Save, GripVertical, Dumbbell, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import toast from 'react-hot-toast';
+import ExerciseSelector from '@/components/workout/ExerciseSelector';
 
 export default function WorkoutBuilder() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function WorkoutBuilder() {
   const [workoutName, setWorkoutName] = useState('');
   const [selectedDrills, setSelectedDrills] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [exerciseDialogOpen, setExerciseDialogOpen] = useState(false);
 
   const addDrill = (drill) => {
     setSelectedDrills([
@@ -39,10 +41,27 @@ export default function WorkoutBuilder() {
         drill_title: drill.title,
         sets: 3,
         reps: 10,
-        completed_sets: 0
+        completed_sets: 0,
+        type: 'drill'
       }
     ]);
     setDialogOpen(false);
+  };
+
+  const addExercise = (exercise) => {
+    setSelectedDrills([
+      ...selectedDrills,
+      {
+        drill_id: exercise.id,
+        drill_title: exercise.name,
+        sets: 3,
+        reps: 10,
+        completed_sets: 0,
+        type: 'exercise',
+        category: exercise.category
+      }
+    ]);
+    setExerciseDialogOpen(false);
   };
 
   const removeDrill = (index) => {
@@ -103,7 +122,7 @@ export default function WorkoutBuilder() {
           className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl p-6 text-white"
         >
           <h2 className="font-bold text-xl mb-2">Create Your Workout</h2>
-          <p className="text-purple-100 text-sm">Drag drills, set reps, and build your training plan</p>
+          <p className="text-purple-100 text-sm">Add drills or exercises, set reps, and build your training plan</p>
         </motion.div>
 
         {/* Workout Name */}
@@ -117,32 +136,52 @@ export default function WorkoutBuilder() {
           />
         </div>
 
-        {/* Add Drill Button */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full h-12 bg-emerald-500 hover:bg-emerald-600">
-              <Plus className="w-5 h-5 mr-2" />
-              Add Drill
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Select a Drill</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-2">
-              {drills.map(drill => (
-                <button
-                  key={drill.id}
-                  onClick={() => addDrill(drill)}
-                  className="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors"
-                >
-                  <h4 className="font-semibold text-slate-800">{drill.title}</h4>
-                  <p className="text-sm text-slate-600">{drill.category} • {drill.skill_level}</p>
-                </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Add Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="h-12 bg-emerald-500 hover:bg-emerald-600">
+                <Target className="w-5 h-5 mr-2" />
+                Add Drill
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Select a Drill</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-2">
+                {drills.map(drill => (
+                  <button
+                    key={drill.id}
+                    onClick={() => addDrill(drill)}
+                    className="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors"
+                  >
+                    <h4 className="font-semibold text-slate-800">{drill.title}</h4>
+                    <p className="text-sm text-slate-600">{drill.category} • {drill.skill_level}</p>
+                  </button>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={exerciseDialogOpen} onOpenChange={setExerciseDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="h-12 bg-purple-500 hover:bg-purple-600">
+                <Dumbbell className="w-5 h-5 mr-2" />
+                Add Exercise
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] p-0">
+              <DialogHeader className="p-4 pb-0">
+                <DialogTitle>Select an Exercise</DialogTitle>
+              </DialogHeader>
+              <ExerciseSelector 
+                onSelect={addExercise} 
+                onClose={() => setExerciseDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
 
         {/* Drill List */}
         {selectedDrills.length > 0 && (
@@ -167,7 +206,18 @@ export default function WorkoutBuilder() {
                               </div>
                               
                               <div className="flex-1">
-                                <h4 className="font-semibold text-slate-800 mb-3">{drill.drill_title}</h4>
+                                <div className="flex items-center gap-2 mb-3">
+                                  <h4 className="font-semibold text-slate-800">{drill.drill_title}</h4>
+                                  {drill.type === 'exercise' && (
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                      drill.category === 'bodyweight' 
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : 'bg-orange-100 text-orange-700'
+                                    }`}>
+                                      {drill.category === 'bodyweight' ? 'Bodyweight' : 'Weighted'}
+                                    </span>
+                                  )}
+                                </div>
                                 
                                 <div className="grid grid-cols-2 gap-2">
                                   <div>
