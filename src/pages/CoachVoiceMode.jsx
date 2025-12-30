@@ -127,7 +127,7 @@ export default function CoachVoiceMode() {
     }
   };
 
-  const handleUserSpeech = async (text) => {
+  const handleUserSpeech = async (text, retryCount = 0) => {
     if (!text.trim()) return;
 
     setConversation(prev => [...prev, { role: 'user', text }]);
@@ -139,65 +139,75 @@ User: ${progress?.display_name || user?.email}
 Skill Level: ${progress?.skill_level || 'beginner'}
 Completed Drills: ${progress?.completed_drills?.length || 0}
 Current Streak: ${progress?.current_streak || 0} days
-Total Practice: ${progress?.total_practice_minutes || 0} minutes
-Recent Chat Context: ${chatHistory?.slice(-3).map(m => m.content).join(' | ') || 'None'}
-`;
+Total Practice: ${progress?.total_practice_minutes || 0} minutes`;
 
       const prompt = mode === 'mental'
-        ? `You are a professional sports psychologist and mental coach for young cricket players.
+        ? `You are a professional sports psychologist coaching young cricketers (11-17).
 
 ${contextInfo}
 
-The player said: "${text}"
+Player says: "${text}"
 
-Provide SHORT, calming, supportive mental coaching advice (2-3 sentences max).
-Focus on:
-- Building mental strength and confidence
-- Handling pressure and nerves
-- Visualization techniques
-- Focus and concentration
-- Staying positive
-- Recovery after mistakes
+Respond in 2-3 SHORT, calming sentences:
+- Gentle, reassuring tone
+- Focus on: confidence, handling pressure, staying focused, mental recovery
+- ONE simple mental technique (breathing, visualization, positive self-talk)
+- Be supportive like a mentor
 
-Be personal, warm, and encouraging. Use their name occasionally. Speak like you're having a calm, one-on-one conversation.`
-        : `You are an expert cricket coach having a voice conversation with a young player.
+Keep it brief and warm.`
+        : `You are an expert cricket coach talking to a young player (11-17).
 
 ${contextInfo}
 
-The player said: "${text}"
+Player says: "${text}"
 
-Provide SHORT, clear, actionable coaching advice (2-3 sentences max).
-Focus on:
-- Specific technique tips
-- Drill recommendations
-- Match strategies
-- Skill improvement
+Respond in 2-3 SHORT, motivating sentences:
+- Enthusiastic, clear language
+- Focus on: batting/bowling/fielding technique, match tactics, drills
+- ONE specific actionable tip
+- Be encouraging like a real coach
 
-Be friendly, encouraging, and speak naturally like a real coach. Use their name occasionally.`;
+Keep it brief and energetic.`;
 
+      console.log(`[Voice Mode - ${mode}] Sending AI request...`);
       const response = await base44.integrations.Core.InvokeLLM({ prompt });
+      console.log(`[Voice Mode - ${mode}] Response received`);
 
-      setConversation(prev => [...prev, { role: 'coach', text: response }]);
-      speakText(response);
+      if (!response || typeof response !== 'string' || response.trim().length === 0) {
+        throw new Error('Empty or invalid AI response');
+      }
 
-      // Save to chat history
+      setConversation(prev => [...prev, { role: 'coach', text: response.trim() }]);
+      speakText(response.trim());
+
+      // Save to chat history (non-blocking)
       if (user?.email) {
-        await base44.entities.ChatMessage.create({
+        base44.entities.ChatMessage.create({
           user_email: user.email,
           role: 'user',
           content: text,
-        });
-        await base44.entities.ChatMessage.create({
+        }).catch(err => console.warn('Failed to save user message:', err));
+        
+        base44.entities.ChatMessage.create({
           user_email: user.email,
           role: 'coach',
-          content: response,
-        });
+          content: response.trim(),
+        }).catch(err => console.warn('Failed to save coach message:', err));
       }
     } catch (error) {
-      console.error('Voice Mode Error:', error);
+      console.error(`[Voice Mode - ${mode}] Error:`, error);
+      
+      // Retry logic - up to 2 retries
+      if (retryCount < 2) {
+        console.log(`[Voice Mode - ${mode}] Retrying... (${retryCount + 1}/2)`);
+        setTimeout(() => handleUserSpeech(text, retryCount + 1), 1000);
+        return;
+      }
+
+      // After retries failed
       const errorMsg = mode === 'mental' 
-        ? "Let's take a breath. I'm having trouble connecting. Please try again."
-        : "Sorry, I didn't catch that. Can you say that again?";
+        ? "Take a deep breath... I'm having a connection issue. Let's try again in a moment."
+        : "Hang tight! Technical timeout. Try speaking again!";
       setConversation(prev => [...prev, { role: 'coach', text: errorMsg }]);
       speakText(errorMsg);
     }
