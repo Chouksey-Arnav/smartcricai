@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Mic, MicOff, Volume2, VolumeX, Brain, Sparkles, ChevronLeft } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, Brain, Sparkles, ChevronLeft, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ export default function CoachVoiceMode() {
   const [transcript, setTranscript] = useState('');
   const [conversation, setConversation] = useState([]);
   const [mode, setMode] = useState(initialMode);
+  const [aiFailed, setAiFailed] = useState(false);
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -78,7 +79,13 @@ export default function CoachVoiceMode() {
         }
 
         if (finalTranscript) {
-          handleUserSpeech(finalTranscript.trim());
+          if (!aiFailed) {
+            handleUserSpeech(finalTranscript.trim());
+          } else {
+            setTranscript('');
+            setIsListening(false);
+            recognitionRef.current?.stop();
+          }
         } else {
           setTranscript(interimTranscript);
         }
@@ -107,6 +114,10 @@ export default function CoachVoiceMode() {
   }, []);
 
   const toggleListening = () => {
+    if (aiFailed) {
+      return;
+    }
+
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
@@ -115,19 +126,18 @@ export default function CoachVoiceMode() {
       setIsListening(true);
       setTranscript('');
       
-      // Greet user on first interaction
-      if (conversation.length === 0) {
+      if (conversation.length === 0 || (conversation.length === 1 && conversation[0].role === 'coach' && (conversation[0].text.includes('connection issue') || conversation[0].text.includes('timeout')))) {
         const greeting = mode === 'mental' 
           ? `Hi ${progress?.display_name || 'champion'}. Let's work on your mental game. Take a deep breath. What would you like to focus on today?`
           : `Hey ${progress?.display_name || 'champ'}! I'm your personal cricket coach. Tell me what you want to work on today.`;
         
-        speakText(greeting);
         setConversation([{ role: 'coach', text: greeting }]);
+        speakText(greeting);
       }
     }
   };
 
-  const handleUserSpeech = async (text, retryCount = 0) => {
+  const handleUserSpeech = async (text) => {
     if (!text.trim()) return;
 
     setConversation(prev => [...prev, { role: 'user', text }]);
@@ -197,20 +207,25 @@ Keep it brief and energetic.`;
     } catch (error) {
       console.error(`[Voice Mode - ${mode}] Error:`, error);
       
-      // Retry logic - up to 2 retries
-      if (retryCount < 2) {
-        console.log(`[Voice Mode - ${mode}] Retrying... (${retryCount + 1}/2)`);
-        setTimeout(() => handleUserSpeech(text, retryCount + 1), 1000);
-        return;
-      }
-
-      // After retries failed
       const errorMsg = mode === 'mental' 
-        ? "Take a deep breath... I'm having a connection issue. Let's try again in a moment."
-        : "Hang tight! Technical timeout. Try speaking again!";
+        ? "Take a deep breath... I'm having a connection issue. Please try again later."
+        : "Hang tight! Technical timeout. Please try speaking again later!";
       setConversation(prev => [...prev, { role: 'coach', text: errorMsg }]);
       speakText(errorMsg);
+      setAiFailed(true);
+      setIsSpeaking(false);
+      setIsListening(false);
+      recognitionRef.current?.stop();
     }
+  };
+
+  const handleRetryVoice = () => {
+    setAiFailed(false);
+    setConversation([]);
+    setTranscript('');
+    setIsListening(false);
+    setIsSpeaking(false);
+    recognitionRef.current?.stop();
   };
 
   const speakText = (text) => {
@@ -312,21 +327,32 @@ Keep it brief and energetic.`;
         <div className="fixed bottom-8 left-0 right-0 px-6">
           <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-6">
             <div className="flex items-center justify-center gap-6">
-              <Button
-                onClick={toggleListening}
-                size="lg"
-                className={`w-20 h-20 rounded-full ${
-                  isListening 
-                    ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                    : mode === 'mental'
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
-                    : 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600'
-                }`}
-              >
-                {isListening ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
-              </Button>
+              {aiFailed ? (
+                <Button
+                  onClick={handleRetryVoice}
+                  size="lg"
+                  className="w-20 h-20 rounded-full bg-red-500 hover:bg-red-600"
+                >
+                  <RefreshCcw className="w-8 h-8" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={toggleListening}
+                  size="lg"
+                  disabled={isSpeaking}
+                  className={`w-20 h-20 rounded-full ${
+                    isListening 
+                      ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                      : mode === 'mental'
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+                      : 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600'
+                  }`}
+                >
+                  {isListening ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                </Button>
+              )}
 
-              {isSpeaking && (
+              {isSpeaking && !aiFailed && (
                 <Button
                   onClick={stopSpeaking}
                   size="lg"
@@ -338,14 +364,24 @@ Keep it brief and energetic.`;
               )}
             </div>
 
-            <div className="text-center mt-4">
-              <p className="text-sm font-medium text-slate-700">
-                {isListening ? 'Listening...' : isSpeaking ? 'Coach is speaking...' : 'Tap to speak'}
-              </p>
-              {transcript && (
-                <p className="text-xs text-slate-500 mt-1 italic">"{transcript}"</p>
-              )}
-            </div>
+            {aiFailed && (
+              <div className="text-center mt-4">
+                <p className="text-sm font-medium text-red-600">
+                  Coach is unavailable. Click 'Retry Coach' above.
+                </p>
+              </div>
+            )}
+            
+            {!aiFailed && (
+              <div className="text-center mt-4">
+                <p className="text-sm font-medium text-slate-700">
+                  {isListening ? 'Listening...' : isSpeaking ? 'Coach is speaking...' : 'Tap to speak'}
+                </p>
+                {transcript && (
+                  <p className="text-xs text-slate-500 mt-1 italic">"{transcript}"</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

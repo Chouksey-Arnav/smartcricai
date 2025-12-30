@@ -18,6 +18,7 @@ export default function Coach() {
   const [isTyping, setIsTyping] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showInfoTooltip, setShowInfoTooltip] = useState(true);
+  const [aiFailed, setAiFailed] = useState(false);
   const messagesEndRef = useRef(null);
 
   const { data: user } = useQuery({
@@ -126,15 +127,16 @@ export default function Coach() {
       return;
     }
 
+    const currentInput = input.trim();
+    setInput('');
+
     const userMessage = {
       role: 'user',
-      content: input,
+      content: currentInput,
       timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentInput = input;
-    setInput('');
     setIsTyping(true);
 
     try {
@@ -213,19 +215,25 @@ Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental
       }
 
     } catch (error) {
-      console.error('[AI Coach] Error details:', error);
+      console.error('[AI Coach] Critical Error:', error);
       
-      // Show error message ONCE, no retries, no loops
       const errorMessage = {
         role: 'coach',
-        content: "Sorry champ, I'm having trouble right now. Please try sending your message again! 🏏",
+        content: "Sorry champ, I'm having trouble connecting right now. Please try again in a moment! 🏏",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
       stopSpeaking();
+      setAiFailed(true);
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const handleRetry = () => {
+    setAiFailed(false);
+    setMessages([]);
+    setInput('');
   };
 
   const handleQuickQuestion = (question) => {
@@ -416,20 +424,31 @@ Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  handleSend();
+                  if (!aiFailed) {
+                    handleSend();
+                  }
                 }
               }}
-              placeholder="Ask me anything about cricket..."
+              placeholder={aiFailed ? "Coach is unavailable. Click 'Retry' to try again." : "Ask me anything about cricket..."}
               className="flex-1 min-h-[48px] max-h-32 resize-none"
-              disabled={isTyping}
+              disabled={isTyping || aiFailed}
             />
-            <Button
-              onClick={handleSend}
-              disabled={!input.trim() || isTyping}
-              className="bg-emerald-500 hover:bg-emerald-600 h-12 w-12 p-0"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
+            {aiFailed ? (
+              <Button
+                onClick={handleRetry}
+                className="bg-red-500 hover:bg-red-600 h-12 px-4"
+              >
+                Retry Coach
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSend}
+                disabled={!input.trim() || isTyping}
+                className="bg-emerald-500 hover:bg-emerald-600 h-12 w-12 p-0"
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
