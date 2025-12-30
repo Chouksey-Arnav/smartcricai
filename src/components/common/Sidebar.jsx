@@ -97,7 +97,7 @@ export default function Sidebar() {
             </div>
 
             {/* Menu Items - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto p-4 space-y-2" style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
               {menuItems.map((item, index) => (
                 <Link
                   key={item.page}

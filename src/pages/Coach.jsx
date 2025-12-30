@@ -212,12 +212,14 @@ Keep it conversational, friendly, and like a real coach talking to a player.`,
         });
       }
     } catch (error) {
+      console.error('AI Coach Error:', error);
       const errorMessage = {
         role: 'coach',
-        content: "Sorry, I'm having trouble responding right now. Please try again!",
+        content: "Sorry, I'm having trouble connecting right now. Please check your connection and try again!",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
+      stopSpeaking();
     } finally {
       setIsTyping(false);
     }

@@ -18,11 +18,15 @@ export default function Drills() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+    retry: 3,
   });
 
   const { data: drills = [], isLoading } = useQuery({
     queryKey: ['drills'],
     queryFn: () => base44.entities.Drill.list(),
+    staleTime: 300000,
+    retry: 3,
   });
 
   const { data: progress } = useQuery({
@@ -33,6 +37,9 @@ export default function Drills() {
       return results[0] || null;
     },
     enabled: !!user?.email,
+    staleTime: 60000,
+    refetchOnWindowFocus: true,
+    retry: 3,
   });
 
   const filteredDrills = drills.filter(drill => {

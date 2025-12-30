@@ -12,8 +12,13 @@ export default function ExerciseSelector({ onSelect, onClose }) {
   
   const { data: exercises, isLoading } = useQuery({
     queryKey: ['exercises'],
-    queryFn: () => base44.entities.Exercise.list(),
+    queryFn: async () => {
+      const allExercises = await base44.entities.Exercise.list();
+      return allExercises.sort((a, b) => a.name.localeCompare(b.name));
+    },
     initialData: [],
+    staleTime: 600000,
+    retry: 3,
   });
 
   // Filter and sort exercises

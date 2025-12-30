@@ -86,12 +86,14 @@ function getCricketJoke() {
 export default function Home() {
   const [greeting, setGreeting] = useState('');
   
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+    retry: 3,
   });
 
-  const { data: progress } = useQuery({
+  const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ['userProgress', user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
@@ -99,6 +101,9 @@ export default function Home() {
       return results[0] || null;
     },
     enabled: !!user?.email,
+    staleTime: 60000,
+    refetchOnWindowFocus: true,
+    retry: 3,
   });
 
   useEffect(() => {
@@ -109,6 +114,22 @@ export default function Home() {
   }, []);
 
   const displayName = progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
+
+  useEffect(() => {
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (userLoading || progressLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 font-medium">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 pb-24">

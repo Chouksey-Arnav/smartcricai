@@ -19,9 +19,11 @@ const reactionIcons = {
 export default function Social() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+    retry: 3,
   });
 
   const { data: myProfile } = useQuery({
@@ -32,25 +34,31 @@ export default function Social() {
       return profiles[0] || null;
     },
     enabled: !!user?.email,
+    staleTime: 60000,
+    retry: 3,
   });
 
   const { data: activityFeed } = useQuery({
     queryKey: ['activityFeed'],
     queryFn: async () => {
-      if (!myProfile?.following?.length) return [];
-      
-      // Get activities from people I follow
       const activities = await base44.entities.ActivityFeed.list('-created_date', 50);
+      if (!myProfile?.following?.length) {
+        return activities.filter(a => a.user_email === user?.email);
+      }
       return activities.filter(a => 
         myProfile.following.includes(a.user_email) || a.user_email === user.email
       );
     },
-    enabled: !!myProfile,
+    enabled: !!user?.email,
+    initialData: [],
+    refetchInterval: 30000,
   });
 
   const { data: profiles } = useQuery({
     queryKey: ['allProfiles'],
     queryFn: () => base44.entities.Profile.list(),
+    initialData: [],
+    staleTime: 60000,
   });
 
   const { data: myLabels } = useQuery({
@@ -60,6 +68,7 @@ export default function Social() {
       return await base44.entities.ContactLabel.filter({ user_email: user.email });
     },
     enabled: !!user?.email,
+    initialData: [],
   });
 
   const filteredProfiles = profiles?.filter(p => 
@@ -76,6 +85,17 @@ export default function Social() {
     friends: myLabels?.filter(l => ['friend', 'best_friend', 'practice_buddy'].includes(l.label)) || [],
     inspiration: myLabels?.filter(l => l.label === 'inspiration') || [],
   };
+
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 font-medium">Loading community...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 pb-24">

@@ -45,6 +45,8 @@ export default function DrillDetail() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+    retry: 3,
   });
 
   const { data: drill, isLoading } = useQuery({
@@ -54,6 +56,7 @@ export default function DrillDetail() {
       return drills[0];
     },
     enabled: !!drillId,
+    retry: 3,
   });
 
   const { data: progress } = useQuery({
@@ -64,6 +67,8 @@ export default function DrillDetail() {
       return results[0] || null;
     },
     enabled: !!user?.email,
+    staleTime: 60000,
+    retry: 3,
   });
 
   const completeDrillMutation = useMutation({

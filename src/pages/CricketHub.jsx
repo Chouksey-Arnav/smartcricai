@@ -19,6 +19,8 @@ export default function CricketHub() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+    retry: 3,
   });
 
   const { data: preferences } = useQuery({
@@ -29,6 +31,8 @@ export default function CricketHub() {
       return prefs[0] || null;
     },
     enabled: !!user?.email,
+    staleTime: 60000,
+    retry: 3,
   });
 
   // Fetch live cricket data

@@ -23,6 +23,8 @@ export default function CoachVoiceMode() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+    retry: 3,
   });
 
   const { data: progress } = useQuery({
@@ -33,6 +35,8 @@ export default function CoachVoiceMode() {
       return results[0] || null;
     },
     enabled: !!user?.email,
+    staleTime: 60000,
+    retry: 3,
   });
 
   const { data: chatHistory } = useQuery({
@@ -40,9 +44,10 @@ export default function CoachVoiceMode() {
     queryFn: async () => {
       if (!user?.email) return [];
       const messages = await base44.entities.ChatMessage.filter({ user_email: user.email });
-      return messages.slice(-10); // Last 10 messages for context
+      return messages.slice(-10).sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
     },
     enabled: !!user?.email,
+    initialData: [],
   });
 
   // Auto-scroll to latest message
@@ -189,8 +194,10 @@ Be friendly, encouraging, and speak naturally like a real coach. Use their name 
         });
       }
     } catch (error) {
-      console.error('Error processing speech:', error);
-      const errorMsg = "Sorry, I didn't catch that. Can you repeat?";
+      console.error('Voice Mode Error:', error);
+      const errorMsg = mode === 'mental' 
+        ? "Let's take a breath. I'm having trouble connecting. Please try again."
+        : "Sorry, I didn't catch that. Can you say that again?";
       setConversation(prev => [...prev, { role: 'coach', text: errorMsg }]);
       speakText(errorMsg);
     }
