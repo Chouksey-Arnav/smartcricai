@@ -23,11 +23,14 @@ export default function Coach() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 300000,
   });
 
   const { data: drills } = useQuery({
     queryKey: ['drills'],
     queryFn: () => base44.entities.Drill.list(),
+    initialData: [],
+    staleTime: 300000,
   });
 
   const { data: progress } = useQuery({
@@ -44,9 +47,11 @@ export default function Coach() {
     queryKey: ['chatMessages', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      return await base44.entities.ChatMessage.filter({ user_email: user.email });
+      const messages = await base44.entities.ChatMessage.filter({ user_email: user.email });
+      return messages.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
     },
     enabled: !!user?.email,
+    initialData: [],
   });
 
   useEffect(() => {

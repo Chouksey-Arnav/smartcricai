@@ -9,11 +9,14 @@ import { Badge } from '@/components/ui/badge';
 
 export default function CoachVoiceMode() {
   const navigate = useNavigate();
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialMode = urlParams.get('mode') === 'mental' ? 'mental' : 'voice';
+  
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [conversation, setConversation] = useState([]);
-  const [mode, setMode] = useState('voice'); // 'voice' or 'mental'
+  const [mode, setMode] = useState(initialMode);
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
 
