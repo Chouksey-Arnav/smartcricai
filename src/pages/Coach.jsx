@@ -112,7 +112,7 @@ export default function Coach() {
     return null;
   };
 
-  const handleSend = async (retryCount = 0) => {
+  const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
     // Check for mode triggers
@@ -154,7 +154,7 @@ Completed drills: ${progress.completed_drills?.length || 0}
 Current streak: ${progress.current_streak || 0} days
 Total practice time: ${progress.total_practice_minutes || 0} minutes` : 'New player - be extra encouraging!';
 
-      // Get AI response with retry logic
+      // Get AI response
       console.log('[AI Coach] Sending request to AI...');
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an enthusiastic, supportive cricket coach for young players aged 11-17.
@@ -174,7 +174,7 @@ Focus on: batting technique, bowling tips, fielding skills, mental strength, mat
 Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental Mode'!"`,
       });
 
-      console.log('[AI Coach] Received response:', response?.substring(0, 50));
+      console.log('[AI Coach] Response received:', response?.substring(0, 100));
 
       if (!response || typeof response !== 'string' || response.trim().length === 0) {
         throw new Error('Empty or invalid response from AI');
@@ -213,25 +213,16 @@ Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental
       }
 
     } catch (error) {
-      console.error('[AI Coach] Error:', error);
+      console.error('[AI Coach] Error details:', error);
       
-      // Retry logic - up to 2 retries
-      if (retryCount < 2) {
-        console.log(`[AI Coach] Retrying... (attempt ${retryCount + 1}/2)`);
-        setInput(currentInput); // Restore input for retry
-        setTimeout(() => handleSend(retryCount + 1), 1000);
-        return;
-      }
-
-      // After retries failed, show helpful error
+      // Show error message ONCE, no retries, no loops
       const errorMessage = {
         role: 'coach',
-        content: "Hey champ, I'm having a technical timeout right now. Give me a moment and try asking again! 🏏",
+        content: "Sorry champ, I'm having trouble right now. Please try sending your message again! 🏏",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
       stopSpeaking();
-      setInput(currentInput); // Restore input so user can retry
     } finally {
       setIsTyping(false);
     }
