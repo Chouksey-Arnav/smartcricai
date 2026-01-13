@@ -28,6 +28,7 @@ import FitnessBuilder from './pages/FitnessBuilder';
 import Timer from './pages/Timer';
 import GetToKnowYou from './pages/GetToKnowYou';
 import NewHome from './pages/NewHome';
+import AIWorkout from './pages/AIWorkout';
 import __Layout from './Layout.jsx';
 
 
@@ -62,6 +63,7 @@ export const PAGES = {
     "Timer": Timer,
     "GetToKnowYou": GetToKnowYou,
     "NewHome": NewHome,
+    "AIWorkout": AIWorkout,
 }
 
 export const pagesConfig = {
