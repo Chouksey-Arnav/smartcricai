@@ -155,7 +155,6 @@ export default function Coach() {
       return;
     }
 
-    const currentInput = input.trim();
     setInput('');
 
     const userMessage = {
