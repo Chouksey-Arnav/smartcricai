@@ -116,8 +116,36 @@ export default function Coach() {
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
+    const currentInput = input.trim();
+    const lowerInput = currentInput.toLowerCase();
+    
+    // Check for memory save triggers
+    if (lowerInput.includes('save to memory') || lowerInput.includes('remember this') || lowerInput.includes('save to your memory')) {
+      if (user?.email) {
+        // Extract the info and save to UserProfile
+        const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+        const profile = profiles[0];
+        
+        // Simple keyword extraction for common patterns
+        const memoryNote = currentInput.replace(/(save to memory|remember this|save to your memory)/gi, '').trim();
+        
+        if (profile) {
+          const notes = profile.coach_memory_notes || [];
+          await base44.entities.UserProfile.update(profile.id, {
+            coach_memory_notes: [...notes, { text: memoryNote, date: new Date().toISOString() }]
+          });
+        }
+        
+        setMessages(prev => [...prev, 
+          { role: 'user', content: currentInput, timestamp: new Date() },
+          { role: 'coach', content: `Got it! I've saved that to my memory: "${memoryNote}". I'll use this to personalize your training! 🧠`, timestamp: new Date() }
+        ]);
+        setInput('');
+        return;
+      }
+    }
+    
     // Check for mode triggers
-    const lowerInput = input.toLowerCase();
     if (lowerInput.includes('open voice mode') || lowerInput.includes('voice mode')) {
       navigate(createPageUrl('CoachVoiceMode'));
       return;
@@ -190,8 +218,7 @@ Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental
 
       setMessages(prev => [...prev, coachMessage]);
 
-      // Speak the response
-      speakText(response.trim());
+      // Do NOT speak in text mode - only in voice/mental mode
 
       // Check if we should recommend a drill
       const suggestedDrill = recommendDrill(currentInput);

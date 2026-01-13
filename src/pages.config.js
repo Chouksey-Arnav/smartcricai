@@ -29,6 +29,8 @@ import Timer from './pages/Timer';
 import GetToKnowYou from './pages/GetToKnowYou';
 import NewHome from './pages/NewHome';
 import AIWorkout from './pages/AIWorkout';
+import Leaderboard from './pages/Leaderboard';
+import MentalTrainingCreator from './pages/MentalTrainingCreator';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +66,8 @@ export const PAGES = {
     "GetToKnowYou": GetToKnowYou,
     "NewHome": NewHome,
     "AIWorkout": AIWorkout,
+    "Leaderboard": Leaderboard,
+    "MentalTrainingCreator": MentalTrainingCreator,
 }
 
 export const pagesConfig = {

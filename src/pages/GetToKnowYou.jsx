@@ -71,6 +71,21 @@ const quizSteps = [
     ]
   },
   {
+    question: "Which areas need the most work? (Select all)",
+    field: 'weak_areas',
+    multiple: true,
+    options: [
+      { value: 'footwork', label: 'Footwork', emoji: '👟' },
+      { value: 'timing', label: 'Timing', emoji: '⏱️' },
+      { value: 'accuracy', label: 'Accuracy', emoji: '🎯' },
+      { value: 'power', label: 'Power', emoji: '💪' },
+      { value: 'speed', label: 'Speed', emoji: '⚡' },
+      { value: 'fielding', label: 'Fielding', emoji: '🧤' },
+      { value: 'mental_game', label: 'Mental Game', emoji: '🧠' },
+      { value: 'strategy', label: 'Match Strategy', emoji: '♟️' }
+    ]
+  },
+  {
     question: "Which formats do you play? (Select all)",
     field: 'preferred_formats',
     multiple: true,
@@ -79,6 +94,39 @@ const quizSteps = [
       { value: 'odi', label: 'ODI', emoji: '🌍' },
       { value: 't20', label: 'T20', emoji: '⚡' },
       { value: 'club', label: 'Club/Local', emoji: '🏘️' }
+    ]
+  },
+  {
+    question: "What's your biggest challenge in cricket?",
+    field: 'biggest_challenge',
+    options: [
+      { value: 'nerves', label: 'Match Day Nerves', emoji: '😰' },
+      { value: 'consistency', label: 'Staying Consistent', emoji: '📊' },
+      { value: 'pressure', label: 'Handling Pressure', emoji: '💥' },
+      { value: 'technique', label: 'Technical Issues', emoji: '⚙️' },
+      { value: 'fitness', label: 'Fitness & Stamina', emoji: '🏃' },
+      { value: 'decision_making', label: 'Quick Decisions', emoji: '🤔' }
+    ]
+  },
+  {
+    question: "When do you usually train?",
+    field: 'preferred_training_time',
+    options: [
+      { value: 'morning', label: 'Morning (6-10 AM)', emoji: '🌅' },
+      { value: 'afternoon', label: 'Afternoon (12-4 PM)', emoji: '☀️' },
+      { value: 'evening', label: 'Evening (4-8 PM)', emoji: '🌆' },
+      { value: 'flexible', label: 'Flexible Schedule', emoji: '🔄' }
+    ]
+  },
+  {
+    question: "What motivates you the most?",
+    field: 'motivation',
+    options: [
+      { value: 'winning', label: 'Winning Matches', emoji: '🏆' },
+      { value: 'improvement', label: 'Personal Growth', emoji: '📈' },
+      { value: 'team', label: 'Helping the Team', emoji: '👥' },
+      { value: 'recognition', label: 'Recognition', emoji: '⭐' },
+      { value: 'fun', label: 'Love of the Game', emoji: '❤️' }
     ]
   }
 ];

@@ -46,6 +46,8 @@ const menuItems = [
   { name: 'Workout Builder', icon: Dumbbell, page: 'WorkoutBuilder', color: 'text-purple-600' },
   { name: 'AI Workout', icon: Sparkles, page: 'AIWorkout', color: 'text-pink-500' },
   { name: 'Fitness Builder', icon: Zap, page: 'FitnessBuilder', color: 'text-orange-500' },
+  { name: 'Mental Creator', icon: Brain, page: 'MentalTrainingCreator', color: 'text-purple-500' },
+  { name: 'Leaderboard', icon: Trophy, page: 'Leaderboard', color: 'text-amber-500' },
   { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
   { name: 'Settings', icon: Settings, page: 'Settings', color: 'text-slate-500' },
 ];
