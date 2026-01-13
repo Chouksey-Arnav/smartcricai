@@ -21,10 +21,12 @@ import {
   TrendingDown,
   Dumbbell,
   User,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
+  { name: '✨ Get to Know You', icon: Sparkles, page: 'GetToKnowYou', color: 'text-pink-500', highlight: true },
   { name: 'Home', icon: Home, page: 'Home', color: 'text-emerald-500' },
   { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
@@ -42,6 +44,8 @@ const menuItems = [
   { name: 'Why Did I Get Out?', icon: TrendingDown, page: 'WhyDidIGetOut', color: 'text-red-600' },
   { name: 'Match Tracker', icon: Trophy, page: 'MatchTracker', color: 'text-green-600' },
   { name: 'Workout Builder', icon: Dumbbell, page: 'WorkoutBuilder', color: 'text-purple-600' },
+  { name: 'AI Workout', icon: Sparkles, page: 'AIWorkout', color: 'text-pink-500' },
+  { name: 'Fitness Builder', icon: Zap, page: 'FitnessBuilder', color: 'text-orange-500' },
   { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
   { name: 'Settings', icon: Settings, page: 'Settings', color: 'text-slate-500' },
 ];
@@ -116,10 +120,15 @@ export default function Sidebar() {
                       "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:shadow-md active:bg-slate-100"
                     )}
                   >
-                    <div className={cn("p-2 rounded-lg bg-slate-50 transition-colors duration-200 group-hover:bg-white", item.color)}>
+                    <div className={cn("p-2 rounded-lg transition-colors duration-200", 
+                      item.highlight ? "bg-gradient-to-r from-purple-100 to-pink-100 group-hover:from-purple-200 group-hover:to-pink-200" : "bg-slate-50 group-hover:bg-white", 
+                      item.color)}>
                       <item.icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
                     </div>
-                    <span className="font-medium text-slate-700 group-hover:text-slate-900 transition-colors">{item.name}</span>
+                    <span className={cn("font-medium transition-colors", 
+                      item.highlight ? "text-purple-700 group-hover:text-purple-900" : "text-slate-700 group-hover:text-slate-900")}>
+                      {item.name}
+                    </span>
                   </motion.div>
                 </Link>
               ))}
