@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, MessageCircle, Target, Brain, Trophy } from 'lucide-react';
+import { Home, MessageCircle, Target, Brain, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -9,7 +9,7 @@ const navItems = [
   { name: 'Coach', icon: MessageCircle, page: 'Coach' },
   { name: 'Drills', icon: Target, page: 'Drills' },
   { name: 'Mind', icon: Brain, page: 'MentalCoaching' },
-  { name: 'Progress', icon: Trophy, page: 'Progress' },
+  { name: 'Timer', icon: Clock, page: 'Timer' },
 ];
 
 export default function BottomNav() {

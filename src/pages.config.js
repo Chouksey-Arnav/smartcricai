@@ -24,6 +24,8 @@ import TeamMode from './pages/TeamMode';
 import VideoAnalysis from './pages/VideoAnalysis';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
+import FitnessBuilder from './pages/FitnessBuilder';
+import Timer from './pages/Timer';
 import __Layout from './Layout.jsx';
 
 
@@ -54,6 +56,8 @@ export const PAGES = {
     "VideoAnalysis": VideoAnalysis,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
+    "FitnessBuilder": FitnessBuilder,
+    "Timer": Timer,
 }
 
 export const pagesConfig = {
