@@ -31,6 +31,7 @@ import NewHome from './pages/NewHome';
 import AIWorkout from './pages/AIWorkout';
 import Leaderboard from './pages/Leaderboard';
 import MentalTrainingCreator from './pages/MentalTrainingCreator';
+import DrillsCreator from './pages/DrillsCreator';
 import __Layout from './Layout.jsx';
 
 
@@ -68,6 +69,7 @@ export const PAGES = {
     "AIWorkout": AIWorkout,
     "Leaderboard": Leaderboard,
     "MentalTrainingCreator": MentalTrainingCreator,
+    "DrillsCreator": DrillsCreator,
 }
 
 export const pagesConfig = {

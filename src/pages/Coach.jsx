@@ -19,7 +19,9 @@ export default function Coach() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showInfoTooltip, setShowInfoTooltip] = useState(true);
   const [aiFailed, setAiFailed] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -78,6 +80,52 @@ export default function Coach() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Initialize speech recognition for microphone input
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => prev + ' ' + transcript);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
+
+  const toggleMicrophone = () => {
+    if (!recognitionRef.current) {
+      alert('Speech recognition is not supported in your browser');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
 
   const recommendDrill = (userMessage) => {
     const lower = userMessage.toLowerCase();
@@ -459,6 +507,14 @@ Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental
               className="flex-1 min-h-[48px] max-h-32 resize-none"
               disabled={isTyping || aiFailed}
             />
+            <Button
+              onClick={toggleMicrophone}
+              variant={isListening ? "destructive" : "outline"}
+              className={`h-12 w-12 p-0 ${isListening ? 'animate-pulse' : ''}`}
+              disabled={isTyping || aiFailed}
+            >
+              <Mic className="w-5 h-5" />
+            </Button>
             {aiFailed ? (
               <Button
                 onClick={handleRetry}
