@@ -27,7 +27,8 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   { name: '✨ Get to Know You', icon: Sparkles, page: 'GetToKnowYou', color: 'text-pink-500', highlight: true },
-  { name: 'Home', icon: Home, page: 'Home', color: 'text-emerald-500' },
+  { name: 'Home', icon: Home, page: 'NewHome', color: 'text-emerald-500' },
+  { name: '🎯 Goals', icon: Target, page: 'Goals', color: 'text-purple-600', highlight: true },
   { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
   { name: 'Drills', icon: Target, page: 'Drills', color: 'text-purple-500' },
@@ -47,6 +48,7 @@ const menuItems = [
   { name: 'AI Workout', icon: Sparkles, page: 'AIWorkout', color: 'text-pink-500' },
   { name: 'Fitness Builder', icon: Zap, page: 'FitnessBuilder', color: 'text-orange-500' },
   { name: 'Mental Creator', icon: Brain, page: 'MentalTrainingCreator', color: 'text-purple-500' },
+  { name: 'Drills Creator', icon: Target, page: 'DrillsCreator', color: 'text-blue-500' },
   { name: 'Leaderboard', icon: Trophy, page: 'Leaderboard', color: 'text-amber-500' },
   { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
   { name: 'Settings', icon: Settings, page: 'Settings', color: 'text-slate-500' },

@@ -17,6 +17,11 @@ const focusAreas = [
   { value: 'focus', label: 'Improving Focus', emoji: '🧘' },
   { value: 'recovery', label: 'Mental Recovery', emoji: '🌿' },
   { value: 'visualization', label: 'Visualization Practice', emoji: '👁️' },
+  { value: 'concentration', label: 'Deep Concentration', emoji: '🎯' },
+  { value: 'motivation', label: 'Boosting Motivation', emoji: '🔥' },
+  { value: 'dealing_with_failure', label: 'Dealing with Failure', emoji: '💔' },
+  { value: 'staying_calm', label: 'Staying Calm', emoji: '😌' },
+  { value: 'positive_mindset', label: 'Positive Mindset', emoji: '✨' },
 ];
 
 const sessionLengths = [
@@ -24,6 +29,9 @@ const sessionLengths = [
   { value: 600, label: '10 minutes' },
   { value: 900, label: '15 minutes' },
   { value: 1200, label: '20 minutes' },
+  { value: 1800, label: '30 minutes' },
+  { value: 2700, label: '45 minutes' },
+  { value: 3600, label: '60 minutes' },
 ];
 
 export default function MentalTrainingCreator() {

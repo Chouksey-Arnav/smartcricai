@@ -32,6 +32,7 @@ import AIWorkout from './pages/AIWorkout';
 import Leaderboard from './pages/Leaderboard';
 import MentalTrainingCreator from './pages/MentalTrainingCreator';
 import DrillsCreator from './pages/DrillsCreator';
+import Goals from './pages/Goals';
 import __Layout from './Layout.jsx';
 
 
@@ -70,6 +71,7 @@ export const PAGES = {
     "Leaderboard": Leaderboard,
     "MentalTrainingCreator": MentalTrainingCreator,
     "DrillsCreator": DrillsCreator,
+    "Goals": Goals,
 }
 
 export const pagesConfig = {

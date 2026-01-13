@@ -2,6 +2,7 @@ import React from 'react';
 import BottomNav from '@/components/common/BottomNav';
 import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
+import FloatingTimer from '@/components/common/FloatingTimer';
 
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 
@@ -126,6 +127,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-slate-50">
       <Sidebar />
       <NotificationBar challenges={dailyChallenges} />
+      <FloatingTimer />
       <style>{`
         :root {
           --primary: 16 185 129;
