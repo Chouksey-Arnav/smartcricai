@@ -8,8 +8,11 @@ import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function AIWorkout() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [workoutStarted, setWorkoutStarted] = useState(false);
@@ -115,7 +118,7 @@ export default function AIWorkout() {
             <Sparkles className="w-16 h-16 text-purple-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-800 mb-3">No Active Workout</h2>
             <p className="text-slate-600 mb-6">Create a workout from the Fitness Builder to get started!</p>
-            <Button onClick={() => window.location.href = '/FitnessBuilder'} className="bg-purple-500 hover:bg-purple-600">
+            <Button onClick={() => navigate(createPageUrl('FitnessBuilder'))} className="bg-purple-500 hover:bg-purple-600">
               Go to Fitness Builder
             </Button>
           </motion.div>
@@ -138,7 +141,7 @@ export default function AIWorkout() {
             <h2 className="text-3xl font-bold mb-3">Workout Complete! 🎉</h2>
             <p className="text-emerald-100 mb-6">Amazing job crushing that workout! You're getting stronger every day!</p>
             <Button 
-              onClick={() => window.location.href = '/'} 
+              onClick={() => navigate(createPageUrl('Home'))} 
               variant="secondary"
               className="bg-white text-emerald-600 hover:bg-emerald-50"
             >

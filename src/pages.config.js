@@ -33,6 +33,8 @@ import Timer from './pages/Timer';
 import VideoAnalysis from './pages/VideoAnalysis';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
+import CustomDrillWorkoutCreator from './pages/CustomDrillWorkoutCreator';
+import ConfidenceCheckIn from './pages/ConfidenceCheckIn';
 import __Layout from './Layout.jsx';
 
 
@@ -72,6 +74,8 @@ export const PAGES = {
     "VideoAnalysis": VideoAnalysis,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
+    "CustomDrillWorkoutCreator": CustomDrillWorkoutCreator,
+    "ConfidenceCheckIn": ConfidenceCheckIn,
 }
 
 export const pagesConfig = {
