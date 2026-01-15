@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 const drillCategories = [
   { value: 'batting', label: 'Batting', emoji: '🏏' },
@@ -177,6 +178,24 @@ Return ONLY valid JSON, no other text.`;
               <Target className="w-16 h-16 mx-auto mb-3" />
               <h2 className="text-2xl font-bold mb-2">Create Custom Drill</h2>
               <p className="text-blue-100">AI-powered personalized training drills</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="grid grid-cols-2 gap-3"
+            >
+              <Button
+                onClick={() => navigate(createPageUrl('CustomDrillWorkoutCreator'))}
+                className="h-16 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                <Sparkles className="w-5 h-5 mr-2" />
+                Create Drill Workout
+              </Button>
+              <div className="h-16 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-sm font-medium">
+                Single Drill →
+              </div>
             </motion.div>
 
             <motion.div
