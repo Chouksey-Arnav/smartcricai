@@ -4,11 +4,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, CheckCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
 const quizSteps = [
+  {
+    question: "What's your name?",
+    field: 'username',
+    type: 'text',
+    placeholder: 'Enter your name'
+  },
   {
     question: "What's your primary cricket role?",
     field: 'cricket_role',
@@ -154,21 +161,36 @@ export default function GetToKnowYou() {
 
   const saveProfileMutation = useMutation({
     mutationFn: async () => {
-      const profileData = {
+      const { username, ...profileData } = answers;
+      
+      // Save UserProfile
+      const userProfileData = {
         user_email: user.email,
-        ...answers,
+        ...profileData,
         quiz_completed: true,
         match_iq_rating: 50 // Starting IQ
       };
 
       if (existingProfile?.id) {
-        return await base44.entities.UserProfile.update(existingProfile.id, profileData);
+        await base44.entities.UserProfile.update(existingProfile.id, userProfileData);
       } else {
-        return await base44.entities.UserProfile.create(profileData);
+        await base44.entities.UserProfile.create(userProfileData);
+      }
+
+      // Save username to Profile entity
+      const profiles = await base44.entities.Profile.filter({ user_email: user.email });
+      if (profiles.length > 0) {
+        await base44.entities.Profile.update(profiles[0].id, { username });
+      } else {
+        await base44.entities.Profile.create({
+          user_email: user.email,
+          username: username || user.full_name?.split(' ')[0] || 'Player'
+        });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       toast.success('Profile saved! Your training is now personalized! 🎉');
       navigate('/');
     },
@@ -200,7 +222,12 @@ export default function GetToKnowYou() {
   };
 
   const handleNext = () => {
-    if (currentQuestion.multiple) {
+    if (currentQuestion.type === 'text') {
+      if (!answers[currentQuestion.field] || answers[currentQuestion.field].trim() === '') {
+        toast.error('Please enter your name');
+        return;
+      }
+    } else if (currentQuestion.multiple) {
       const selected = answers[currentQuestion.field] || [];
       if (selected.length === 0) {
         toast.error('Please select at least one option');
@@ -270,42 +297,55 @@ export default function GetToKnowYou() {
               {currentQuestion.question}
             </h2>
 
-            <div className={cn(
-              "grid gap-4 mb-8",
-              currentQuestion.options.length === 2 ? "grid-cols-2" : 
-              currentQuestion.options.length <= 4 ? "grid-cols-2" : "grid-cols-1"
-            )}>
-              {currentQuestion.options.map((option) => {
-                const isSelected = currentQuestion.multiple
-                  ? (answers[currentQuestion.field] || []).includes(option.value)
-                  : answers[currentQuestion.field] === option.value;
+            {currentQuestion.type === 'text' ? (
+              <div className="mb-8">
+                <Input
+                  type="text"
+                  placeholder={currentQuestion.placeholder}
+                  value={answers[currentQuestion.field] || ''}
+                  onChange={(e) => setAnswers({ ...answers, [currentQuestion.field]: e.target.value })}
+                  className="h-14 text-lg"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <div className={cn(
+                "grid gap-4 mb-8",
+                currentQuestion.options?.length === 2 ? "grid-cols-2" : 
+                currentQuestion.options?.length <= 4 ? "grid-cols-2" : "grid-cols-1"
+              )}>
+                {currentQuestion.options?.map((option) => {
+                  const isSelected = currentQuestion.multiple
+                    ? (answers[currentQuestion.field] || []).includes(option.value)
+                    : answers[currentQuestion.field] === option.value;
 
-                return (
-                  <motion.button
-                    key={option.value}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleAnswer(option.value)}
-                    className={cn(
-                      "p-6 rounded-2xl border-2 transition-all text-left",
-                      isSelected
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    )}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">{option.emoji}</div>
-                      <div className="flex-1">
-                        <div className="font-semibold text-slate-800">{option.label}</div>
-                      </div>
-                      {isSelected && (
-                        <CheckCircle className="w-6 h-6 text-purple-500" />
+                  return (
+                    <motion.button
+                      key={option.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleAnswer(option.value)}
+                      className={cn(
+                        "p-6 rounded-2xl border-2 transition-all text-left",
+                        isSelected
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-slate-200 hover:border-slate-300 bg-white"
                       )}
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-4xl">{option.emoji}</div>
+                        <div className="flex-1">
+                          <div className="font-semibold text-slate-800">{option.label}</div>
+                        </div>
+                        {isSelected && (
+                          <CheckCircle className="w-6 h-6 text-purple-500" />
+                        )}
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
 
             <div className="flex gap-4">
               {currentStep > 0 && (

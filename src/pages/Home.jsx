@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -84,6 +84,7 @@ function getCricketJoke() {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
   
   const { data: user, isLoading: userLoading } = useQuery({
@@ -106,6 +107,18 @@ export default function Home() {
     retry: 3,
   });
 
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      return profiles[0] || null;
+    },
+    enabled: !!user?.email,
+    staleTime: 60000,
+    retry: 3,
+  });
+
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Good morning');
@@ -119,6 +132,13 @@ export default function Home() {
     // Scroll to top on mount
     window.scrollTo(0, 0);
   }, []);
+
+  // Redirect to Get to Know You if not completed
+  useEffect(() => {
+    if (user && userProfile !== undefined && !userProfile?.quiz_completed) {
+      navigate(createPageUrl('GetToKnowYou'));
+    }
+  }, [user, userProfile]);
 
   if (userLoading || progressLoading) {
     return (
@@ -134,7 +154,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 pb-24">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 px-6 pt-8 pb-20">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 px-6 pt-8 pb-24">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-24 -translate-x-24" />
         <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
@@ -157,14 +177,15 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex items-center justify-between mb-6"
+            className="mb-6"
           >
-            <div>
-              <p className="text-emerald-100 text-sm">{greeting}!</p>
-              <h1 className="text-2xl font-bold text-white">Hey, {displayName} 👋</h1>
-            </div>
+            <p className="text-emerald-100 text-sm mb-1">{greeting}!</p>
+            <h1 className="text-2xl font-bold text-white mb-4">Hey, {displayName} 👋</h1>
+            
             {(progress?.current_streak || 0) > 0 && (
-              <StreakDisplay streak={progress.current_streak} />
+              <div className="flex justify-start">
+                <StreakDisplay streak={progress.current_streak} />
+              </div>
             )}
           </motion.div>
 
@@ -172,7 +193,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.15 }}
             className="grid grid-cols-3 gap-3"
           >
             <motion.div 
@@ -210,7 +231,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="px-6 -mt-8 max-w-lg mx-auto space-y-6">
+      <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

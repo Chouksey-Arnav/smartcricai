@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, Users, Star, Settings, UserPlus, MessageCircle } from 'lucide-react';
+import { Trophy, Users, Star, Settings, UserPlus, MessageCircle, Edit2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Header from '@/components/common/Header';
 import BadgeDisplay from '@/components/common/BadgeDisplay';
 import StreakDisplay from '@/components/common/StreakDisplay';
+import { toast } from 'sonner';
 
 export default function Profile() {
+  const queryClient = useQueryClient();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
@@ -34,6 +40,38 @@ export default function Profile() {
     enabled: !!user?.email,
   });
 
+  const updateNameMutation = useMutation({
+    mutationFn: async (username) => {
+      if (profile?.id) {
+        return await base44.entities.Profile.update(profile.id, { username });
+      } else {
+        return await base44.entities.Profile.create({
+          user_email: user.email,
+          username
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast.success('Name updated successfully!');
+      setIsEditingName(false);
+      setNewUsername('');
+    },
+  });
+
+  const handleSaveName = () => {
+    if (!newUsername.trim()) {
+      toast.error('Please enter a valid name');
+      return;
+    }
+    updateNameMutation.mutate(newUsername.trim());
+  };
+
+  const handleEditName = () => {
+    setNewUsername(profile?.username || progress?.display_name || user?.full_name || '');
+    setIsEditingName(true);
+  };
+
   const stats = [
     { label: 'Drills', value: progress?.completed_drills?.length || 0, icon: '🎯' },
     { label: 'Quizzes', value: progress?.completed_quizzes?.length || 0, icon: '📚' },
@@ -57,7 +95,38 @@ export default function Profile() {
               {(progress?.display_name || user?.full_name || 'U').charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold mb-1">{progress?.display_name || user?.full_name}</h2>
+              {isEditingName ? (
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    className="h-10 bg-white/20 border-white/30 text-white placeholder:text-white/50"
+                    placeholder="Enter your name"
+                  />
+                  <button
+                    onClick={handleSaveName}
+                    className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                  >
+                    <Check className="w-5 h-5 text-white" />
+                  </button>
+                  <button
+                    onClick={() => setIsEditingName(false)}
+                    className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-2xl font-bold">{profile?.username || progress?.display_name || user?.full_name}</h2>
+                  <button
+                    onClick={handleEditName}
+                    className="p-1.5 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              )}
               <p className="text-purple-100 capitalize">{progress?.primary_role || 'Player'}</p>
               {profile?.archetype && (
                 <p className="text-sm text-purple-200 mt-1">🎯 {profile.archetype}</p>
