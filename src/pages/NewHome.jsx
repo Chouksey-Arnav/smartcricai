@@ -205,32 +205,22 @@ export default function NewHome() {
       <div className="px-6 -mt-16 max-w-lg mx-auto space-y-6">
         {/* Coach Check-In */}
         {!todayConfidence && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-2xl"
-          >
-            <h3 className="font-bold text-lg mb-3">🏏 Coach Check-In</h3>
-            <p className="text-purple-100 mb-4">How confident are you feeling today?</p>
-            <div className="grid grid-cols-3 gap-3">
-              {confidenceLevels.map(level => {
-                const Icon = level.icon;
-                return (
-                  <button
-                    key={level.value}
-                    onClick={() => {
-                      setTodayConfidence(level.value);
-                      saveConfidenceMutation.mutate(level.value);
-                    }}
-                    className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-xl p-3 transition-all"
-                  >
-                    <Icon className="w-6 h-6 mx-auto mb-1" />
-                    <p className="text-xs font-medium">{level.label}</p>
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
+          <Link to={createPageUrl('ConfidenceCheckIn')}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02, y: -4 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-2xl cursor-pointer"
+            >
+              <h3 className="font-bold text-lg mb-2">🏏 Coach Check-In</h3>
+              <p className="text-purple-100 text-sm mb-3">How confident are you feeling today?</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-purple-200">Tap to share your mood →</span>
+                <ChevronRight className="w-5 h-5" />
+              </div>
+            </motion.div>
+          </Link>
         )}
 
         {/* Stats Dashboard */}
