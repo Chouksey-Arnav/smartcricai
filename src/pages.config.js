@@ -2,7 +2,9 @@ import AIWorkout from './pages/AIWorkout';
 import Chat from './pages/Chat';
 import Coach from './pages/Coach';
 import CoachVoiceMode from './pages/CoachVoiceMode';
+import ConfidenceCheckIn from './pages/ConfidenceCheckIn';
 import CricketHub from './pages/CricketHub';
+import CustomDrillWorkoutCreator from './pages/CustomDrillWorkoutCreator';
 import DrillDetail from './pages/DrillDetail';
 import Drills from './pages/Drills';
 import DrillsCreator from './pages/DrillsCreator';
@@ -33,8 +35,6 @@ import Timer from './pages/Timer';
 import VideoAnalysis from './pages/VideoAnalysis';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
-import CustomDrillWorkoutCreator from './pages/CustomDrillWorkoutCreator';
-import ConfidenceCheckIn from './pages/ConfidenceCheckIn';
 import __Layout from './Layout.jsx';
 
 
@@ -43,7 +43,9 @@ export const PAGES = {
     "Chat": Chat,
     "Coach": Coach,
     "CoachVoiceMode": CoachVoiceMode,
+    "ConfidenceCheckIn": ConfidenceCheckIn,
     "CricketHub": CricketHub,
+    "CustomDrillWorkoutCreator": CustomDrillWorkoutCreator,
     "DrillDetail": DrillDetail,
     "Drills": Drills,
     "DrillsCreator": DrillsCreator,
@@ -74,8 +76,6 @@ export const PAGES = {
     "VideoAnalysis": VideoAnalysis,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
-    "CustomDrillWorkoutCreator": CustomDrillWorkoutCreator,
-    "ConfidenceCheckIn": ConfidenceCheckIn,
 }
 
 export const pagesConfig = {

@@ -8,7 +8,10 @@ import {
   Clock, 
   Flame,
   TrendingUp,
-  Calendar
+  Calendar,
+  Gem,
+  BarChart2,
+  ChevronRight
 } from 'lucide-react';
 import Header from '@/components/common/Header';
 import BadgeDisplay from '@/components/common/BadgeDisplay';
@@ -16,6 +19,8 @@ import StreakDisplay from '@/components/common/StreakDisplay';
 import ProgressTracker from '@/components/progress/ProgressTracker';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function Progress() {
   const { data: user } = useQuery({
@@ -34,6 +39,13 @@ export default function Progress() {
   });
 
   const stats = [
+    {
+      label: 'Total XP',
+      value: progress?.total_xp || 0,
+      icon: Gem,
+      color: 'bg-yellow-500',
+      bgColor: 'bg-yellow-50',
+    },
     {
       label: 'Drills Completed',
       value: progress?.completed_drills?.length || 0,
@@ -106,6 +118,29 @@ export default function Progress() {
             </div>
           ))}
         </motion.div>
+
+        {/* Leaderboard Link */}
+        <Link to={createPageUrl('Leaderboard')}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl shadow-lg p-5 flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white">
+                <BarChart2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-lg">Global Leaderboard</h3>
+                <p className="text-indigo-100 text-sm">See where you rank!</p>
+              </div>
+            </div>
+            <ChevronRight className="w-6 h-6 text-white" />
+          </motion.div>
+        </Link>
 
         {/* Last Practice */}
         {progress?.last_practice_date && (

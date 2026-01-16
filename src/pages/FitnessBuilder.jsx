@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Dumbbell, Zap, Clock, AlertCircle, Play, CheckCircle } from 'lucide-react';
+import { Dumbbell, Zap, Clock, AlertCircle, Play, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
@@ -50,6 +50,7 @@ export default function FitnessBuilder() {
   const [goal, setGoal] = useState('keep_fit');
   const [duration, setDuration] = useState('medium');
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -94,6 +95,8 @@ export default function FitnessBuilder() {
     const isFullBody = selectedParts.includes('full_body');
     const targetDuration = durations.find(d => d.id === duration).minutes;
 
+    setIsGenerating(true);
+
     // Generate workout plan using AI
     const prompt = `Create a ${level} level ${isFullBody ? 'full body' : selectedParts.join(', ')} workout.
 
@@ -101,7 +104,7 @@ Goal: ${goal.replace('_', ' ')}
 Duration: ${targetDuration} minutes
 ${injuredArea ? `IMPORTANT: Avoid exercises that stress the ${injuredArea}` : ''}
 
-Return a JSON array of 5-8 exercises. Each exercise must have:
+Return a JSON with "exercises" array. Each exercise must have:
 {
   "name": "Exercise name",
   "target": "muscle group",
@@ -128,14 +131,16 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
                   name: { type: 'string' },
                   target: { type: 'string' },
                   sets: { type: 'number' },
-                  reps: {},
+                  reps: { type: ['number', 'string'] },
                   rest_seconds: { type: 'number' },
                   instructions: { type: 'string' },
                   difficulty: { type: 'string' }
-                }
+                },
+                required: ['name', 'target', 'sets', 'reps', 'rest_seconds', 'instructions', 'difficulty']
               }
             }
-          }
+          },
+          required: ['exercises']
         }
       });
 
@@ -145,6 +150,8 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
     } catch (error) {
       console.error('Failed to generate workout:', error);
       toast.error('Failed to generate workout. Please try again.');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -344,9 +351,17 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
               </Button>
               <Button
                 onClick={generateWorkout}
+                disabled={isGenerating}
                 className="flex-1 bg-orange-500 hover:bg-orange-600"
               >
-                Generate Workout
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  'Generate Workout'
+                )}
               </Button>
             </div>
           </motion.div>
@@ -410,7 +425,7 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
 
             <div className="flex gap-3">
               <Button
-                onClick={() => setStep(2)}
+                onClick={() => { setStep(2); setGeneratedWorkout(null); }}
                 variant="outline"
                 className="flex-1"
               >

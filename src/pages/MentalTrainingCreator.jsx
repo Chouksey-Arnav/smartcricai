@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tantml:react-query';
 import { motion } from 'framer-motion';
 import { Brain, Sparkles, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -130,10 +130,12 @@ Return ONLY valid JSON, no other text.`;
                 properties: {
                   instruction: { type: 'string' },
                   duration_seconds: { type: 'number' }
-                }
+                },
+                required: ['instruction', 'duration_seconds']
               }
             }
-          }
+          },
+          required: ['title', 'description', 'steps']
         }
       });
 
