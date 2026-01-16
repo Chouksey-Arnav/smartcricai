@@ -193,9 +193,13 @@ Return ONLY valid JSON, no other text.`;
                 <Sparkles className="w-5 h-5 mr-2" />
                 Create Drill Workout
               </Button>
-              <div className="h-16 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-sm font-medium">
-                Single Drill →
-              </div>
+              <Button
+                disabled={true}
+                className="h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 opacity-50 cursor-not-allowed"
+              >
+                <Target className="w-5 h-5 mr-2" />
+                Single Drill
+              </Button>
             </motion.div>
 
             <motion.div

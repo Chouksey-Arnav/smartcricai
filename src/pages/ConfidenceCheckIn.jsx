@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Frown, Meh, Smile, Sparkles, Send, ArrowLeft } from 'lucide-react';
+import { Heart, Frown, Meh, Smile, Sparkles, Send, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Header from '@/components/common/Header';

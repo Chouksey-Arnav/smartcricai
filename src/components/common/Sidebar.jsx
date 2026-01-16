@@ -26,32 +26,44 @@ import {
 import { cn } from '@/lib/utils';
 
 const menuItems = [
+  // Top 3 - Always Fixed
   { name: '✨ Get to Know You', icon: Sparkles, page: 'GetToKnowYou', color: 'text-pink-500', highlight: true },
   { name: 'Home', icon: Home, page: 'NewHome', color: 'text-emerald-500' },
   { name: '🎯 Goals', icon: Target, page: 'Goals', color: 'text-purple-600', highlight: true },
+  
+  // Community & Social
   { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
-  { name: 'Drills', icon: Target, page: 'Drills', color: 'text-purple-500' },
-  { name: 'Mental Training', icon: Brain, page: 'MentalCoaching', color: 'text-indigo-500' },
-  { name: 'Quizzes', icon: BookOpen, page: 'Quizzes', color: 'text-amber-500' },
-  { name: 'Progress', icon: Trophy, page: 'Progress', color: 'text-pink-500' },
-  { name: 'Cricket Hub', icon: Zap, page: 'CricketHub', color: 'text-red-600' },
   { name: 'Player Lookup', icon: Search, page: 'PlayerLookup', color: 'text-cyan-500' },
-  { name: 'Mini-Match', icon: Zap, page: 'MiniMatch', color: 'text-orange-500' },
-  { name: 'Skill Paths', icon: TrendingUp, page: 'SkillPaths', color: 'text-teal-500' },
   { name: 'Team Mode', icon: Users, page: 'TeamMode', color: 'text-red-500' },
-  { name: 'Schedule', icon: Calendar, page: 'Schedule', color: 'text-violet-500' },
-  { name: 'Video Analysis', icon: Video, page: 'VideoAnalysis', color: 'text-rose-500' },
-  { name: 'Why Did I Get Out?', icon: TrendingDown, page: 'WhyDidIGetOut', color: 'text-red-600' },
-  { name: 'Match Tracker', icon: Trophy, page: 'MatchTracker', color: 'text-green-600' },
+  
+  // Training & Skills
+  { name: 'Skill Paths', icon: TrendingUp, page: 'SkillPaths', color: 'text-teal-500' },
+  { name: 'Drills', icon: Target, page: 'Drills', color: 'text-purple-500' },
+  { name: 'Drills Creator', icon: Target, page: 'DrillsCreator', color: 'text-blue-500' },
+  
+  // Fitness & Workouts
   { name: 'Workout Builder', icon: Dumbbell, page: 'WorkoutBuilder', color: 'text-purple-600' },
   { name: 'AI Workout', icon: Sparkles, page: 'AIWorkout', color: 'text-pink-500' },
   { name: 'Fitness Builder', icon: Zap, page: 'FitnessBuilder', color: 'text-orange-500' },
+  
+  // Mental & Knowledge
+  { name: 'Mental Training', icon: Brain, page: 'MentalCoaching', color: 'text-indigo-500' },
   { name: 'Mental Creator', icon: Brain, page: 'MentalTrainingCreator', color: 'text-purple-500' },
-  { name: 'Drills Creator', icon: Target, page: 'DrillsCreator', color: 'text-blue-500' },
+  { name: 'Quizzes', icon: BookOpen, page: 'Quizzes', color: 'text-amber-500' },
+  
+  // Game & Performance
+  { name: 'Video Analysis', icon: Video, page: 'VideoAnalysis', color: 'text-rose-500' },
+  { name: 'Match Tracker', icon: Trophy, page: 'MatchTracker', color: 'text-green-600' },
+  { name: 'Mini-Match', icon: Zap, page: 'MiniMatch', color: 'text-orange-500' },
+  { name: 'Schedule', icon: Calendar, page: 'Schedule', color: 'text-violet-500' },
+  { name: 'Why Did I Get Out?', icon: TrendingDown, page: 'WhyDidIGetOut', color: 'text-red-600' },
+  { name: 'Progress', icon: Trophy, page: 'Progress', color: 'text-pink-500' },
   { name: 'Leaderboard', icon: Trophy, page: 'Leaderboard', color: 'text-amber-500' },
+  
+  // Resources & Profile - Always at Bottom
+  { name: 'Cricket Hub', icon: Zap, page: 'CricketHub', color: 'text-red-600' },
   { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
-  { name: 'Settings', icon: Settings, page: 'Settings', color: 'text-slate-500' },
 ];
 
 export default function Sidebar() {
