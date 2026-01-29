@@ -194,11 +194,11 @@ Return ONLY valid JSON, no other text.`;
                 Create Drill Workout
               </Button>
               <Button
-                disabled={true}
-                className="h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 opacity-50 cursor-not-allowed"
+                onClick={() => navigate(createPageUrl('AIDrillRecommendation'))}
+                className="h-16 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
               >
                 <Target className="w-5 h-5 mr-2" />
-                Single Drill
+                AI Recommendations
               </Button>
             </motion.div>
 

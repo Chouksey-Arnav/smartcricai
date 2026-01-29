@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, MessageCircle, Target, Brain, Clock } from 'lucide-react';
+import { Home, MessageCircle, Target, Crown, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { name: 'Home', icon: Home, page: 'Home' },
   { name: 'Coach', icon: MessageCircle, page: 'Coach' },
   { name: 'Drills', icon: Target, page: 'Drills' },
-  { name: 'Mind', icon: Brain, page: 'MentalCoaching' },
+  { name: 'Premium', icon: Crown, page: 'Premium' },
   { name: 'Timer', icon: Clock, page: 'Timer' },
 ];
 

@@ -10,6 +10,7 @@ import { createPageUrl } from '@/utils';
 import ChatBubble from '@/components/coach/ChatBubble';
 import QuickQuestions from '@/components/coach/QuickQuestions';
 import Header from '@/components/common/Header';
+import { findPremadeResponse } from '@/components/coach/PremadeResponses';
 
 export default function Coach() {
   const navigate = useNavigate();
@@ -166,6 +167,23 @@ export default function Coach() {
 
     const currentInput = input.trim();
     const lowerInput = currentInput.toLowerCase();
+    
+    // Check for premade responses first (saves integration credits)
+    const premadeResponse = findPremadeResponse(lowerInput);
+    if (premadeResponse) {
+      setInput('');
+      const userMessage = { role: 'user', content: currentInput, timestamp: new Date() };
+      const coachMessage = { role: 'coach', content: premadeResponse, timestamp: new Date() };
+      
+      setMessages(prev => [...prev, userMessage, coachMessage]);
+      
+      // Save messages
+      if (user?.email) {
+        base44.entities.ChatMessage.create({ user_email: user.email, role: 'user', content: currentInput }).catch(err => console.warn('Failed to save:', err));
+        base44.entities.ChatMessage.create({ user_email: user.email, role: 'coach', content: premadeResponse }).catch(err => console.warn('Failed to save:', err));
+      }
+      return;
+    }
     
     // Check for memory save triggers
     if (lowerInput.includes('save to memory') || lowerInput.includes('remember this') || lowerInput.includes('save to your memory')) {
