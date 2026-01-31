@@ -403,6 +403,28 @@ Occasionally mention: "Want to chat live? Type 'Open Voice Mode' or 'Open Mental
       <Header title="AI Coach" showSettings={false} />
 
       <div className="px-6 py-4 max-w-2xl mx-auto">
+        {/* SmartTrick Chat Widget Notice */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-6 text-white mb-6"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">👉 Check Bottom Right Corner!</h2>
+              <p className="text-emerald-100 text-sm">Click the chat widget to talk with SmartTrick Coach</p>
+            </div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <p className="text-sm text-white font-medium">
+              💬 Look for the chat icon in the bottom right of your screen to start chatting instantly!
+            </p>
+          </div>
+        </motion.div>
+
         {/* Info Tooltip */}
         <AnimatePresence>
           {showInfoTooltip && (
