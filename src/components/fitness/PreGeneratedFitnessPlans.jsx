@@ -7856,6 +7856,715 @@ export const PRE_GENERATED_FITNESS_PLANS = [
     ]
   },
 
+  // AGILITY - INTERMEDIATE - 60 MIN - ALL GOALS (516-520)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Intermediate",
+    durationMinutes: 60,
+    fitnessGoal: "Strength",
+    planName: "Intermediate Agility Strength - 60 min",
+    exercises: [
+      { name: "Advanced Cone Drills", sets: 14, reps: 20, rest: 45 },
+      { name: "Lateral Power Shuffles", sets: 13, reps: 40, rest: 45 },
+      { name: "Multi-Directional Sprints", sets: 13, reps: 30, rest: 45 },
+      { name: "Speed Ladder Complex", sets: 12, reps: 35, rest: 45 },
+      { name: "T-Drill Advanced", sets: 11, reps: 20, rest: 60 },
+      { name: "Star Drill Pro", sets: 10, reps: 20, rest: 60 },
+      { name: "Pro Agility Complex", sets: 9, reps: 18, rest: 60 },
+      { name: "Figure 8 Advanced", sets: 8, reps: 20, rest: 60 },
+      { name: "Box Drill Complex", sets: 7, reps: 18, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Intermediate",
+    durationMinutes: 60,
+    fitnessGoal: "Endurance",
+    planName: "Intermediate Agility Endurance - 60 min",
+    exercises: [
+      { name: "Continuous Agility Circuit", sets: 17, reps: "3 min", rest: 20 },
+      { name: "Lateral Hops", sets: 15, reps: 80, rest: 20 },
+      { name: "Complex Zigzag Runs", sets: 14, reps: "210 sec", rest: 20 },
+      { name: "Advanced Ladder Patterns", sets: 13, reps: "180 sec", rest: 20 },
+      { name: "Shuttle Complex", sets: 12, reps: "180 sec", rest: 30 },
+      { name: "Carioca Advanced", sets: 11, reps: 70, rest: 30 },
+      { name: "Multi-Directional Runs", sets: 10, reps: "150 sec", rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Intermediate",
+    durationMinutes: 60,
+    fitnessGoal: "Power",
+    planName: "Intermediate Agility Power - 60 min",
+    exercises: [
+      { name: "Explosive Sprint Starts", sets: 17, reps: 18, rest: 60 },
+      { name: "Reactive Direction Changes", sets: 15, reps: 25, rest: 60 },
+      { name: "Plyometric Agility Drills", sets: 14, reps: 30, rest: 60 },
+      { name: "Speed Cuts", sets: 13, reps: 35, rest: 60 },
+      { name: "Box Agility Complex", sets: 12, reps: 20, rest: 90 },
+      { name: "Lateral Bounds", sets: 11, reps: 30, rest: 90 },
+      { name: "Reactive Jumps", sets: 10, reps: 25, rest: 90 },
+      { name: "Depth Jump to Sprint", sets: 9, reps: 15, rest: 90 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Intermediate",
+    durationMinutes: 60,
+    fitnessGoal: "Fat Loss",
+    planName: "Intermediate Agility Fat Loss - 60 min",
+    exercises: [
+      { name: "HIIT Ladder Drills", sets: 17, reps: "180 sec", rest: 20 },
+      { name: "Burpee Sprint Complex", sets: 15, reps: 25, rest: 20 },
+      { name: "Explosive Shuffles", sets: 14, reps: "150 sec", rest: 20 },
+      { name: "Speed Agility Circuit", sets: 13, reps: "180 sec", rest: 30 },
+      { name: "Jump Rope Intervals", sets: 12, reps: "180 sec", rest: 30 },
+      { name: "Mountain Climbers", sets: 11, reps: 120, rest: 30 },
+      { name: "Battle Ropes", sets: 10, reps: "120 sec", rest: 30 },
+      { name: "Sprawls", sets: 9, reps: 35, rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Intermediate",
+    durationMinutes: 60,
+    fitnessGoal: "Muscle Gain",
+    planName: "Intermediate Agility Muscle Gain - 60 min",
+    exercises: [
+      { name: "Heavy Resistance Cone Drills", sets: 14, reps: 20, rest: 90 },
+      { name: "Weighted Agility Ladder", sets: 13, reps: 30, rest: 90 },
+      { name: "Resistance Band Multi-Directional", sets: 12, reps: 35, rest: 60 },
+      { name: "Sled Sprint Variations", sets: 12, reps: 18, rest: 90 },
+      { name: "Parachute Sprints", sets: 11, reps: 15, rest: 90 },
+      { name: "Weighted Shuttle Runs", sets: 10, reps: 18, rest: 90 },
+      { name: "Prowler Push", sets: 9, reps: "90 sec", rest: 120 },
+      { name: "Heavy Resistance Bounds", sets: 8, reps: 20, rest: 90 }
+    ]
+  },
+
+  // AGILITY - ADVANCED - 15 MIN - ALL GOALS (521-525)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 15,
+    fitnessGoal: "Strength",
+    planName: "Advanced Agility Strength - 15 min",
+    exercises: [
+      { name: "Elite Cone Drills", sets: 6, reps: 15, rest: 45 },
+      { name: "Explosive Lateral Cuts", sets: 5, reps: 20, rest: 45 },
+      { name: "Change of Direction Sprints", sets: 5, reps: 18, rest: 45 },
+      { name: "Advanced Ladder Complex", sets: 4, reps: 25, rest: 45 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 15,
+    fitnessGoal: "Endurance",
+    planName: "Advanced Agility Endurance - 15 min",
+    exercises: [
+      { name: "Non-Stop Agility Circuit", sets: 7, reps: "2 min", rest: 15 },
+      { name: "Complex Lateral Patterns", sets: 6, reps: 60, rest: 15 },
+      { name: "Advanced Zigzag", sets: 5, reps: "120 sec", rest: 15 },
+      { name: "Multi-Plane Movements", sets: 5, reps: "90 sec", rest: 15 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 15,
+    fitnessGoal: "Power",
+    planName: "Advanced Agility Power - 15 min",
+    exercises: [
+      { name: "Max Effort Sprint Starts", sets: 7, reps: 10, rest: 90 },
+      { name: "Reactive Cutting Drills", sets: 6, reps: 15, rest: 90 },
+      { name: "Plyometric Agility Complex", sets: 5, reps: 20, rest: 90 },
+      { name: "Speed Box Jumps Multi-Dir", sets: 5, reps: 15, rest: 90 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 15,
+    fitnessGoal: "Fat Loss",
+    planName: "Advanced Agility Fat Loss - 15 min",
+    exercises: [
+      { name: "Extreme HIIT Ladder", sets: 7, reps: "90 sec", rest: 15 },
+      { name: "Burpee to Sprint Complex", sets: 6, reps: 18, rest: 15 },
+      { name: "Speed Shuffle Burpees", sets: 5, reps: "75 sec", rest: 20 },
+      { name: "All-Out Agility Circuit", sets: 5, reps: "90 sec", rest: 20 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 15,
+    fitnessGoal: "Muscle Gain",
+    planName: "Advanced Agility Muscle Gain - 15 min",
+    exercises: [
+      { name: "Heavy Sled Agility Drills", sets: 6, reps: 12, rest: 120 },
+      { name: "Weighted Ladder Complex", sets: 5, reps: 15, rest: 90 },
+      { name: "Resistance Sprint Cuts", sets: 5, reps: 18, rest: 90 },
+      { name: "Heavy Parachute Runs", sets: 4, reps: 10, rest: 120 }
+    ]
+  },
+
+  // AGILITY - ADVANCED - 30 MIN - ALL GOALS (526-530)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 30,
+    fitnessGoal: "Strength",
+    planName: "Advanced Agility Strength - 30 min",
+    exercises: [
+      { name: "Elite Cone Drills", sets: 10, reps: 18, rest: 45 },
+      { name: "Explosive Lateral Cuts", sets: 9, reps: 25, rest: 45 },
+      { name: "Change of Direction Sprints", sets: 9, reps: 22, rest: 45 },
+      { name: "Advanced Ladder Complex", sets: 8, reps: 30, rest: 45 },
+      { name: "Pro Agility Variations", sets: 7, reps: 18, rest: 60 },
+      { name: "Complex T-Drill", sets: 6, reps: 15, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 30,
+    fitnessGoal: "Endurance",
+    planName: "Advanced Agility Endurance - 30 min",
+    exercises: [
+      { name: "Non-Stop Agility Circuit", sets: 12, reps: "2 min", rest: 15 },
+      { name: "Complex Lateral Patterns", sets: 10, reps: 70, rest: 15 },
+      { name: "Advanced Zigzag", sets: 9, reps: "150 sec", rest: 15 },
+      { name: "Multi-Plane Movements", sets: 8, reps: "120 sec", rest: 15 },
+      { name: "Continuous Shuffle Pattern", sets: 7, reps: "120 sec", rest: 20 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 30,
+    fitnessGoal: "Power",
+    planName: "Advanced Agility Power - 30 min",
+    exercises: [
+      { name: "Max Effort Sprint Starts", sets: 12, reps: 12, rest: 90 },
+      { name: "Reactive Cutting Drills", sets: 10, reps: 18, rest: 90 },
+      { name: "Plyometric Agility Complex", sets: 9, reps: 25, rest: 90 },
+      { name: "Speed Box Jumps Multi-Dir", sets: 8, reps: 20, rest: 90 },
+      { name: "Depth Jump Cuts", sets: 7, reps: 15, rest: 120 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 30,
+    fitnessGoal: "Fat Loss",
+    planName: "Advanced Agility Fat Loss - 30 min",
+    exercises: [
+      { name: "Extreme HIIT Ladder", sets: 12, reps: "120 sec", rest: 15 },
+      { name: "Burpee to Sprint Complex", sets: 10, reps: 20, rest: 15 },
+      { name: "Speed Shuffle Burpees", sets: 9, reps: "90 sec", rest: 20 },
+      { name: "All-Out Agility Circuit", sets: 8, reps: "120 sec", rest: 20 },
+      { name: "Battle Ropes", sets: 7, reps: "90 sec", rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 30,
+    fitnessGoal: "Muscle Gain",
+    planName: "Advanced Agility Muscle Gain - 30 min",
+    exercises: [
+      { name: "Heavy Sled Agility Drills", sets: 10, reps: 15, rest: 120 },
+      { name: "Weighted Ladder Complex", sets: 9, reps: 20, rest: 90 },
+      { name: "Resistance Sprint Cuts", sets: 8, reps: 22, rest: 90 },
+      { name: "Heavy Parachute Runs", sets: 7, reps: 12, rest: 120 },
+      { name: "Prowler Push Multi-Dir", sets: 6, reps: "90 sec", rest: 120 }
+    ]
+  },
+
+  // AGILITY - ADVANCED - 45 MIN - ALL GOALS (531-535)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 45,
+    fitnessGoal: "Strength",
+    planName: "Advanced Agility Strength - 45 min",
+    exercises: [
+      { name: "Elite Cone Drills", sets: 14, reps: 20, rest: 45 },
+      { name: "Explosive Lateral Cuts", sets: 13, reps: 30, rest: 45 },
+      { name: "Change of Direction Sprints", sets: 13, reps: 25, rest: 45 },
+      { name: "Advanced Ladder Complex", sets: 12, reps: 35, rest: 45 },
+      { name: "Pro Agility Variations", sets: 11, reps: 20, rest: 60 },
+      { name: "Complex T-Drill", sets: 10, reps: 18, rest: 60 },
+      { name: "Star Drill Elite", sets: 9, reps: 18, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 45,
+    fitnessGoal: "Endurance",
+    planName: "Advanced Agility Endurance - 45 min",
+    exercises: [
+      { name: "Non-Stop Agility Circuit", sets: 16, reps: "3 min", rest: 15 },
+      { name: "Complex Lateral Patterns", sets: 14, reps: 80, rest: 15 },
+      { name: "Advanced Zigzag", sets: 13, reps: "180 sec", rest: 15 },
+      { name: "Multi-Plane Movements", sets: 12, reps: "150 sec", rest: 15 },
+      { name: "Continuous Shuffle Pattern", sets: 11, reps: "150 sec", rest: 20 },
+      { name: "Endless Ladder Flow", sets: 10, reps: "180 sec", rest: 20 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 45,
+    fitnessGoal: "Power",
+    planName: "Advanced Agility Power - 45 min",
+    exercises: [
+      { name: "Max Effort Sprint Starts", sets: 16, reps: 15, rest: 90 },
+      { name: "Reactive Cutting Drills", sets: 14, reps: 20, rest: 90 },
+      { name: "Plyometric Agility Complex", sets: 13, reps: 30, rest: 90 },
+      { name: "Speed Box Jumps Multi-Dir", sets: 12, reps: 25, rest: 90 },
+      { name: "Depth Jump Cuts", sets: 11, reps: 18, rest: 120 },
+      { name: "Explosive Bounds Multi-Dir", sets: 10, reps: 25, rest: 90 },
+      { name: "Reactive Box Jumps", sets: 9, reps: 20, rest: 90 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 45,
+    fitnessGoal: "Fat Loss",
+    planName: "Advanced Agility Fat Loss - 45 min",
+    exercises: [
+      { name: "Extreme HIIT Ladder", sets: 16, reps: "150 sec", rest: 15 },
+      { name: "Burpee to Sprint Complex", sets: 14, reps: 25, rest: 15 },
+      { name: "Speed Shuffle Burpees", sets: 13, reps: "120 sec", rest: 20 },
+      { name: "All-Out Agility Circuit", sets: 12, reps: "150 sec", rest: 20 },
+      { name: "Battle Ropes", sets: 11, reps: "120 sec", rest: 30 },
+      { name: "Sprint Intervals", sets: 10, reps: "90 sec", rest: 30 },
+      { name: "Kettlebell Swings", sets: 9, reps: 60, rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 45,
+    fitnessGoal: "Muscle Gain",
+    planName: "Advanced Agility Muscle Gain - 45 min",
+    exercises: [
+      { name: "Heavy Sled Agility Drills", sets: 14, reps: 18, rest: 120 },
+      { name: "Weighted Ladder Complex", sets: 13, reps: 25, rest: 90 },
+      { name: "Resistance Sprint Cuts", sets: 12, reps: 25, rest: 90 },
+      { name: "Heavy Parachute Runs", sets: 11, reps: 15, rest: 120 },
+      { name: "Prowler Push Multi-Dir", sets: 10, reps: "120 sec", rest: 120 },
+      { name: "Weighted Bounds", sets: 9, reps: 22, rest: 90 },
+      { name: "Resistance Band Sprints", sets: 8, reps: 20, rest: 90 }
+    ]
+  },
+
+  // AGILITY - ADVANCED - 60 MIN - ALL GOALS (536-540)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 60,
+    fitnessGoal: "Strength",
+    planName: "Advanced Agility Strength - 60 min",
+    exercises: [
+      { name: "Elite Cone Drills", sets: 17, reps: 22, rest: 45 },
+      { name: "Explosive Lateral Cuts", sets: 16, reps: 35, rest: 45 },
+      { name: "Change of Direction Sprints", sets: 16, reps: 30, rest: 45 },
+      { name: "Advanced Ladder Complex", sets: 15, reps: 40, rest: 45 },
+      { name: "Pro Agility Variations", sets: 14, reps: 22, rest: 60 },
+      { name: "Complex T-Drill", sets: 13, reps: 20, rest: 60 },
+      { name: "Star Drill Elite", sets: 12, reps: 20, rest: 60 },
+      { name: "Figure 8 Elite", sets: 11, reps: 22, rest: 60 },
+      { name: "Box Drill Advanced", sets: 10, reps: 20, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 60,
+    fitnessGoal: "Endurance",
+    planName: "Advanced Agility Endurance - 60 min",
+    exercises: [
+      { name: "Non-Stop Agility Circuit", sets: 19, reps: "3 min", rest: 15 },
+      { name: "Complex Lateral Patterns", sets: 17, reps: 90, rest: 15 },
+      { name: "Advanced Zigzag", sets: 16, reps: "210 sec", rest: 15 },
+      { name: "Multi-Plane Movements", sets: 15, reps: "180 sec", rest: 15 },
+      { name: "Continuous Shuffle Pattern", sets: 14, reps: "180 sec", rest: 20 },
+      { name: "Endless Ladder Flow", sets: 13, reps: "210 sec", rest: 20 },
+      { name: "Carioca Elite", sets: 12, reps: 80, rest: 20 },
+      { name: "Grapevine Advanced", sets: 11, reps: 70, rest: 20 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 60,
+    fitnessGoal: "Power",
+    planName: "Advanced Agility Power - 60 min",
+    exercises: [
+      { name: "Max Effort Sprint Starts", sets: 19, reps: 18, rest: 90 },
+      { name: "Reactive Cutting Drills", sets: 17, reps: 25, rest: 90 },
+      { name: "Plyometric Agility Complex", sets: 16, reps: 35, rest: 90 },
+      { name: "Speed Box Jumps Multi-Dir", sets: 15, reps: 30, rest: 90 },
+      { name: "Depth Jump Cuts", sets: 14, reps: 20, rest: 120 },
+      { name: "Explosive Bounds Multi-Dir", sets: 13, reps: 30, rest: 90 },
+      { name: "Reactive Box Jumps", sets: 12, reps: 25, rest: 90 },
+      { name: "Altitude Landings", sets: 11, reps: 20, rest: 120 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 60,
+    fitnessGoal: "Fat Loss",
+    planName: "Advanced Agility Fat Loss - 60 min",
+    exercises: [
+      { name: "Extreme HIIT Ladder", sets: 19, reps: "180 sec", rest: 15 },
+      { name: "Burpee to Sprint Complex", sets: 17, reps: 30, rest: 15 },
+      { name: "Speed Shuffle Burpees", sets: 16, reps: "150 sec", rest: 20 },
+      { name: "All-Out Agility Circuit", sets: 15, reps: "180 sec", rest: 20 },
+      { name: "Battle Ropes", sets: 14, reps: "150 sec", rest: 30 },
+      { name: "Sprint Intervals", sets: 13, reps: "120 sec", rest: 30 },
+      { name: "Kettlebell Swings", sets: 12, reps: 80, rest: 30 },
+      { name: "Prowler Push", sets: 11, reps: "120 sec", rest: 30 },
+      { name: "Sled Sprints", sets: 10, reps: "90 sec", rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Advanced",
+    durationMinutes: 60,
+    fitnessGoal: "Muscle Gain",
+    planName: "Advanced Agility Muscle Gain - 60 min",
+    exercises: [
+      { name: "Heavy Sled Agility Drills", sets: 17, reps: 20, rest: 120 },
+      { name: "Weighted Ladder Complex", sets: 16, reps: 30, rest: 90 },
+      { name: "Resistance Sprint Cuts", sets: 15, reps: 30, rest: 90 },
+      { name: "Heavy Parachute Runs", sets: 14, reps: 18, rest: 120 },
+      { name: "Prowler Push Multi-Dir", sets: 13, reps: "150 sec", rest: 120 },
+      { name: "Weighted Bounds", sets: 12, reps: 25, rest: 90 },
+      { name: "Resistance Band Sprints", sets: 11, reps: 25, rest: 90 },
+      { name: "Heavy Resistance Ladder", sets: 10, reps: 25, rest: 90 }
+    ]
+  },
+
+  // AGILITY - PRO - 15 MIN - ALL GOALS (541-545)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 15,
+    fitnessGoal: "Strength",
+    planName: "Pro Agility Strength - 15 min",
+    exercises: [
+      { name: "Elite Multi-Dir Cone Drills", sets: 7, reps: 18, rest: 45 },
+      { name: "Max Power Lateral Cuts", sets: 6, reps: 25, rest: 45 },
+      { name: "Reactive Sprint Complex", sets: 6, reps: 20, rest: 45 },
+      { name: "Professional Ladder Sequence", sets: 5, reps: 30, rest: 45 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 15,
+    fitnessGoal: "Endurance",
+    planName: "Pro Agility Endurance - 15 min",
+    exercises: [
+      { name: "Elite Agility Circuit", sets: 9, reps: "2 min", rest: 10 },
+      { name: "Professional Lateral Patterns", sets: 7, reps: 70, rest: 10 },
+      { name: "Complex Multi-Plane Drills", sets: 6, reps: "120 sec", rest: 10 },
+      { name: "Advanced Movement Patterns", sets: 6, reps: "90 sec", rest: 10 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 15,
+    fitnessGoal: "Power",
+    planName: "Pro Agility Power - 15 min",
+    exercises: [
+      { name: "Maximum Sprint Explosions", sets: 8, reps: 12, rest: 120 },
+      { name: "Reactive Elite Cuts", sets: 7, reps: 18, rest: 120 },
+      { name: "Plyometric Agility Elite", sets: 6, reps: 22, rest: 120 },
+      { name: "Speed Box Multi-Dir Elite", sets: 6, reps: 18, rest: 120 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 15,
+    fitnessGoal: "Fat Loss",
+    planName: "Pro Agility Fat Loss - 15 min",
+    exercises: [
+      { name: "Extreme Elite HIIT", sets: 9, reps: "90 sec", rest: 10 },
+      { name: "Burpee Sprint Elite", sets: 7, reps: 20, rest: 10 },
+      { name: "Speed Shuffle Complex", sets: 6, reps: "90 sec", rest: 15 },
+      { name: "All-Out Circuit Elite", sets: 6, reps: "90 sec", rest: 15 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 15,
+    fitnessGoal: "Muscle Gain",
+    planName: "Pro Agility Muscle Gain - 15 min",
+    exercises: [
+      { name: "Max Sled Agility", sets: 7, reps: 15, rest: 150 },
+      { name: "Heavy Weighted Ladder", sets: 6, reps: 18, rest: 120 },
+      { name: "Extreme Resistance Cuts", sets: 6, reps: 20, rest: 120 },
+      { name: "Heavy Parachute Complex", sets: 5, reps: 12, rest: 150 }
+    ]
+  },
+
+  // AGILITY - PRO - 30 MIN - ALL GOALS (546-550)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 30,
+    fitnessGoal: "Strength",
+    planName: "Pro Agility Strength - 30 min",
+    exercises: [
+      { name: "Elite Multi-Dir Cone Drills", sets: 12, reps: 20, rest: 45 },
+      { name: "Max Power Lateral Cuts", sets: 11, reps: 30, rest: 45 },
+      { name: "Reactive Sprint Complex", sets: 11, reps: 25, rest: 45 },
+      { name: "Professional Ladder Sequence", sets: 10, reps: 35, rest: 45 },
+      { name: "Elite T-Drill", sets: 9, reps: 20, rest: 60 },
+      { name: "Advanced Star Complex", sets: 8, reps: 20, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 30,
+    fitnessGoal: "Endurance",
+    planName: "Pro Agility Endurance - 30 min",
+    exercises: [
+      { name: "Elite Agility Circuit", sets: 14, reps: "2 min", rest: 10 },
+      { name: "Professional Lateral Patterns", sets: 12, reps: 80, rest: 10 },
+      { name: "Complex Multi-Plane Drills", sets: 11, reps: "150 sec", rest: 10 },
+      { name: "Advanced Movement Patterns", sets: 10, reps: "120 sec", rest: 10 },
+      { name: "Continuous Elite Flow", sets: 9, reps: "150 sec", rest: 15 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 30,
+    fitnessGoal: "Power",
+    planName: "Pro Agility Power - 30 min",
+    exercises: [
+      { name: "Maximum Sprint Explosions", sets: 14, reps: 15, rest: 120 },
+      { name: "Reactive Elite Cuts", sets: 12, reps: 20, rest: 120 },
+      { name: "Plyometric Agility Elite", sets: 11, reps: 28, rest: 120 },
+      { name: "Speed Box Multi-Dir Elite", sets: 10, reps: 22, rest: 120 },
+      { name: "Depth Jump to Sprint Elite", sets: 9, reps: 18, rest: 150 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 30,
+    fitnessGoal: "Fat Loss",
+    planName: "Pro Agility Fat Loss - 30 min",
+    exercises: [
+      { name: "Extreme Elite HIIT", sets: 14, reps: "120 sec", rest: 10 },
+      { name: "Burpee Sprint Elite", sets: 12, reps: 25, rest: 10 },
+      { name: "Speed Shuffle Complex", sets: 11, reps: "120 sec", rest: 15 },
+      { name: "All-Out Circuit Elite", sets: 10, reps: "120 sec", rest: 15 },
+      { name: "Battle Ropes", sets: 9, reps: "120 sec", rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 30,
+    fitnessGoal: "Muscle Gain",
+    planName: "Pro Agility Muscle Gain - 30 min",
+    exercises: [
+      { name: "Max Sled Agility", sets: 12, reps: 18, rest: 150 },
+      { name: "Heavy Weighted Ladder", sets: 11, reps: 22, rest: 120 },
+      { name: "Extreme Resistance Cuts", sets: 10, reps: 25, rest: 120 },
+      { name: "Heavy Parachute Complex", sets: 9, reps: 15, rest: 150 },
+      { name: "Prowler Elite Push", sets: 8, reps: "120 sec", rest: 150 }
+    ]
+  },
+
+  // AGILITY - PRO - 45 MIN - ALL GOALS (551-555)
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 45,
+    fitnessGoal: "Strength",
+    planName: "Pro Agility Strength - 45 min",
+    exercises: [
+      { name: "Elite Multi-Dir Cone Drills", sets: 16, reps: 25, rest: 45 },
+      { name: "Max Power Lateral Cuts", sets: 15, reps: 35, rest: 45 },
+      { name: "Reactive Sprint Complex", sets: 15, reps: 30, rest: 45 },
+      { name: "Professional Ladder Sequence", sets: 14, reps: 40, rest: 45 },
+      { name: "Elite T-Drill", sets: 13, reps: 22, rest: 60 },
+      { name: "Advanced Star Complex", sets: 12, reps: 22, rest: 60 },
+      { name: "Pro Figure 8", sets: 11, reps: 25, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 45,
+    fitnessGoal: "Endurance",
+    planName: "Pro Agility Endurance - 45 min",
+    exercises: [
+      { name: "Elite Agility Circuit", sets: 18, reps: "2 min", rest: 10 },
+      { name: "Professional Lateral Patterns", sets: 16, reps: 90, rest: 10 },
+      { name: "Complex Multi-Plane Drills", sets: 15, reps: "180 sec", rest: 10 },
+      { name: "Advanced Movement Patterns", sets: 14, reps: "150 sec", rest: 10 },
+      { name: "Continuous Elite Flow", sets: 13, reps: "180 sec", rest: 15 },
+      { name: "Non-Stop Ladder Series", sets: 12, reps: "210 sec", rest: 15 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 45,
+    fitnessGoal: "Power",
+    planName: "Pro Agility Power - 45 min",
+    exercises: [
+      { name: "Maximum Sprint Explosions", sets: 18, reps: 18, rest: 120 },
+      { name: "Reactive Elite Cuts", sets: 16, reps: 25, rest: 120 },
+      { name: "Plyometric Agility Elite", sets: 15, reps: 35, rest: 120 },
+      { name: "Speed Box Multi-Dir Elite", sets: 14, reps: 28, rest: 120 },
+      { name: "Depth Jump to Sprint Elite", sets: 13, reps: 22, rest: 150 },
+      { name: "Explosive Bounds Elite", sets: 12, reps: 30, rest: 120 },
+      { name: "Reactive Box Jump Complex", sets: 11, reps: 25, rest: 120 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 45,
+    fitnessGoal: "Fat Loss",
+    planName: "Pro Agility Fat Loss - 45 min",
+    exercises: [
+      { name: "Extreme Elite HIIT", sets: 18, reps: "150 sec", rest: 10 },
+      { name: "Burpee Sprint Elite", sets: 16, reps: 30, rest: 10 },
+      { name: "Speed Shuffle Complex", sets: 15, reps: "150 sec", rest: 15 },
+      { name: "All-Out Circuit Elite", sets: 14, reps: "180 sec", rest: 15 },
+      { name: "Battle Ropes", sets: 13, reps: "150 sec", rest: 30 },
+      { name: "Sprint Intervals", sets: 12, reps: "150 sec", rest: 30 },
+      { name: "Kettlebell Swings", sets: 11, reps: 90, rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 45,
+    fitnessGoal: "Muscle Gain",
+    planName: "Pro Agility Muscle Gain - 45 min",
+    exercises: [
+      { name: "Max Sled Agility", sets: 16, reps: 22, rest: 150 },
+      { name: "Heavy Weighted Ladder", sets: 15, reps: 28, rest: 120 },
+      { name: "Extreme Resistance Cuts", sets: 14, reps: 30, rest: 120 },
+      { name: "Heavy Parachute Complex", sets: 13, reps: 18, rest: 150 },
+      { name: "Prowler Elite Push", sets: 12, reps: "150 sec", rest: 150 },
+      { name: "Heavy Weighted Bounds", sets: 11, reps: 25, rest: 120 },
+      { name: "Max Resistance Sprints", sets: 10, reps: 20, rest: 120 }
+    ]
+  },
+
+  // AGILITY - PRO - 60 MIN - ALL GOALS (556-560) - FINAL PLANS!
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 60,
+    fitnessGoal: "Strength",
+    planName: "Pro Agility Strength - 60 min",
+    exercises: [
+      { name: "Elite Multi-Dir Cone Drills", sets: 19, reps: 28, rest: 45 },
+      { name: "Max Power Lateral Cuts", sets: 18, reps: 40, rest: 45 },
+      { name: "Reactive Sprint Complex", sets: 18, reps: 35, rest: 45 },
+      { name: "Professional Ladder Sequence", sets: 17, reps: 45, rest: 45 },
+      { name: "Elite T-Drill", sets: 16, reps: 25, rest: 60 },
+      { name: "Advanced Star Complex", sets: 15, reps: 25, rest: 60 },
+      { name: "Pro Figure 8", sets: 14, reps: 28, rest: 60 },
+      { name: "Elite Box Drill", sets: 13, reps: 25, rest: 60 },
+      { name: "Complex Movement Patterns", sets: 12, reps: 30, rest: 60 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 60,
+    fitnessGoal: "Endurance",
+    planName: "Pro Agility Endurance - 60 min",
+    exercises: [
+      { name: "Elite Agility Circuit", sets: 22, reps: "3 min", rest: 10 },
+      { name: "Professional Lateral Patterns", sets: 20, reps: 100, rest: 10 },
+      { name: "Complex Multi-Plane Drills", sets: 19, reps: "210 sec", rest: 10 },
+      { name: "Advanced Movement Patterns", sets: 18, reps: "180 sec", rest: 10 },
+      { name: "Continuous Elite Flow", sets: 17, reps: "210 sec", rest: 15 },
+      { name: "Non-Stop Ladder Series", sets: 16, reps: "240 sec", rest: 15 },
+      { name: "Endless Shuffle Pattern", sets: 15, reps: "210 sec", rest: 15 },
+      { name: "Carioca Elite", sets: 14, reps: 90, rest: 15 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 60,
+    fitnessGoal: "Power",
+    planName: "Pro Agility Power - 60 min",
+    exercises: [
+      { name: "Maximum Sprint Explosions", sets: 22, reps: 22, rest: 120 },
+      { name: "Reactive Elite Cuts", sets: 20, reps: 30, rest: 120 },
+      { name: "Plyometric Agility Elite", sets: 19, reps: 40, rest: 120 },
+      { name: "Speed Box Multi-Dir Elite", sets: 18, reps: 35, rest: 120 },
+      { name: "Depth Jump to Sprint Elite", sets: 17, reps: 25, rest: 150 },
+      { name: "Explosive Bounds Elite", sets: 16, reps: 35, rest: 120 },
+      { name: "Reactive Box Jump Complex", sets: 15, reps: 30, rest: 120 },
+      { name: "Altitude Landing Cuts", sets: 14, reps: 25, rest: 150 },
+      { name: "Multi-Dir Plyometric Series", sets: 13, reps: 30, rest: 120 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 60,
+    fitnessGoal: "Fat Loss",
+    planName: "Pro Agility Fat Loss - 60 min",
+    exercises: [
+      { name: "Extreme Elite HIIT", sets: 22, reps: "180 sec", rest: 10 },
+      { name: "Burpee Sprint Elite", sets: 20, reps: 35, rest: 10 },
+      { name: "Speed Shuffle Complex", sets: 19, reps: "180 sec", rest: 15 },
+      { name: "All-Out Circuit Elite", sets: 18, reps: "210 sec", rest: 15 },
+      { name: "Battle Ropes", sets: 17, reps: "180 sec", rest: 30 },
+      { name: "Sprint Intervals", sets: 16, reps: "180 sec", rest: 30 },
+      { name: "Kettlebell Swings", sets: 15, reps: 100, rest: 30 },
+      { name: "Prowler Push", sets: 14, reps: "150 sec", rest: 30 },
+      { name: "Sled Sprints", sets: 13, reps: "120 sec", rest: 30 }
+    ]
+  },
+  {
+    targetArea: "Agility",
+    fitnessLevel: "Pro",
+    durationMinutes: 60,
+    fitnessGoal: "Muscle Gain",
+    planName: "Pro Agility Muscle Gain - 60 min",
+    exercises: [
+      { name: "Max Sled Agility", sets: 20, reps: 25, rest: 150 },
+      { name: "Heavy Weighted Ladder", sets: 19, reps: 35, rest: 120 },
+      { name: "Extreme Resistance Cuts", sets: 18, reps: 35, rest: 120 },
+      { name: "Heavy Parachute Complex", sets: 17, reps: 22, rest: 150 },
+      { name: "Prowler Elite Push", sets: 16, reps: "180 sec", rest: 150 },
+      { name: "Heavy Weighted Bounds", sets: 15, reps: 30, rest: 120 },
+      { name: "Max Resistance Sprints", sets: 14, reps: 25, rest: 120 },
+      { name: "Heavy Resistance Ladder", sets: 13, reps: 30, rest: 120 },
+      { name: "Weighted Shuttle Elite", sets: 12, reps: 25, rest: 120 }
+    ]
+  },
+
 ];
 
 // Retrieval function
