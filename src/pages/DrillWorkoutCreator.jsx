@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 const drillCategories = [
   { value: 'batting', label: 'Batting', emoji: '🏏' },
@@ -60,7 +61,7 @@ export default function DrillWorkoutCreator() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
       toast.success('Workout saved! 🎯');
-      navigate('/Drills');
+      navigate(createPageUrl('Drills'));
     },
   });
 
