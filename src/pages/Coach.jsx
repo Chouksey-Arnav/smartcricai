@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Sparkles, Target, Brain, TrendingUp, Volume2, Mic, Info, X } from 'lucide-react';
+import { Send, Sparkles, Target, Brain, TrendingUp, Volume2, Mic, Info, X, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Link, useNavigate } from 'react-router-dom';
