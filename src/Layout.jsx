@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import BottomNav from '@/components/common/BottomNav';
 import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
@@ -8,6 +8,18 @@ const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'Qu
 
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
+
+  useEffect(() => {
+    // Load SmartTrick Coach script
+    const script = document.createElement('script');
+    script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   // Mock daily challenges - would come from backend
   const dailyChallenges = [

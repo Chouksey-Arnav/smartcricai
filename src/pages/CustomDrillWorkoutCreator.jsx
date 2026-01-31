@@ -30,8 +30,7 @@ export default function CustomDrillWorkoutCreator() {
   
   const [numDrills, setNumDrills] = useState(5);
   const [skillLevel, setSkillLevel] = useState('intermediate');
-  const [targetSkills, setTargetSkills] = useState([]);
-  const [additionalDetails, setAdditionalDetails] = useState('');
+  const [targetSkill, setTargetSkill] = useState('batting');
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
