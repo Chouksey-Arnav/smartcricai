@@ -195,16 +195,12 @@ export default function Layout({ children, currentPageName }) {
       
       {children}
       
-      {/* SmartTrick Coach Indicator */}
-      <div className="smarttrick-indicator bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 max-w-xs">
-        <span className="text-2xl">💬</span>
-        <div className="text-sm">
-          <div className="font-bold">AI Coach</div>
-          <div className="text-xs opacity-90">Ask me anything!</div>
+      {/* SmartTrick Coach Indicator - Minimal Arrow */}
+      <div className="smarttrick-indicator flex items-center gap-1">
+        <div className="text-xs font-semibold text-slate-700 bg-white px-2 py-1 rounded-lg shadow-md">
+          AI Coach
         </div>
-        <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-xs shadow-md">
-          ↓
-        </div>
+        <div className="text-2xl">↓</div>
       </div>
 
       {showNav && <BottomNav />}
