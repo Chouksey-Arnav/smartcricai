@@ -12,6 +12,17 @@ import QuickQuestions from '@/components/coach/QuickQuestions';
 import Header from '@/components/common/Header';
 import { findPremadeResponse } from '@/components/coach/PremadeResponses';
 
+// SmartTrick Coach Integration
+const loadSmartTrickCoach = () => {
+  if (typeof window !== 'undefined' && !window.smartTrickCoachLoaded) {
+    window.smartTrickCoachLoaded = true;
+    const script = document.createElement('script');
+    script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+};
+
 export default function Coach() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
@@ -23,6 +34,11 @@ export default function Coach() {
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
+
+  // Load SmartTrick Coach on mount
+  useEffect(() => {
+    loadSmartTrickCoach();
+  }, []);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
