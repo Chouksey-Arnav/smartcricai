@@ -40,7 +40,7 @@ const menuItems = [
   // Training & Skills
   { name: 'Skill Paths', icon: TrendingUp, page: 'SkillPaths', color: 'text-teal-500' },
   { name: 'Drills', icon: Target, page: 'Drills', color: 'text-purple-500' },
-  { name: 'Drills Creator', icon: Target, page: 'DrillsCreator', color: 'text-blue-500' },
+  { name: 'Drill Workout', icon: Target, page: 'DrillWorkoutCreator', color: 'text-blue-500' },
   
   // Fitness & Workouts
   { name: 'Workout Builder', icon: Dumbbell, page: 'WorkoutBuilder', color: 'text-purple-600' },
