@@ -30,11 +30,13 @@ export default function Premium() {
   const isPremium = subscription?.is_premium && new Date(subscription.subscription_end) > new Date();
 
   const premiumFeatures = [
-    { icon: Brain, title: 'AI Drill Recommendations', description: 'Get personalized drill suggestions based on your performance' },
-    { icon: Target, title: 'Advanced Analytics', description: 'Deep insights into your training patterns and progress' },
-    { icon: Sparkles, title: 'Unlimited AI Coaching', description: 'No limits on AI coach interactions' },
-    { icon: TrendingUp, title: 'Custom Training Plans', description: 'AI-generated weekly training schedules' },
-    { icon: Zap, title: 'Priority Support', description: 'Get help faster with premium support' },
+    { icon: Brain, title: 'AI Drill Recommendations', description: 'Get personalized drill suggestions based on your performance and goals' },
+    { icon: Target, title: 'Advanced Analytics', description: 'Deep insights into your training patterns, progress, and areas for improvement' },
+    { icon: Sparkles, title: 'Unlimited AI Coaching', description: 'No limits on AI coach interactions - chat as much as you need' },
+    { icon: TrendingUp, title: 'Custom Training Plans', description: 'AI-generated personalized weekly training schedules' },
+    { icon: Zap, title: 'Priority Support', description: 'Get help faster with premium support and exclusive features' },
+    { icon: Brain, title: 'Exclusive Mental Training', description: 'Access to advanced mental routines and visualization techniques' },
+    { icon: Target, title: 'Performance Tracking', description: 'Track your stats, compare with past performances, and see your growth' },
   ];
 
   const handleUpgrade = async (planType) => {
@@ -138,15 +140,32 @@ export default function Premium() {
             >
               <h3 className="text-xl font-bold text-slate-800 mb-4">Choose Your Plan:</h3>
               
+              {/* Free Plan */}
+              <div className="bg-white rounded-2xl shadow-md p-6 border-2 border-slate-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="text-xl font-bold text-slate-800">Free Plan</h4>
+                    <p className="text-slate-600 text-sm">Basic features</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-slate-800">$0.00</div>
+                    <div className="text-sm text-slate-500">forever</div>
+                  </div>
+                </div>
+                <div className="text-center py-2 text-sm text-slate-600">
+                  Limited AI coaching • Basic drills • Community features
+                </div>
+              </div>
+
               {/* Monthly Plan */}
-              <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-slate-200">
+              <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-amber-200">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="text-xl font-bold text-slate-800">Monthly Plan</h4>
                     <p className="text-slate-600 text-sm">Cancel anytime</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-slate-800">$9.99</div>
+                    <div className="text-3xl font-bold text-slate-800">$1.99</div>
                     <div className="text-sm text-slate-500">per month</div>
                   </div>
                 </div>
@@ -172,15 +191,15 @@ export default function Premium() {
               {/* Yearly Plan */}
               <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-xl p-6 border-4 border-amber-400 relative">
                 <div className="absolute top-3 right-3 bg-white text-amber-600 px-3 py-1 rounded-full text-xs font-bold">
-                  SAVE 40%
+                  BEST VALUE
                 </div>
                 <div className="flex items-center justify-between mb-4 text-white">
                   <div>
                     <h4 className="text-xl font-bold">Yearly Plan</h4>
-                    <p className="text-amber-100 text-sm">Best value</p>
+                    <p className="text-amber-100 text-sm">Save over 60%</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold">$59.99</div>
+                    <div className="text-3xl font-bold">$7.99</div>
                     <div className="text-sm text-amber-100">per year</div>
                   </div>
                 </div>
@@ -201,6 +220,47 @@ export default function Premium() {
                     </>
                   )}
                 </Button>
+              </div>
+
+              {/* Lifetime Plan */}
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-xl p-6 border-4 border-purple-400 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+                <div className="absolute top-3 right-3 bg-white text-purple-600 px-3 py-1 rounded-full text-xs font-bold z-10">
+                  MOST POPULAR
+                </div>
+                <div className="flex items-center justify-between mb-4 text-white relative z-10">
+                  <div>
+                    <h4 className="text-xl font-bold flex items-center gap-2">
+                      Lifetime Plan
+                      <Sparkles className="w-5 h-5" />
+                    </h4>
+                    <p className="text-purple-100 text-sm">One-time payment • Unlimited access</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold">$20.99</div>
+                    <div className="text-sm text-purple-100">forever</div>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => handleUpgrade('lifetime')}
+                  disabled={isProcessing}
+                  className="w-full h-12 bg-white text-purple-600 hover:bg-purple-50"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Get Lifetime Access
+                    </>
+                  )}
+                </Button>
+                <div className="mt-3 text-center text-xs text-purple-100">
+                  🔥 Pay once, train forever • No recurring fees
+                </div>
               </div>
             </motion.div>
 

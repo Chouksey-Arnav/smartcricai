@@ -47,6 +47,7 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AIDrillRecommendation from './pages/AIDrillRecommendation';
 import AIWorkout from './pages/AIWorkout';
 import Chat from './pages/Chat';
 import Coach from './pages/Coach';
@@ -71,6 +72,7 @@ import NewHome from './pages/NewHome';
 import Onboarding from './pages/Onboarding';
 import PlayerLookup from './pages/PlayerLookup';
 import PlayerProfile from './pages/PlayerProfile';
+import Premium from './pages/Premium';
 import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import QuizPlayer from './pages/QuizPlayer';
@@ -84,12 +86,11 @@ import Timer from './pages/Timer';
 import VideoAnalysis from './pages/VideoAnalysis';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
-import Premium from './pages/Premium';
-import AIDrillRecommendation from './pages/AIDrillRecommendation';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AIDrillRecommendation": AIDrillRecommendation,
     "AIWorkout": AIWorkout,
     "Chat": Chat,
     "Coach": Coach,
@@ -114,6 +115,7 @@ export const PAGES = {
     "Onboarding": Onboarding,
     "PlayerLookup": PlayerLookup,
     "PlayerProfile": PlayerProfile,
+    "Premium": Premium,
     "Profile": Profile,
     "Progress": Progress,
     "QuizPlayer": QuizPlayer,
@@ -127,8 +129,6 @@ export const PAGES = {
     "VideoAnalysis": VideoAnalysis,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
-    "Premium": Premium,
-    "AIDrillRecommendation": AIDrillRecommendation,
 }
 
 export const pagesConfig = {
