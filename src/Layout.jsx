@@ -159,10 +159,54 @@ export default function Layout({ children, currentPageName }) {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+
+        .scrollbar-visible::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .scrollbar-visible::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        
+        .scrollbar-visible::-webkit-scrollbar-thumb {
+          background: #10b981;
+          border-radius: 4px;
+        }
+        
+        .scrollbar-visible::-webkit-scrollbar-thumb:hover {
+          background: #059669;
+        }
+
+        /* SmartTrick Coach Indicator */
+        .smarttrick-indicator {
+          position: fixed;
+          bottom: 90px;
+          right: 20px;
+          z-index: 40;
+          animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
       `}</style>
       
       {children}
       
+      {/* SmartTrick Coach Indicator */}
+      <div className="smarttrick-indicator bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 max-w-xs">
+        <span className="text-2xl">💬</span>
+        <div className="text-sm">
+          <div className="font-bold">AI Coach</div>
+          <div className="text-xs opacity-90">Ask me anything!</div>
+        </div>
+        <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-xs shadow-md">
+          ↓
+        </div>
+      </div>
+
       {showNav && <BottomNav />}
     </div>
   );

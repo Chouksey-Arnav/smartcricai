@@ -71,19 +71,7 @@ export default function FitnessBuilder() {
   const isProUnlocked = (progress?.completed_drills?.length || 0) >= 20;
 
   const toggleBodyPart = (part) => {
-    if (part === 'full_body') {
-      setSelectedParts(['full_body']);
-    } else {
-      if (selectedParts.includes('full_body')) {
-        setSelectedParts([part]);
-      } else if (selectedParts.includes(part)) {
-        setSelectedParts(selectedParts.filter(p => p !== part));
-      } else if (selectedParts.length < 3) {
-        setSelectedParts([...selectedParts, part]);
-      } else {
-        toast.error('Maximum 3 body parts can be selected');
-      }
-    }
+    setSelectedParts([part]);
   };
 
   const generateWorkout = async () => {
@@ -205,7 +193,7 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
             className="space-y-4"
           >
             <div className="bg-white rounded-2xl p-5 shadow-lg">
-              <h3 className="font-bold text-slate-800 mb-3">Select Target Areas (max 3)</h3>
+              <h3 className="font-bold text-slate-800 mb-3">Select Target Area</h3>
               <div className="grid grid-cols-2 gap-3">
                 {bodyParts.map(part => (
                   <button
@@ -312,30 +300,6 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
                     )}
                   >
                     <div className="font-semibold text-slate-800">{dur.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Injured Area */}
-            <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
-              <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-amber-600" />
-                Any Injured Area?
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {['None', ...bodyParts.slice(0, -1).map(p => p.label)].map((area) => (
-                  <button
-                    key={area}
-                    onClick={() => setInjuredArea(area === 'None' ? null : area)}
-                    className={cn(
-                      "p-3 rounded-xl border-2 transition-all text-sm",
-                      injuredArea === (area === 'None' ? null : area)
-                        ? "border-amber-500 bg-amber-100"
-                        : "border-amber-200 hover:border-amber-300 bg-white"
-                    )}
-                  >
-                    {area}
                   </button>
                 ))}
               </div>
