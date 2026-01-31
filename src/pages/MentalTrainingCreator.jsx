@@ -4,11 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Brain, Sparkles, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { getPreGeneratedMentalRoutine } from '@/components/mental/PreGeneratedMentalRoutines';
 
 const focusAreas = [
   { value: 'match_anxiety', label: 'Match Day Anxiety', emoji: '😰' },
@@ -39,7 +39,6 @@ export default function MentalTrainingCreator() {
   const queryClient = useQueryClient();
   const [focusArea, setFocusArea] = useState('');
   const [sessionLength, setSessionLength] = useState(600);
-  const [description, setDescription] = useState('');
   const [generatedPlan, setGeneratedPlan] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -77,75 +76,14 @@ export default function MentalTrainingCreator() {
 
     setIsGenerating(true);
 
-    try {
-      const contextInfo = userProfile ? `
-User background:
-- Cricket role: ${userProfile.cricket_role}
-- Experience: ${userProfile.experience_years} years
-- Main goals: ${userProfile.main_goals?.join(', ')}
-- Weak areas: ${userProfile.weak_areas?.join(', ')}
-` : '';
-
-      const prompt = `Create a personalized mental training routine for a young cricket player.
-
-${contextInfo}
-
-Focus area: ${focusAreas.find(f => f.value === focusArea)?.label}
-Session length: ${sessionLength} seconds
-Additional context: ${description || 'None'}
-
-Generate a mental training plan in the following JSON format:
-{
-  "title": "Short, motivating title (max 50 chars)",
-  "description": "Brief description of what this routine helps with (max 150 chars)",
-  "steps": [
-    {
-      "instruction": "Clear, simple instruction for this step",
-      "duration_seconds": duration_for_this_step
-    }
-  ]
-}
-
-Requirements:
-- Create 4-6 steps that add up to exactly ${sessionLength} seconds
-- Make instructions warm, encouraging, age-appropriate (11-17)
-- Include breathing exercises, visualization, positive affirmations
-- Each step should be 60-180 seconds
-- Instructions should be specific and actionable
-- Focus on cricket-specific mental skills
-
-Return ONLY valid JSON, no other text.`;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            title: { type: 'string' },
-            description: { type: 'string' },
-            steps: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  instruction: { type: 'string' },
-                  duration_seconds: { type: 'number' }
-                },
-                required: ['instruction', 'duration_seconds']
-              }
-            }
-          },
-          required: ['title', 'description', 'steps']
-        }
-      });
-
-      setGeneratedPlan(response);
-    } catch (error) {
-      console.error('Error generating plan:', error);
-      toast.error('Failed to generate plan. Please try again.');
-    } finally {
+    // Simulate brief loading for better UX
+    setTimeout(() => {
+      // Get pre-generated routine - NO INTEGRATION CREDITS USED!
+      const routine = getPreGeneratedMentalRoutine(focusArea, sessionLength);
+      setGeneratedPlan(routine);
       setIsGenerating(false);
-    }
+      toast.success('Mental routine generated! 🧠');
+    }, 800);
   };
 
   const handleSave = () => {
@@ -226,18 +164,6 @@ Return ONLY valid JSON, no other text.`;
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Tell us more (Optional)
-                </label>
-                <Textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="e.g., I get nervous before big matches and need help calming down..."
-                  className="h-24 text-base"
-                />
               </div>
 
               <Button
