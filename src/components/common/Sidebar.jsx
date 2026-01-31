@@ -6,7 +6,6 @@ import {
   Menu,
   X,
   Home,
-  MessageCircle,
   Target,
   Brain,
   BookOpen,
@@ -22,6 +21,7 @@ import {
   Dumbbell,
   User,
   Sparkles,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
