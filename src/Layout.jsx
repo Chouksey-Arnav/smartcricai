@@ -9,137 +9,12 @@ const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'Qu
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
-    script.async = true;
-    document.body.appendChild(script);
-    
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
 
-  // Mock daily challenges - would come from backend
-  const dailyChallenges = [
-    {
-      id: 1,
-      type: 'drill',
-      title: 'Complete 3 Drills',
-      description: 'Finish any 3 practice drills today',
-      current: 1,
-      target: 3,
-      progress: 33,
-      completed: false,
-      reward: 50
-    },
-    {
-      id: 2,
-      type: 'quiz',
-      title: 'Quiz Master',
-      description: 'Take and pass 1 quiz with 80%+',
-      current: 0,
-      target: 1,
-      progress: 0,
-      completed: false,
-      reward: 30
-    },
-    {
-      id: 3,
-      type: 'streak',
-      title: 'Daily Streak',
-      description: 'Practice every day this week',
-      current: 3,
-      target: 7,
-      progress: 43,
-      completed: false,
-      reward: 100
-    },
-    {
-      id: 4,
-      type: 'mental',
-      title: 'Mental Focus',
-      description: 'Complete 2 mental routines',
-      current: 0,
-      target: 2,
-      progress: 0,
-      completed: false,
-      reward: 40
-    },
-    {
-      id: 5,
-      type: 'batting',
-      title: 'Batting Practice',
-      description: 'Complete 1 advanced batting drill',
-      current: 0,
-      target: 1,
-      progress: 0,
-      completed: false,
-      reward: 60
-    },
-    {
-      id: 6,
-      type: 'video',
-      title: 'Video Analysis',
-      description: 'Analyze your technique video',
-      current: 0,
-      target: 1,
-      progress: 0,
-      completed: false,
-      reward: 70
-    },
-    {
-      id: 7,
-      type: 'dismissal',
-      title: 'Learn from Mistakes',
-      description: 'Analyze 1 dismissal',
-      current: 0,
-      target: 1,
-      progress: 0,
-      completed: false,
-      reward: 45
-    },
-    {
-      id: 8,
-      type: 'scenario',
-      title: 'Scenario Practice',
-      description: 'Complete 3 match scenarios',
-      current: 0,
-      target: 3,
-      progress: 0,
-      completed: false,
-      reward: 55
-    },
-    {
-      id: 9,
-      type: 'coach',
-      title: 'Chat with Coach',
-      description: 'Ask AI Coach 3 questions',
-      current: 1,
-      target: 3,
-      progress: 33,
-      completed: false,
-      reward: 35
-    },
-    {
-      id: 10,
-      type: 'fitness',
-      title: 'Fitness Focus',
-      description: 'Complete 2 fitness drills',
-      current: 0,
-      target: 2,
-      progress: 0,
-      completed: false,
-      reward: 50
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Sidebar />
-      <NotificationBar challenges={dailyChallenges} />
+      <NotificationBar />
       <FloatingTimer />
       <style>{`
         :root {
@@ -196,33 +71,35 @@ export default function Layout({ children, currentPageName }) {
       
       {children}
       
-      {/* Smart Trick Coach Indicator */}
-      <div className="fixed bottom-[100px] right-5 z-50 flex items-center gap-2 animate-bounce">
-        <svg
-          width="60"
-          height="50"
-          viewBox="0 0 60 50"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="drop-shadow-lg"
-        >
-          <path
-            d="M10 10 Q 30 5, 50 10"
-            stroke="black"
-            strokeWidth="3"
-            strokeLinecap="round"
+      {/* Smart Trick Coach Indicator - Points to FloatingTimer */}
+      <div className="fixed bottom-[95px] right-[85px] z-[45] pointer-events-none">
+        <div className="flex flex-col items-end gap-1">
+          <svg
+            width="50"
+            height="50"
+            viewBox="0 0 50 50"
             fill="none"
-          />
-          <path
-            d="M50 10 L 45 5 M 50 10 L 45 15"
-            stroke="black"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-          />
-        </svg>
-        <div className="bg-black text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
-          Smart Trick Coach
+            xmlns="http://www.w3.org/2000/svg"
+            className="drop-shadow-lg animate-pulse"
+          >
+            <path
+              d="M 5 5 Q 25 5, 35 15 Q 40 25, 40 40"
+              stroke="black"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <path
+              d="M40 40 L 35 35 M 40 40 L 35 42"
+              stroke="black"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </svg>
+          <div className="bg-black text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg whitespace-nowrap mr-1">
+            Smart Trick Coach
+          </div>
         </div>
       </div>
 
