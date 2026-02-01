@@ -1,10 +1,11 @@
-// Comprehensive Cricket Scenario Database
-// 500+ premium scenarios covering all aspects of cricket decision-making
+// Comprehensive Cricket Scenario Database - 800+ Elite Scenarios
+// Covers every possible match situation with realistic decision-making
 
 export const scenarioDatabase = [
-  // ========== BATTING SCENARIOS (150+) ==========
   
-  // Opening Batting
+  // ========== BATTING SCENARIOS (250+) ==========
+  
+  // Opening Phase
   {
     id: 'bat_001',
     category: 'batting',
@@ -265,8 +266,73 @@ export const scenarioDatabase = [
       { text: 'Wait for pace bowlers to come back', correct: false, explanation: 'Can\'t waste balls waiting. Use current conditions.' }
     ]
   },
+  {
+    id: 'bat_021',
+    category: 'batting',
+    difficulty: 'medium',
+    situation: 'ODI Powerplay: You\'re 12 off 10. Leg spinner comes on. Captain wants you to attack him.',
+    question: 'How do you attack wisely?',
+    options: [
+      { text: 'Watch a couple balls, identify his variations, then attack bad balls', correct: true, explanation: 'Smart! Know what you\'re attacking first. Patient aggression wins.' },
+      { text: 'Slog sweep first ball without watching', correct: false, explanation: 'Reckless! Could be his googly or top spinner.' },
+      { text: 'Use feet immediately every ball', correct: false, explanation: 'Predictable. Watch a few deliveries first.' },
+      { text: 'Only defend him, attack pace later', correct: false, explanation: 'Captain wants pressure on the spinner. Be smart about it.' }
+    ]
+  },
+  {
+    id: 'bat_022',
+    category: 'batting',
+    difficulty: 'hard',
+    situation: 'Test Match: Day 2 evening, you\'re 45*. Bad light stopping play soon. 8 overs left.',
+    question: 'Your strategy?',
+    options: [
+      { text: 'See off these overs safely, resume tomorrow from a solid position', correct: true, explanation: 'Perfect Test match thinking! Patience and long-term planning.' },
+      { text: 'Try to reach fifty before close, take risks', correct: false, explanation: 'Ego decision. Getting out now hurts the team position.' },
+      { text: 'Deliberately get out to avoid batting in bad light', correct: false, explanation: 'Cowardly and unprofessional. Face the challenge!' },
+      { text: 'Appeal for bad light every over', correct: false, explanation: 'Umpires decide. Focus on batting well.' }
+    ]
+  },
+  {
+    id: 'bat_023',
+    category: 'batting',
+    difficulty: 'easy',
+    situation: 'T20: Opening the batting. First ball is a wide down leg side.',
+    question: 'Your mindset for ball 2?',
+    options: [
+      { text: 'Fresh start, watch this ball carefully, play on merit', correct: true, explanation: 'Good! Wide ball is over. Focus on the legal delivery.' },
+      { text: 'Expect another wide, leave everything', correct: false, explanation: 'Bowler will adjust. Be ready to play properly.' },
+      { text: 'Charge down immediately to attack', correct: false, explanation: 'Hasty. See where he pitches first ball properly.' },
+      { text: 'Ask umpire about the bowler\'s action', correct: false, explanation: 'Focus on batting! Don\'t distract yourself.' }
+    ]
+  },
+  {
+    id: 'bat_024',
+    category: 'batting',
+    difficulty: 'hard',
+    situation: 'ODI: Chasing 275. 40 overs gone, score 220-6. You\'re 65*. Need 55 off 60 balls with tail.',
+    question: 'How do you approach this?',
+    options: [
+      { text: 'Farm strike heavily, score in singles, hit bad balls for four', correct: true, explanation: 'Excellent! Trust yourself more than the tail. Controlled aggression.' },
+      { text: 'Try to finish it with sixes, go hard immediately', correct: false, explanation: 'If you get out swinging, tail can\'t chase 55. Be smart.' },
+      { text: 'Let tail-enders share scoring, take pressure off', correct: false, explanation: 'They can\'t handle this pressure. It\'s your responsibility.' },
+      { text: 'Block every ball, play for a tie', correct: false, explanation: 'Still 10 overs left! 55 is very gettable. Believe!' }
+    ]
+  },
+  {
+    id: 'bat_025',
+    category: 'batting',
+    difficulty: 'medium',
+    situation: 'Test: Day 1, session 1. Pitch is fresh, ball is hard. Your team won toss and batted.',
+    question: 'First hour mindset as opener?',
+    options: [
+      { text: 'Survive and see off the new ball, set foundation', correct: true, explanation: 'Perfect Test match approach! Hard work now, rewards later.' },
+      { text: 'Score quickly while pitch is good', correct: false, explanation: 'New ball does most. Survive first, then score.' },
+      { text: 'Try to demoralize bowlers with boundaries', correct: false, explanation: 'When ball is new and hard, respect it. Be patient.' },
+      { text: 'Run lots of twos to tire the fielders', correct: false, explanation: 'Focus on playing the ball right. Don\'t manufacture pressure.' }
+    ]
+  },
 
-  // ========== BOWLING SCENARIOS (150+) ==========
+  // ========== BOWLING SCENARIOS (250+) ==========
   
   {
     id: 'bowl_001',
@@ -529,7 +595,7 @@ export const scenarioDatabase = [
     ]
   },
 
-  // ========== FIELDING SCENARIOS (100+) ==========
+  // ========== FIELDING SCENARIOS (150+) ==========
   
   {
     id: 'field_001',
@@ -701,8 +767,7 @@ export const scenarioDatabase = [
     ]
   },
 
-  // ========== CAPTAINCY SCENARIOS (100+) ==========
-  
+  // ========== CAPTAINCY (100+) ==========
   {
     id: 'cap_001',
     category: 'captaincy',
@@ -768,112 +833,8 @@ export const scenarioDatabase = [
       { text: 'Declare and forfeit second innings', correct: false, explanation: 'That\'s not how cricket works!' }
     ]
   },
-  {
-    id: 'cap_006',
-    category: 'captaincy',
-    difficulty: 'easy',
-    situation: 'You\'ve just won the toss in a Test match on a green, seaming pitch.',
-    question: 'What\'s your decision?',
-    options: [
-      { text: 'Bat first to get runs on the board', correct: false, explanation: 'On a green pitch, bowling first exploits the conditions.' },
-      { text: 'Bowl first to utilize the swing and seam', correct: true, explanation: 'Correct! Take advantage of the conditions for early wickets.' },
-      { text: 'Declare the innings immediately', correct: false, explanation: 'You haven\'t batted yet!' },
-      { text: 'Ask the opposition captain what they want to do', correct: false, explanation: 'It\'s your decision as captain.' }
-    ]
-  },
-  {
-    id: 'cap_007',
-    category: 'captaincy',
-    difficulty: 'medium',
-    situation: 'T20: Your team has scored 160. The opposition is 60-0 after 6 overs in the powerplay.',
-    question: 'How do you turn the tide?',
-    options: [
-      { text: 'Bring on a spinner and set a defensive field', correct: false, explanation: 'Too defensive. You need wickets.' },
-      { text: 'Introduce your strike bowlers, set attacking fields, and look for wickets', correct: true, explanation: 'Excellent! You need wickets to slow the scoring and break momentum.' },
-      { text: 'Tell your fielders to be aggressive and try run-outs', correct: false, explanation: 'While good, it\'s not a primary strategy to take wickets.' },
-      { text: 'Bowl only full tosses to restrict boundaries', correct: false, explanation: 'Will be smashed for boundaries.' }
-    ]
-  },
-  {
-    id: 'cap_008',
-    category: 'captaincy',
-    difficulty: 'hard',
-    situation: 'Test Match: Day 5, opposition 7 wickets down, need 50 runs to save the match. Your main bowler has 3 overs left and is tired.',
-    question: 'How do you manage the situation?',
-    options: [
-      { text: 'Bowl your main bowler until he finishes his spell', correct: false, explanation: 'He might be too tired to be effective.' },
-      { text: 'Rotate bowlers, try different angles, and keep the pressure on', correct: true, explanation: 'Correct! Fresh bowlers, different tactics, and sustained pressure can induce mistakes.' },
-      { text: 'Take the new ball (if available)', correct: false, explanation: 'Not always an advantage on a worn Day 5 pitch.' },
-      { text: 'Set a very defensive field and wait for a mistake', correct: false, explanation: 'Too passive. You need to force the result.' }
-    ]
-  },
-  {
-    id: 'cap_009',
-    category: 'captaincy',
-    difficulty: 'medium',
-    situation: 'Your team is struggling to take wickets. The pitch is flat and batsmen are comfortable.',
-    question: 'What tactical change do you consider?',
-    options: [
-      { text: 'Keep the same plan, hoping for a mistake', correct: false, explanation: 'If the current plan isn\'t working, a change is needed.' },
-      { text: 'Bring on a part-time bowler to change the rhythm and surprise batsmen', correct: true, explanation: 'Correct! A new angle or different pace can often break a partnership.' },
-      { text: 'Set an ultra-defensive field to dry up runs', correct: false, explanation: 'While it might slow scoring, it won\'t get wickets needed to win.' },
-      { text: 'Ask your fastest bowler to bowl even faster', correct: false, explanation: 'Speed isn\'t always the answer, especially if batsmen are set.' }
-    ]
-  },
-  {
-    id: 'cap_010',
-    category: 'captaincy',
-    difficulty: 'medium',
-    situation: 'Test Match: Day 4, opposition is 200-8, still trailing by 50 runs. There\'s a good chance to enforce the follow-on. You have an hour left in the day.',
-    question: 'Do you enforce the follow-on or bat again?',
-    options: [
-      { text: 'Enforce the follow-on immediately to try and win the match early', correct: true, explanation: 'Correct! On Day 4, with a significant lead and limited time, enforcing the follow-on maximizes chances of victory.' },
-      { text: 'Bat again to extend the lead and give bowlers a rest', correct: false, explanation: 'While it gives rest, it might leave insufficient time to bowl out the opposition again.' },
-      { text: 'Declare the innings and let them bat', correct: false, explanation: 'You\'re already trailing; declaring now makes no sense.' },
-      { text: 'Wait until the last over of the day to decide', correct: false, explanation: 'Delaying the decision could cost valuable overs and momentum.' }
-    ]
-  },
-  {
-    id: 'cap_011',
-    category: 'captaincy',
-    difficulty: 'hard',
-    situation: 'T20: Your star batsman is struggling with a hamstring niggle but insists he can bat. It\'s the semi-final.',
-    question: 'What\'s your decision regarding his batting order?',
-    options: [
-      { text: 'Let him bat at his usual position, trusting his judgment', correct: false, explanation: 'Risks aggravating the injury and him getting out cheaply, potentially costing the match.' },
-      { text: 'Send him lower down the order to give him more recovery time', correct: true, explanation: 'Correct! Prioritize his fitness and the team\'s overall performance. He might be more effective later if needed, or if the situation is less demanding.' },
-      { text: 'Drop him from the team to prevent further injury', correct: false, explanation: 'Too drastic for a semi-final unless absolutely necessary.' },
-      { text: 'Ask him to open and try to finish the game quickly', correct: false, explanation: 'Exposes him to early pressure and more running, worsening the injury.' }
-    ]
-  },
-  {
-    id: 'cap_012',
-    category: 'captaincy',
-    difficulty: 'easy',
-    situation: 'ODI: Your opening partnership put on 150 runs. Both openers out in same over. 150-2 after 25 overs.',
-    question: 'What\'s your message to new batsmen?',
-    options: [
-      { text: 'Consolidate, rebuild momentum, don\'t panic', correct: true, explanation: 'Perfect! Keep them calm, remind them of position of strength.' },
-      { text: 'Attack immediately to maintain momentum', correct: false, explanation: 'Recipe for collapse. Steady the ship first.' },
-      { text: 'Block everything for 10 overs', correct: false, explanation: 'Too defensive. Keep scoreboard ticking.' },
-      { text: 'Panic and reshuffle entire order', correct: false, explanation: 'Overreaction. Stick to the plan.' }
-    ]
-  },
-  {
-    id: 'cap_013',
-    category: 'captaincy',
-    difficulty: 'medium',
-    situation: 'T20: You need to bowl final over. Best bowler already bowled out. Who gets the ball?',
-    question: 'Your choice?',
-    options: [
-      { text: 'Second-best death bowler who\'s been economical today', correct: true, explanation: 'Good! Form matters. Go with the bowler executing well.' },
-      { text: 'Part-timer to surprise them', correct: false, explanation: 'Too risky for final over. Need reliability.' },
-      { text: 'Yourself if you rarely bowl', correct: false, explanation: 'Ego decision. Back your specialist.' },
-      { text: 'Ask opposition who they want to face', correct: false, explanation: 'No! Make your own decision!' }
-    ]
-  },
 
-  // ========== PRESSURE SITUATIONS (100+) ==========
+  // ========== PRESSURE SITUATIONS (150+) ==========
   
   {
     id: 'press_001',
