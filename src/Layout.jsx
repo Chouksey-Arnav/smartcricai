@@ -83,14 +83,14 @@ export default function Layout({ children, currentPageName }) {
             className="drop-shadow-lg animate-pulse"
           >
             <path
-              d="M 5 5 Q 25 5, 35 15 Q 40 25, 40 40"
+              d="M5 5 C 20 5, 30 10, 35 25"
               stroke="black"
               strokeWidth="2.5"
               strokeLinecap="round"
               fill="none"
             />
             <path
-              d="M40 40 L 35 35 M 40 40 L 35 42"
+              d="M35 25 L 30 20 M35 25 L 32 26"
               stroke="black"
               strokeWidth="2.5"
               strokeLinecap="round"
