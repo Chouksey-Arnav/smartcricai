@@ -105,8 +105,8 @@ export default function Sidebar() {
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-emerald-500 to-teal-500 p-6 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-white">Pro Cricket AI</h2>
-                <p className="text-emerald-100 text-sm">Elite Cricket Coaching</p>
+                <h2 className="text-xl font-bold text-white">Smart Crick AI</h2>
+                <p className="text-emerald-100 text-sm">Smart Trick Coach</p>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
