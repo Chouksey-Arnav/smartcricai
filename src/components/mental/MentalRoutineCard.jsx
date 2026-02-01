@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Play, Heart, Target, RefreshCw, Sparkles } from 'lucide-react';
+import { Clock, Play, Heart, Target, RefreshCw, Sparkles, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -26,7 +26,7 @@ const categoryConfig = {
   },
 };
 
-export default function MentalRoutineCard({ routine, onClick }) {
+export default function MentalRoutineCard({ routine, onClick, isLocked }) {
   const config = categoryConfig[routine.category] || categoryConfig.focus;
   const Icon = config.icon;
 
@@ -36,10 +36,16 @@ export default function MentalRoutineCard({ routine, onClick }) {
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "p-4 rounded-2xl border-2 cursor-pointer transition-all",
-        config.bgColor
+        "relative p-4 rounded-2xl border-2 cursor-pointer transition-all",
+        config.bgColor,
+        isLocked && "opacity-60"
       )}
     >
+      {isLocked && (
+        <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full p-2 shadow-lg">
+          <Lock className="w-4 h-4 text-white" />
+        </div>
+      )}
       <div className="flex items-start gap-3">
         <div className={cn(
           "w-12 h-12 rounded-xl flex items-center justify-center text-white",
@@ -55,13 +61,20 @@ export default function MentalRoutineCard({ routine, onClick }) {
           </p>
           
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1 text-sm text-slate-500">
-              <Clock className="w-4 h-4" />
-              {Math.round(routine.duration_seconds / 60)} min
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="flex items-center gap-1 text-sm text-slate-500">
+                <Clock className="w-4 h-4" />
+                {Math.round(routine.duration_seconds / 60)} min
+              </span>
+              {isLocked && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                  Premium
+                </span>
+              )}
+            </div>
             
             <div className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center text-white",
+              "w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0",
               config.color
             )}>
               <Play className="w-4 h-4 ml-0.5" />

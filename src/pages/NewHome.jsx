@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -59,9 +59,11 @@ function getCricketJoke() {
 export default function NewHome() {
   const [greeting, setGreeting] = useState('');
   const [todayConfidence, setTodayConfidence] = useState(null);
+  const [hasCheckedOnboarding, setHasCheckedOnboarding] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
     staleTime: 300000,
@@ -81,7 +83,7 @@ export default function NewHome() {
     retry: 3,
   });
 
-  const { data: userProfile } = useQuery({
+  const { data: userProfile, isLoading: profileLoading } = useQuery({
     queryKey: ['userProfile', user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
@@ -163,6 +165,18 @@ export default function NewHome() {
     const saved = localStorage.getItem(`confidence_${today}`);
     if (saved) setTodayConfidence(saved);
   }, []);
+
+  // First-time user redirect to Get to Know You
+  useEffect(() => {
+    if (!userLoading && !profileLoading && user && !hasCheckedOnboarding) {
+      setHasCheckedOnboarding(true);
+      
+      // Check if user has completed the quiz
+      if (!userProfile || !userProfile.quiz_completed) {
+        navigate(createPageUrl('GetToKnowYou'));
+      }
+    }
+  }, [user, userProfile, userLoading, profileLoading, hasCheckedOnboarding, navigate]);
 
   const displayName = progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
 

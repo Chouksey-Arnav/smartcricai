@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Dumbbell, ChevronRight, Video } from 'lucide-react';
+import { Clock, Dumbbell, ChevronRight, Video, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -23,7 +23,7 @@ const levelColors = {
   advanced: 'bg-red-100 text-red-700'
 };
 
-export default function DrillCard({ drill, onClick, isCompleted }) {
+export default function DrillCard({ drill, onClick, isCompleted, isPremium, isLocked }) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -32,10 +32,16 @@ export default function DrillCard({ drill, onClick, isCompleted }) {
       className={cn(
         "relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300",
         categoryBgs[drill.category],
-        isCompleted && "ring-2 ring-emerald-400"
+        isCompleted && "ring-2 ring-emerald-400",
+        isLocked && "opacity-60"
       )}
     >
-      {isCompleted && (
+      {isLocked && (
+        <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full p-2 shadow-lg">
+          <Lock className="w-4 h-4 text-white" />
+        </div>
+      )}
+      {isCompleted && !isLocked && (
         <div className="absolute top-3 right-3 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
           <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -59,7 +65,7 @@ export default function DrillCard({ drill, onClick, isCompleted }) {
             )}
           </div>
           
-          <div className="flex items-center gap-3 text-sm text-slate-500">
+          <div className="flex items-center gap-3 text-sm text-slate-500 flex-wrap">
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               {drill.duration_minutes} min
@@ -70,6 +76,11 @@ export default function DrillCard({ drill, onClick, isCompleted }) {
             )}>
               {drill.skill_level}
             </span>
+            {isLocked && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                Premium
+              </span>
+            )}
           </div>
         </div>
         

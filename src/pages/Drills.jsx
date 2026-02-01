@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import DrillCard from '@/components/drills/DrillCard';
 import CategoryFilter from '@/components/drills/CategoryFilter';
+import toast from 'react-hot-toast';
 
 export default function Drills() {
   const navigate = useNavigate();
@@ -30,6 +31,18 @@ export default function Drills() {
     staleTime: 300000,
     retry: 3,
   });
+
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      return subs[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const isPremium = premiumStatus?.is_premium || false;
 
   const { data: progress } = useQuery({
     queryKey: ['userProgress', user?.email],
@@ -81,20 +94,33 @@ export default function Drills() {
           <div className={`h-1 w-8 rounded-full ${color}`} />
           <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">{title}</h3>
         </div>
-        {drills.map((drill, index) => (
-          <motion.div
-            key={drill.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-          >
-            <DrillCard
-              drill={drill}
-              onClick={() => navigate(createPageUrl(`DrillDetail?id=${drill.id}`))}
-              isCompleted={completedDrillIds.includes(drill.id)}
-            />
-          </motion.div>
-        ))}
+        {drills.map((drill, index) => {
+          const isLocked = drill.is_premium && !isPremium;
+          return (
+            <motion.div
+              key={drill.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <DrillCard
+                drill={drill}
+                onClick={() => {
+                  if (isLocked) {
+                    toast('Unlock with Premium! 🔓', {
+                      icon: '💎',
+                      duration: 3000,
+                    });
+                  } else {
+                    navigate(createPageUrl(`DrillDetail?id=${drill.id}`));
+                  }
+                }}
+                isCompleted={completedDrillIds.includes(drill.id)}
+                isLocked={isLocked}
+              />
+            </motion.div>
+          );
+        })}
       </div>
     );
   };

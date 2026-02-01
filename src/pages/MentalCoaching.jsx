@@ -8,6 +8,7 @@ import { Brain, Sparkles, Target, RefreshCw, Heart } from 'lucide-react';
 import Header from '@/components/common/Header';
 import MentalRoutineCard from '@/components/mental/MentalRoutineCard';
 import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
 
 const categories = [
   { id: 'all', label: 'All', icon: Brain },
@@ -59,10 +60,27 @@ export default function MentalCoaching() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
 
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
   const { data: routines = [], isLoading } = useQuery({
     queryKey: ['mentalRoutines'],
     queryFn: () => base44.entities.MentalRoutine.list(),
   });
+
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      return subs[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const isPremium = premiumStatus?.is_premium || false;
 
   const filteredRoutines = selectedCategory === 'all' 
     ? routines 
@@ -155,19 +173,32 @@ export default function MentalCoaching() {
               <p className="text-slate-500">No routines found in this category.</p>
             </motion.div>
           ) : (
-            sortedRoutines.map((routine, index) => (
-              <motion.div
-                key={routine.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <MentalRoutineCard
-                  routine={routine}
-                  onClick={() => navigate(createPageUrl(`MentalRoutinePlayer?id=${routine.id}`))}
-                />
-              </motion.div>
-            ))
+            sortedRoutines.map((routine, index) => {
+              const isLocked = routine.is_premium && !isPremium;
+              return (
+                <motion.div
+                  key={routine.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <MentalRoutineCard
+                    routine={routine}
+                    onClick={() => {
+                      if (isLocked) {
+                        toast('Unlock with Premium! 🔓', {
+                          icon: '💎',
+                          duration: 3000,
+                        });
+                      } else {
+                        navigate(createPageUrl(`MentalRoutinePlayer?id=${routine.id}`));
+                      }
+                    }}
+                    isLocked={isLocked}
+                  />
+                </motion.div>
+              );
+            })
           )}
         </div>
       </div>
