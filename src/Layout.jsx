@@ -196,7 +196,35 @@ export default function Layout({ children, currentPageName }) {
       
       {children}
       
-      {/* AI Coach indicator removed - script not active */}
+      {/* Smart Trick Coach Indicator */}
+      <div className="fixed bottom-[100px] right-5 z-50 flex items-center gap-2 animate-bounce">
+        <svg
+          width="60"
+          height="50"
+          viewBox="0 0 60 50"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="drop-shadow-lg"
+        >
+          <path
+            d="M10 10 Q 30 5, 50 10"
+            stroke="black"
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M50 10 L 45 5 M 50 10 L 45 15"
+            stroke="black"
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </svg>
+        <div className="bg-black text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+          Smart Trick Coach
+        </div>
+      </div>
 
       {showNav && <BottomNav />}
     </div>
