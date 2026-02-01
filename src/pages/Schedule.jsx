@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Calendar, Trash2, Heart, Dumbbell, BookOpen } from 'lucide-react';
+import { Plus, Trash2, Heart, Dumbbell, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,16 +11,11 @@ import toast from 'react-hot-toast';
 
 export default function Schedule() {
   const [showForm, setShowForm] = useState(false);
-  const [editingWorkout, setEditingWorkout] = useState(null);
-  const [workoutData, setWorkoutData] = useState({
-    name: '',
-    drills: [],
-    scheduled_date: '',
+  const [activityData, setActivityData] = useState({
+    title: '',
+    date: new Date().toISOString().split('T')[0],
     notes: ''
   });
-  const [selectedDrill, setSelectedDrill] = useState('');
-  const [sets, setSets] = useState(3);
-  const [reps, setReps] = useState(10);
 
   const queryClient = useQueryClient();
 
@@ -29,40 +24,84 @@ export default function Schedule() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: allDrills = [] } = useQuery({
-    queryKey: ['drills'],
-    queryFn: () => base44.entities.Drill.list(),
-  });
-
-  const { data: scheduledWorkouts = [] } = useQuery({
-    queryKey: ['scheduledWorkouts', user?.email],
+  const { data: activities = [] } = useQuery({
+    queryKey: ['userActivities', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      // This would be a ScheduledWorkout entity
-      return [];
+      const prefs = await base44.entities.UserPreferences.filter({ 
+        user_email: user.email,
+        preference_type: { $in: ['schedule_activity', 'confidence_checkin'] }
+      });
+      return prefs;
     },
     enabled: !!user?.email,
   });
 
-  const addDrillToWorkout = () => {
-    if (!selectedDrill) return;
-    const drill = allDrills.find(d => d.id === selectedDrill);
-    if (!drill) return;
+  const addActivityMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.email || !activityData.title || !activityData.date) return;
+      
+      await base44.entities.UserPreferences.create({
+        user_email: user.email,
+        preference_type: 'schedule_activity',
+        preference_value: JSON.stringify({
+          title: activityData.title,
+          notes: activityData.notes,
+          date: activityData.date
+        })
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['userActivities']);
+      toast.success('Activity logged!');
+      setActivityData({ title: '', date: new Date().toISOString().split('T')[0], notes: '' });
+      setShowForm(false);
+    },
+  });
 
-    setWorkoutData(prev => ({
-      ...prev,
-      drills: [...prev.drills, { ...drill, sets, reps }]
-    }));
-    setSelectedDrill('');
-    setSets(3);
-    setReps(10);
+  const deleteActivityMutation = useMutation({
+    mutationFn: async (activityId) => {
+      await base44.entities.UserPreferences.delete(activityId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['userActivities']);
+      toast.success('Activity removed');
+    },
+  });
+
+  const handleAddActivity = () => {
+    if (!activityData.title) {
+      toast.error('Please enter activity title');
+      return;
+    }
+    addActivityMutation.mutate();
   };
 
-  const removeDrill = (index) => {
-    setWorkoutData(prev => ({
-      ...prev,
-      drills: prev.drills.filter((_, i) => i !== index)
-    }));
+  const getCurrentWeekDates = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const diff = today.getDate() - dayOfWeek;
+    const sunday = new Date(today.setDate(diff));
+    
+    const week = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sunday);
+      date.setDate(sunday.getDate() + i);
+      week.push(date);
+    }
+    return week;
+  };
+
+  const getActivitiesForDate = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    return activities.filter(activity => {
+      try {
+        const value = JSON.parse(activity.preference_value);
+        return value.date === dateStr;
+      } catch {
+        return false;
+      }
+    });
   };
 
   const getActivityIcon = (type) => {
@@ -161,7 +200,7 @@ export default function Schedule() {
           <h3 className="font-bold text-xl text-slate-800 mb-4">This Week</h3>
           
           <div className="grid grid-cols-7 gap-2">
-            {weekDates.map((date, index) => {
+            {getCurrentWeekDates().map((date, index) => {
               const dayActivities = getActivitiesForDate(date);
               const isToday = date.toDateString() === new Date().toDateString();
               
