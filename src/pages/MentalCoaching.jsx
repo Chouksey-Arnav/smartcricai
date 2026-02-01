@@ -2,21 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Brain, Sparkles, Target, RefreshCw, Heart } from 'lucide-react';
+import { Brain, Sparkles, Target, RefreshCw, Heart, Trash2 } from 'lucide-react';
 import Header from '@/components/common/Header';
 import MentalRoutineCard from '@/components/mental/MentalRoutineCard';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
-
-const categories = [
-  { id: 'all', label: 'All', icon: Brain },
-  { id: 'confidence', label: 'Confidence', icon: Sparkles },
-  { id: 'focus', label: 'Focus', icon: Target },
-  { id: 'recovery', label: 'Recovery', icon: RefreshCw },
-  { id: 'pre-performance', label: 'Pre-Match', icon: Heart },
-];
 
 const mindfulnessQuotes = [
   "The mind is everything. What you think, you become.",
@@ -58,7 +51,11 @@ function getMindfulnessQuote() {
 
 export default function MentalCoaching() {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const queryClient = useQueryClient();
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get('tab') || 'all';
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -82,12 +79,34 @@ export default function MentalCoaching() {
 
   const isPremium = premiumStatus?.is_premium || false;
 
-  const filteredRoutines = selectedCategory === 'all' 
-    ? routines 
-    : routines.filter(r => r.category === selectedCategory);
+  const { data: savedRoutines = [] } = useQuery({
+    queryKey: ['customMentalRoutines', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const prefs = await base44.entities.UserPreferences.filter({
+        user_email: user.email,
+        preference_type: 'custom_mental_routine'
+      });
+      return prefs.map(p => {
+        const routine = JSON.parse(p.preference_value);
+        return { ...routine, id: p.id };
+      });
+    },
+    enabled: !!user?.email,
+  });
+
+  const deleteRoutineMutation = useMutation({
+    mutationFn: async (routineId) => {
+      await base44.entities.UserPreferences.delete(routineId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customMentalRoutines'] });
+      toast.success('Routine deleted');
+    },
+  });
 
   // Sort by duration (easier/shorter first)
-  const sortedRoutines = [...filteredRoutines].sort((a, b) => 
+  const sortedRoutines = [...routines].sort((a, b) => 
     (a.duration_seconds || 0) - (b.duration_seconds || 0)
   );
 
@@ -132,75 +151,146 @@ export default function MentalCoaching() {
           </p>
         </motion.div>
 
-        {/* Categories */}
-        <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide mb-4">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <motion.button
-                key={cat.id}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all",
-                  selectedCategory === cat.id
-                    ? "bg-purple-500 text-white shadow-lg shadow-purple-200"
-                    : "bg-white text-slate-600 border border-slate-200"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="text-sm font-medium">{cat.label}</span>
-              </motion.button>
-            );
-          })}
+        {/* Tab Switcher */}
+        <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-lg mb-4">
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'all'
+                ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Brain className="w-5 h-5" />
+            All Routines
+          </button>
+          <button
+            onClick={() => setActiveTab('saved')}
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'saved'
+                ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Heart className="w-5 h-5" />
+            My Routines
+          </button>
         </div>
 
-        {/* Routines List */}
-        <div className="space-y-3">
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-28 bg-slate-100 rounded-2xl animate-pulse" />
-              ))}
-            </div>
-          ) : filteredRoutines.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <Brain className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">No routines found in this category.</p>
-            </motion.div>
-          ) : (
-            sortedRoutines.map((routine, index) => {
-              const isLocked = routine.is_premium && !isPremium;
-              return (
+        {activeTab === 'all' ? (
+          <div className="space-y-3">
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-28 bg-slate-100 rounded-2xl animate-pulse" />
+                ))}
+              </div>
+            ) : sortedRoutines.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <Brain className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No routines found.</p>
+              </motion.div>
+            ) : (
+              sortedRoutines.map((routine, index) => {
+                const isLocked = routine.is_premium && !isPremium;
+                return (
+                  <motion.div
+                    key={routine.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <MentalRoutineCard
+                      routine={routine}
+                      onClick={() => {
+                        if (isLocked) {
+                          toast('Unlock with Premium! 🔓', {
+                            icon: '💎',
+                            duration: 3000,
+                          });
+                        } else {
+                          navigate(createPageUrl(`MentalRoutinePlayer?id=${routine.id}`));
+                        }
+                      }}
+                      isLocked={isLocked}
+                    />
+                  </motion.div>
+                );
+              })
+            )}
+          </div>
+        ) : (
+          // Saved Routines Tab
+          <div className="space-y-4">
+            {savedRoutines.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-3xl p-8 text-center shadow-lg"
+              >
+                <Heart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                <h3 className="font-bold text-slate-800 text-lg mb-2">No Saved Routines Yet</h3>
+                <p className="text-slate-600 text-sm mb-6">
+                  Create and save custom mental routines to access them anytime
+                </p>
+                <Button
+                  onClick={() => navigate(createPageUrl('MentalTrainingCreator'))}
+                  className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+                >
+                  Create Routine
+                </Button>
+              </motion.div>
+            ) : (
+              savedRoutines.map((routine, index) => (
                 <motion.div
                   key={routine.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-2xl p-5 shadow-lg border-2 border-purple-100"
                 >
-                  <MentalRoutineCard
-                    routine={routine}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-slate-800 text-lg mb-1">{routine.title}</h3>
+                      <p className="text-sm text-slate-600">{routine.description}</p>
+                      <p className="text-xs text-purple-600 mt-1">
+                        {Math.floor(routine.duration_seconds / 60)} minutes
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-6 h-6 text-purple-500 fill-purple-500" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm('Delete this routine? This cannot be undone.')) {
+                            deleteRoutineMutation.mutate(routine.id);
+                          }
+                        }}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5 text-red-500" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <Button
                     onClick={() => {
-                      if (isLocked) {
-                        toast('Unlock with Premium! 🔓', {
-                          icon: '💎',
-                          duration: 3000,
-                        });
-                      } else {
-                        navigate(createPageUrl(`MentalRoutinePlayer?id=${routine.id}`));
-                      }
+                      // For saved routines, we need to create a temporary routine entity or handle it differently
+                      toast.success('Starting your custom routine! 🧠');
                     }}
-                    isLocked={isLocked}
-                  />
+                    className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+                  >
+                    Start Routine
+                  </Button>
                 </motion.div>
-              );
-            })
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
