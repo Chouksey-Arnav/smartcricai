@@ -40,104 +40,80 @@ const confidenceLevels = [
   },
 ];
 
+const prewrittenResponses = {
+  not_great: {
+    empathy_statement: "I understand that you're feeling down about your confidence, and that's completely okay. It's normal for every player to go through tough times, especially in a sport as demanding as cricket.",
+    situation_analysis: "It sounds like you're struggling with consistency in your batting, which can impact your overall confidence. Since you've been playing for 7 years, you have the skills, but perhaps the strategy side is where you're feeling a bit lost right now.",
+    action_steps: [
+      "Reflect on your last few games and identify one positive moment where you felt good about your batting.",
+      "Set a small goal for your next practice, like focusing solely on your footwork or shot selection during a specific drill.",
+      "Remember to celebrate small victories, like hitting the ball with power or executing a good strategy in practice."
+    ],
+    encouragement: "Every great batsman has faced challenges, and this is just a part of your journey. Keep pushing forward, and believe in your abilities—you've got this!",
+    recommended_drill: "Power Hitting Drill: Practice hitting with focus on technique using a batting tee or soft toss to build confidence in your power shots."
+  },
+  okay: {
+    empathy_statement: "It's completely normal to feel uncertain about your confidence, especially as you work to improve your game. I'm here to help you find the right steps to boost your self-assurance.",
+    situation_analysis: "You might be feeling a bit frustrated with your consistency and how it affects your overall performance. As a batsman, it can be tough when you want to hit the ball with power, but your strategy isn't quite there yet.",
+    action_steps: [
+      "Focus on one key area in your strategy each practice. For example, select a specific shot to master and assess when to use it in a game situation.",
+      "After each practice session, reflect on what went well and what could improve - this helps build a clearer strategy over time.",
+      "Try to set small, achievable goals for each game, like aiming to hit a certain number of boundaries or staying at the crease for a specific time."
+    ],
+    encouragement: "Remember that even professional players face challenges and have ups and downs in their confidence. Keep pushing forward, and you'll see improvement in no time!",
+    recommended_drill: "A 'Shot Selection' drill where you practice hitting different types of balls in a controlled environment to develop your strategy and consistency."
+  },
+  feeling_good: {
+    empathy_statement: "It's great to hear that you're feeling good! It's important to recognize how your confidence can fluctuate, and that you're willing to work on it.",
+    situation_analysis: "As a batsman, you might be feeling excited about your game but also aware of the challenges with consistency and strategy. This is common for players at your level, especially as they develop their skills further.",
+    action_steps: [
+      "Set specific daily practice goals that focus on hitting drills to enhance your power.",
+      "Analyze match scenarios, possibly through watching game footage, to improve your strategic thinking while batting.",
+      "Practice mindfulness or visualization techniques before matches to help boost your focus and calmness during play."
+    ],
+    encouragement: "Remember, every player has ups and downs. Keep believing in yourself, and with practice, you'll see the progress you aspire to make!",
+    recommended_drill: "Power Hitting Drill - Focus on hitting the ball for distance while maintaining proper technique."
+  }
+};
+
 export default function ConfidenceCheckIn() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedConfidence, setSelectedConfidence] = useState(null);
-  const [reason, setReason] = useState('');
-  const [aiResponse, setAiResponse] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(1);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: userProfile } = useQuery({
-    queryKey: ['userProfile', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-      return profiles[0] || null;
+  const saveConfidenceMutation = useMutation({
+    mutationFn: async (confidenceData) => {
+      // Save confidence check-in to Schedule entity as an activity
+      const today = new Date().toISOString().split('T')[0];
+      return await base44.entities.UserPreferences.create({
+        user_email: user.email,
+        preference_type: 'confidence_checkin',
+        preference_value: JSON.stringify({
+          confidence_level: confidenceData.level,
+          date: today,
+          timestamp: new Date().toISOString()
+        })
+      });
     },
-    enabled: !!user?.email,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['userPreferences']);
+      toast.success('Confidence check-in logged! 💙');
+    }
   });
 
   const handleConfidenceSelect = (level) => {
     setSelectedConfidence(level);
-    setStep(2);
-  };
-
-  const handleSubmit = async () => {
-    if (!reason.trim()) {
-      toast.error('Please share why you\'re feeling this way');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const contextInfo = userProfile ? `
-User background:
-- Cricket role: ${userProfile.cricket_role}
-- Experience: ${userProfile.experience_years} years
-- Main goals: ${userProfile.main_goals?.join(', ')}
-- Weak areas: ${userProfile.weak_areas?.join(', ')}
-- Biggest challenge: ${userProfile.biggest_challenge}
-` : '';
-
-      const prompt = `You are an empathetic cricket coach and mental performance expert. A young cricket player (11-17 years old) has just checked in about their confidence level.
-
-${contextInfo}
-
-Current mood: ${selectedConfidence.label}
-Their response: "${reason}"
-
-Provide supportive, actionable advice in the following JSON format:
-{
-  "empathy_statement": "Short empathetic acknowledgment (1-2 sentences)",
-  "situation_analysis": "Brief analysis of what they might be experiencing (2-3 sentences)",
-  "action_steps": ["Step 1", "Step 2", "Step 3"],
-  "encouragement": "Motivational closing statement (1-2 sentences)",
-  "recommended_drill": "Specific drill/activity name that could help right now"
-}
-
-Requirements:
-- Be warm, understanding, and age-appropriate
-- Give concrete, actionable steps
-- Reference cricket-specific scenarios when relevant
-- Keep language simple and encouraging
-- Focus on building confidence and mental strength
-
-Return ONLY valid JSON.`;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            empathy_statement: { type: 'string' },
-            situation_analysis: { type: 'string' },
-            action_steps: { type: 'array', items: { type: 'string' } },
-            encouragement: { type: 'string' },
-            recommended_drill: { type: 'string' }
-          }
-        }
-      });
-
-      setAiResponse(response);
-      setStep(3);
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      toast.error('Failed to get response. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Immediately log to calendar and show response
+    saveConfidenceMutation.mutate({ level: level.value });
   };
 
   const handleDone = () => {
-    toast.success('Thanks for checking in! 💙');
-    navigate(createPageUrl('Home'));
+    navigate(createPageUrl('Schedule'));
   };
 
   return (
@@ -147,7 +123,7 @@ Return ONLY valid JSON.`;
       <div className="px-6 py-6 max-w-lg mx-auto">
         <AnimatePresence mode="wait">
           {/* Step 1: Select Confidence */}
-          {step === 1 && (
+          {!selectedConfidence && (
             <motion.div
               key="step1"
               initial={{ opacity: 0, x: 20 }}
@@ -189,128 +165,71 @@ Return ONLY valid JSON.`;
             </motion.div>
           )}
 
-          {/* Step 2: Ask Why */}
-          {step === 2 && selectedConfidence && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
-            >
-              <div className={`bg-gradient-to-r ${selectedConfidence.color} rounded-3xl p-6 text-white text-center`}>
-                <div className="text-5xl mb-3">{selectedConfidence.emoji}</div>
-                <h2 className="text-xl font-bold mb-2">You're feeling {selectedConfidence.label.toLowerCase()}</h2>
-                <p className="text-white/80">Tell us what's on your mind</p>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-xl p-6">
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  What's making you feel this way?
-                </label>
-                <Textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder="Share what's going on... (e.g., nervous about upcoming match, struggling with a specific skill, feeling unmotivated...)"
-                  className="h-32 text-base mb-4"
-                  autoFocus
-                />
-
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => setStep(1)}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
-                  </Button>
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isLoading || !reason.trim()}
-                    className={`flex-1 bg-gradient-to-r ${selectedConfidence.color} hover:opacity-90`}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Getting Help...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-5 h-5 mr-2" />
-                        Get Advice
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Step 3: AI Response */}
-          {step === 3 && aiResponse && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="space-y-6"
-            >
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl p-6 text-white text-center">
-                <Sparkles className="w-12 h-12 mx-auto mb-3" />
-                <h2 className="text-xl font-bold">Here's What I Think</h2>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-xl p-6 space-y-5">
-                {/* Empathy */}
-                <div className="bg-blue-50 rounded-2xl p-4">
-                  <p className="text-slate-800 leading-relaxed">{aiResponse.empathy_statement}</p>
+          {/* Response Display */}
+          {selectedConfidence && (() => {
+            const response = prewrittenResponses[selectedConfidence.value];
+            return (
+              <motion.div
+                key="response"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="space-y-6"
+              >
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl p-6 text-white text-center">
+                  <Sparkles className="w-12 h-12 mx-auto mb-3" />
+                  <h2 className="text-xl font-bold">Here's What I Think</h2>
                 </div>
 
-                {/* Analysis */}
-                <div>
-                  <h4 className="font-bold text-slate-800 mb-2">📊 What's Happening:</h4>
-                  <p className="text-slate-700 leading-relaxed">{aiResponse.situation_analysis}</p>
-                </div>
-
-                {/* Action Steps */}
-                <div>
-                  <h4 className="font-bold text-slate-800 mb-3">💪 Here's What You Can Do:</h4>
-                  <div className="space-y-3">
-                    {aiResponse.action_steps.map((step, i) => (
-                      <div key={i} className="flex gap-3 bg-purple-50 rounded-xl p-4">
-                        <div className="w-7 h-7 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold shrink-0 text-sm">
-                          {i + 1}
-                        </div>
-                        <p className="text-slate-800 leading-relaxed flex-1">{step}</p>
-                      </div>
-                    ))}
+                <div className="bg-white rounded-3xl shadow-xl p-6 space-y-5">
+                  {/* Empathy */}
+                  <div className="bg-blue-50 rounded-2xl p-4">
+                    <p className="text-slate-800 leading-relaxed">{response.empathy_statement}</p>
                   </div>
-                </div>
 
-                {/* Encouragement */}
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white">
-                  <p className="leading-relaxed">{aiResponse.encouragement}</p>
-                </div>
+                  {/* Analysis */}
+                  <div>
+                    <h4 className="font-bold text-slate-800 mb-2">📊 What's Happening:</h4>
+                    <p className="text-slate-700 leading-relaxed">{response.situation_analysis}</p>
+                  </div>
 
-                {/* Recommended Drill */}
-                {aiResponse.recommended_drill && (
+                  {/* Action Steps */}
+                  <div>
+                    <h4 className="font-bold text-slate-800 mb-3">💪 Here's What You Can Do:</h4>
+                    <div className="space-y-3">
+                      {response.action_steps.map((step, i) => (
+                        <div key={i} className="flex gap-3 bg-purple-50 rounded-xl p-4">
+                          <div className="w-7 h-7 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold shrink-0 text-sm">
+                            {i + 1}
+                          </div>
+                          <p className="text-slate-800 leading-relaxed flex-1">{step}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Encouragement */}
+                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white">
+                    <p className="leading-relaxed">{response.encouragement}</p>
+                  </div>
+
+                  {/* Recommended Drill */}
                   <div className="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200">
                     <h4 className="font-bold text-amber-800 mb-2">🎯 Recommended Activity:</h4>
-                    <p className="text-slate-700">{aiResponse.recommended_drill}</p>
+                    <p className="text-slate-700">{response.recommended_drill}</p>
                   </div>
-                )}
-              </div>
+                </div>
 
-              <Button
-                onClick={handleDone}
-                className="w-full h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg font-bold"
-              >
-                <CheckCircle className="w-5 h-5 mr-2" />
-                Done
-              </Button>
-            </motion.div>
-          )}
+                <Button
+                  onClick={handleDone}
+                  className="w-full h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg font-bold"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  View in Schedule
+                </Button>
+              </motion.div>
+            );
+          })()}
         </AnimatePresence>
       </div>
     </div>

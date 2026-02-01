@@ -10,16 +10,16 @@ export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
 
   useEffect(() => {
-    // Noupe AI Coach script commented out - domain not accessible
-    // If you have a valid AI coach script, replace the URL below
-    // const script = document.createElement('script');
-    // script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
-    // script.async = true;
-    // document.body.appendChild(script);
+    const script = document.createElement('script');
+    script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
+    script.async = true;
+    document.body.appendChild(script);
     
-    // return () => {
-    //   document.body.removeChild(script);
-    // };
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, []);
 
   // Mock daily challenges - would come from backend
