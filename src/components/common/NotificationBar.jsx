@@ -7,13 +7,116 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-export default function NotificationBar({ challenges = [], onChallengeComplete }) {
+export default function NotificationBar({ onChallengeComplete }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
   });
+
+  // Generate dynamic challenges based on user progress
+  const { data: userProgress } = useQuery({
+    queryKey: ['userProgress', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      return results[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  // Dynamic challenges based on progress
+  const challenges = [
+    {
+      id: 1,
+      type: 'drill',
+      title: 'Complete 3 Drills Today',
+      description: 'Finish any 3 practice drills',
+      current: 0,
+      target: 3,
+      progress: 0,
+      completed: false,
+      reward: 50
+    },
+    {
+      id: 2,
+      type: 'quiz',
+      title: 'Quiz Master',
+      description: 'Pass 1 quiz with 80%+',
+      current: 0,
+      target: 1,
+      progress: 0,
+      completed: false,
+      reward: 30
+    },
+    {
+      id: 3,
+      type: 'streak',
+      title: 'Weekly Streak',
+      description: 'Practice every day this week',
+      current: userProgress?.current_streak || 0,
+      target: 7,
+      progress: Math.min(((userProgress?.current_streak || 0) / 7) * 100, 100),
+      completed: (userProgress?.current_streak || 0) >= 7,
+      reward: 100
+    },
+    {
+      id: 4,
+      type: 'mental',
+      title: 'Mental Training',
+      description: 'Complete 2 mental routines',
+      current: 0,
+      target: 2,
+      progress: 0,
+      completed: false,
+      reward: 40
+    },
+    {
+      id: 5,
+      type: 'scenario',
+      title: 'Mini-Match IQ',
+      description: 'Complete 5 match scenarios',
+      current: 0,
+      target: 5,
+      progress: 0,
+      completed: false,
+      reward: 55
+    },
+    {
+      id: 6,
+      type: 'fitness',
+      title: 'Fitness Focus',
+      description: 'Complete 1 workout session',
+      current: 0,
+      target: 1,
+      progress: 0,
+      completed: false,
+      reward: 45
+    },
+    {
+      id: 7,
+      type: 'coach',
+      title: 'Ask the Coach',
+      description: 'Chat with AI Coach 3 times',
+      current: 0,
+      target: 3,
+      progress: 0,
+      completed: false,
+      reward: 35
+    },
+    {
+      id: 8,
+      type: 'video',
+      title: 'Video Analysis',
+      description: 'Analyze 1 technique video',
+      current: 0,
+      target: 1,
+      progress: 0,
+      completed: false,
+      reward: 60
+    }
+  ];
 
   const { data: preferences } = useQuery({
     queryKey: ['userPreferences', user?.email],

@@ -9,6 +9,7 @@ import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 const confidenceLevels = [
   { 
@@ -92,24 +93,28 @@ export default function ConfidenceCheckIn() {
       const today = new Date().toISOString().split('T')[0];
       return await base44.entities.UserPreferences.create({
         user_email: user.email,
-        preference_type: 'confidence_checkin',
+        preference_type: 'schedule_activity',
         preference_value: JSON.stringify({
-          confidence_level: confidenceData.level,
+          title: confidenceData.title || 'Confidence Check-in',
+          notes: `Feeling: ${confidenceData.level}`,
           date: today,
-          timestamp: new Date().toISOString()
+          type: 'confidence_checkin'
         })
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['userPreferences']);
-      toast.success('Confidence check-in logged! 💙');
+      queryClient.invalidateQueries(['userActivities']);
+      toast.success('Logged to your schedule! 💙');
     }
   });
 
   const handleConfidenceSelect = (level) => {
     setSelectedConfidence(level);
-    // Immediately log to calendar and show response
-    saveConfidenceMutation.mutate({ level: level.value });
+    // Immediately log to calendar with proper title
+    saveConfidenceMutation.mutate({ 
+      level: level.value,
+      title: `Confidence Check-in: ${level.label}`
+    });
   };
 
   const handleDone = () => {

@@ -37,46 +37,50 @@ export default function WhyDidIGetOut() {
     setAnalysis(null);
 
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `A young cricket player (11-15 years) got out. Analyze this dismissal:
-
-**Shot Played:** ${shotPlayed}
-**Ball Type:** ${ballType}
-**Field Setup:** ${fieldSetup}
-
-Provide a detailed but kid-friendly analysis including:
-
-1. **What Went Wrong**: Explain the technical mistake (was it shot selection, timing, footwork, head position, etc?)
-2. **Why This Happened**: The root cause (e.g., didn't watch ball, wrong foot, too early/late)
-3. **What To Do Next Time**: 3 specific actionable tips
-4. **Recommended Drill**: Suggest ONE specific drill with brief description to fix this exact issue
-5. **Match Awareness Tip**: How to read this situation better in future
-6. **Positive Note**: One encouraging thing to remember
-
-Be specific, technical but simple, and constructive. Help them learn and improve.`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            what_went_wrong: { type: "string" },
-            why_it_happened: { type: "string" },
-            what_to_do_next_time: {
-              type: "array",
-              items: { type: "string" }
-            },
-            recommended_drill: {
-              type: "object",
-              properties: {
-                drill_name: { type: "string" },
-                how_it_helps: { type: "string" },
-                quick_steps: { type: "string" }
-              }
-            },
-            match_awareness_tip: { type: "string" },
-            positive_note: { type: "string" },
-            danger_rating: { type: "number" }
-          }
-        }
+      // Fetch from pre-generated library
+      const analyses = await base44.entities.DismissalAnalysis.filter({
+        shot_played: shotPlayed.toLowerCase().replace(/ /g, '_'),
+        ball_type: ballType.toLowerCase().replace(/ /g, '_'),
+        field_setup: fieldSetup.toLowerCase().replace(/ /g, '_')
       });
+
+      let result;
+      if (analyses.length > 0) {
+        // Use existing analysis
+        const dismissal = analyses[0];
+        result = {
+          what_went_wrong: dismissal.analysis,
+          why_it_happened: dismissal.key_mistake,
+          what_to_do_next_time: dismissal.improvement_tips || [],
+          recommended_drill: {
+            drill_name: dismissal.recommended_drills?.[0] || 'Practice this shot',
+            how_it_helps: 'Improves your technique and decision making',
+            quick_steps: dismissal.match_situation_advice
+          },
+          match_awareness_tip: dismissal.match_situation_advice,
+          positive_note: 'Every dismissal is a learning opportunity!',
+          danger_rating: 7
+        };
+      } else {
+        // Fallback generic analysis
+        result = {
+          what_went_wrong: `Playing a ${shotPlayed} to a ${ballType} with ${fieldSetup} field can be risky. Shot selection and timing are crucial.`,
+          why_it_happened: 'This combination requires perfect execution and match awareness.',
+          what_to_do_next_time: [
+            'Watch the ball more closely from the bowler\'s hand',
+            'Consider the field setup before choosing your shot',
+            'Practice this shot in training to build confidence'
+          ],
+          recommended_drill: {
+            drill_name: 'Shot Selection Drill',
+            how_it_helps: 'Helps you make better decisions based on ball type and field',
+            quick_steps: 'Practice recognizing different ball types and choosing appropriate shots'
+          },
+          match_awareness_tip: 'Always assess the field before playing your shot',
+          positive_note: 'Learning from dismissals makes you a smarter player!',
+          danger_rating: 7
+        };
+      }
 
       setAnalysis(result);
     } catch (err) {
