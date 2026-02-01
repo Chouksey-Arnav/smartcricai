@@ -80,27 +80,20 @@ export default function MentalCoaching() {
   const isPremium = premiumStatus?.is_premium || false;
 
   const { data: savedRoutines = [] } = useQuery({
-    queryKey: ['customMentalRoutines', user?.email],
+    queryKey: ['savedMentalRoutines', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      const prefs = await base44.entities.UserPreferences.filter({
-        user_email: user.email,
-        preference_type: 'custom_mental_routine'
-      });
-      return prefs.map(p => {
-        const routine = JSON.parse(p.preference_value);
-        return { ...routine, id: p.id };
-      });
+      return await base44.entities.MentalRoutine.filter({ created_by: user.email });
     },
     enabled: !!user?.email,
   });
 
   const deleteRoutineMutation = useMutation({
     mutationFn: async (routineId) => {
-      await base44.entities.UserPreferences.delete(routineId);
+      await base44.entities.MentalRoutine.delete(routineId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customMentalRoutines'] });
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('Routine deleted');
     },
   });
@@ -279,8 +272,7 @@ export default function MentalCoaching() {
                   
                   <Button
                     onClick={() => {
-                      // For saved routines, we need to create a temporary routine entity or handle it differently
-                      toast.success('Starting your custom routine! 🧠');
+                      navigate(createPageUrl(`MentalRoutinePlayer?id=${routine.id}`));
                     }}
                     className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
                   >

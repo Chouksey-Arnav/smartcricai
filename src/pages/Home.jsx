@@ -136,9 +136,11 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Redirect to Get to Know You if not completed
+  // Redirect to Get to Know You if not completed - only once per session
   useEffect(() => {
-    if (user && userProfile !== undefined && !userProfile?.quiz_completed) {
+    const hasRedirected = sessionStorage.getItem('onboarding_redirect_done');
+    if (user && userProfile !== undefined && !userProfile?.quiz_completed && !hasRedirected) {
+      sessionStorage.setItem('onboarding_redirect_done', 'true');
       navigate(createPageUrl('GetToKnowYou'));
     }
   }, [user, userProfile]);

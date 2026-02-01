@@ -119,21 +119,31 @@ export default function FitnessBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
-      const workoutData = {
-        user_email: user.email,
-        preference_type: 'custom_fitness_workout',
-        preference_value: JSON.stringify({
-          name: `${level.toUpperCase()} ${selectedParts.join(' + ')} Workout`,
-          level: level,
-          parts: selectedParts,
-          goal: goal,
-          exercises: generatedWorkout
-        })
+      const bodyPart = selectedParts[0] || 'full_body';
+      const goalMapping = {
+        'lose_weight': 'endurance',
+        'build_muscle': 'strength',
+        'keep_fit': 'flexibility'
       };
-      return await base44.entities.UserPreferences.create(workoutData);
+      const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
+      
+      const workoutData = {
+        body_part: bodyPart,
+        goal: goalMapping[goal] || 'strength',
+        duration: targetDurationMinutes,
+        level: level,
+        exercises: generatedWorkout.map(ex => ({
+          name: ex.name,
+          sets: ex.sets || 3,
+          reps: ex.reps || '12',
+          rest_seconds: ex.rest_seconds || 60,
+          notes: ex.instructions || ''
+        }))
+      };
+      return await base44.entities.PreGeneratedWorkout.create(workoutData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customFitnessWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['preGeneratedWorkouts'] });
       toast.success('Workout saved forever! Ready to crush it! 🔥');
       navigate(createPageUrl('AIWorkout'));
     },
