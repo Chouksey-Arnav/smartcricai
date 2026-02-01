@@ -63,8 +63,9 @@ export default function DrillWorkoutCreator() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
       toast.success('Workout saved forever! 🎯');
-      navigate(createPageUrl('Drills'));
+      navigate(createPageUrl('Drills?tab=saved'));
     },
   });
 
@@ -113,6 +114,11 @@ export default function DrillWorkoutCreator() {
     };
 
     saveWorkoutMutation.mutate(workout);
+  };
+
+  const handleDiscard = () => {
+    resetForm();
+    toast('Workout discarded', { icon: '🗑️' });
   };
 
   const resetForm = () => {
@@ -268,11 +274,11 @@ export default function DrillWorkoutCreator() {
 
             <div className="flex gap-3">
               <Button
-                onClick={resetForm}
+                onClick={handleDiscard}
                 variant="outline"
                 className="flex-1"
               >
-                Create Another
+                Discard
               </Button>
               {matchingDrills.length > 0 && (
                 <Button

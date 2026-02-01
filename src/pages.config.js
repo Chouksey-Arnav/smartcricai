@@ -70,7 +70,6 @@ import MentalTrainingCreator from './pages/MentalTrainingCreator';
 import MiniMatch from './pages/MiniMatch';
 import NewHome from './pages/NewHome';
 import Onboarding from './pages/Onboarding';
-import PlayerLookup from './pages/PlayerLookup';
 import PlayerProfile from './pages/PlayerProfile';
 import Premium from './pages/Premium';
 import Profile from './pages/Profile';
@@ -113,7 +112,6 @@ export const PAGES = {
     "MiniMatch": MiniMatch,
     "NewHome": NewHome,
     "Onboarding": Onboarding,
-    "PlayerLookup": PlayerLookup,
     "PlayerProfile": PlayerProfile,
     "Premium": Premium,
     "Profile": Profile,

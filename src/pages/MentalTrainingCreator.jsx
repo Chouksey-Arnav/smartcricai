@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { getPreGeneratedMentalRoutine } from '@/components/mental/PreGeneratedMentalRoutines';
 
 const focusAreas = [
@@ -80,7 +81,7 @@ export default function MentalTrainingCreator() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customMentalRoutines'] });
       toast.success('Mental routine saved forever! 🧠');
-      navigate('/MentalCoaching');
+      navigate(createPageUrl('MentalCoaching?tab=saved'));
     },
   });
 
@@ -118,6 +119,11 @@ export default function MentalTrainingCreator() {
     saveMentalRoutineMutation.mutate(routine);
   };
 
+  const handleDiscard = () => {
+    setGeneratedPlan(null);
+    toast('Routine discarded', { icon: '🗑️' });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-orange-50 pb-24">
       <Header title="Mental Training Creator" />
@@ -133,7 +139,7 @@ export default function MentalTrainingCreator() {
             >
               <Brain className="w-16 h-16 mx-auto mb-3" />
               <h2 className="text-2xl font-bold mb-2">Create Your Mental Routine</h2>
-              <p className="text-purple-100">AI-powered personalized mental training plans</p>
+              <p className="text-purple-100">Personalized mental training from our pre-made library</p>
             </motion.div>
 
             {/* Form */}
@@ -236,11 +242,11 @@ export default function MentalTrainingCreator() {
 
               <div className="flex gap-3">
                 <Button
-                  onClick={() => setGeneratedPlan(null)}
+                  onClick={handleDiscard}
                   variant="outline"
                   className="flex-1"
                 >
-                  Create Another
+                  Discard
                 </Button>
                 <Button
                   onClick={handleSave}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -17,7 +17,10 @@ export default function Drills() {
   const queryClient = useQueryClient();
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('drills'); // 'drills' or 'saved'
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get('tab') || 'drills';
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],

@@ -8,6 +8,8 @@ import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { getPreGeneratedFitnessPlan } from '@/components/fitness/PreGeneratedFitnessPlans';
 
 const bodyParts = [
   { id: 'arm', label: 'Arms', emoji: '💪' },
@@ -81,62 +83,34 @@ export default function FitnessBuilder() {
     }
 
     const isFullBody = selectedParts.includes('full_body');
-    const targetDuration = durations.find(d => d.id === duration).minutes;
+    const targetAreaString = isFullBody ? 'Full Body' : selectedParts[0].charAt(0).toUpperCase() + selectedParts[0].slice(1);
+    const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
+    const fitnessGoalString = fitnessGoals.find(g => g.id === goal).label;
+    const fitnessLevelString = levels.find(l => l.id === level).label;
 
     setIsGenerating(true);
 
-    // Generate workout plan using AI
-    const prompt = `Create a ${level} level ${isFullBody ? 'full body' : selectedParts.join(', ')} workout.
-
-Goal: ${goal.replace('_', ' ')}
-Duration: ${targetDuration} minutes
-${injuredArea ? `IMPORTANT: Avoid exercises that stress the ${injuredArea}` : ''}
-
-Return a JSON with "exercises" array. Each exercise must have:
-{
-  "name": "Exercise name",
-  "target": "muscle group",
-  "sets": number,
-  "reps": number or "duration in seconds",
-  "rest_seconds": 30-60,
-  "instructions": "How to do it",
-  "difficulty": "${level}"
-}
-
-Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose_weight' ? 'high reps and cardio' : goal === 'build_muscle' ? 'strength and resistance' : 'balanced fitness'}.`;
+    // Simulate brief loading for better UX
+    await new Promise(resolve => setTimeout(resolve, 800));
 
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            exercises: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' },
-                  target: { type: 'string' },
-                  sets: { type: 'number' },
-                  reps: { type: ['number', 'string'] },
-                  rest_seconds: { type: 'number' },
-                  instructions: { type: 'string' },
-                  difficulty: { type: 'string' }
-                },
-                required: ['name', 'target', 'sets', 'reps', 'rest_seconds', 'instructions', 'difficulty']
-              }
-            }
-          },
-          required: ['exercises']
-        }
-      });
+      // Use pre-generated fitness plan - NO INTEGRATION CREDITS USED!
+      const preGeneratedPlan = getPreGeneratedFitnessPlan(
+        targetAreaString,
+        fitnessLevelString,
+        targetDurationMinutes,
+        fitnessGoalString
+      );
 
-      setGeneratedWorkout(response.exercises);
-      setStep(3);
-      toast.success('Workout generated! 💪');
+      if (preGeneratedPlan) {
+        setGeneratedWorkout(preGeneratedPlan.exercises);
+        setStep(3);
+        toast.success('Workout generated! 💪');
+      } else {
+        toast.error('No pre-generated plan found for these criteria. Please try different options.');
+      }
     } catch (error) {
-      console.error('Failed to generate workout:', error);
+      console.error('Failed to get pre-generated workout:', error);
       toast.error('Failed to generate workout. Please try again.');
     } finally {
       setIsGenerating(false);
@@ -161,7 +135,7 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customFitnessWorkouts'] });
       toast.success('Workout saved forever! Ready to crush it! 🔥');
-      navigate('/AIWorkout');
+      navigate(createPageUrl('AIWorkout'));
     },
   });
 
