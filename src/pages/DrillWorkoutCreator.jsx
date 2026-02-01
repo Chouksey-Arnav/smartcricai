@@ -56,11 +56,14 @@ export default function DrillWorkoutCreator() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async (workout) => {
-      return await base44.entities.CustomDrillWorkout.create(workout);
+      return await base44.entities.CustomDrillWorkout.create({
+        ...workout,
+        saved: true
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
-      toast.success('Workout saved! 🎯');
+      toast.success('Workout saved forever! 🎯');
       navigate(createPageUrl('Drills'));
     },
   });

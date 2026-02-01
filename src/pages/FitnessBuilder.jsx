@@ -147,26 +147,21 @@ Make it challenging but achievable for ${level} level. Focus on ${goal === 'lose
     mutationFn: async () => {
       const workoutData = {
         user_email: user.email,
-        name: `${level.toUpperCase()} ${selectedParts.join(' + ')} Workout`,
-        drills: generatedWorkout.map(ex => ({
-          drill_id: 'fitness_' + Math.random().toString(36).substr(2, 9),
-          drill_title: ex.name,
-          sets: ex.sets,
-          reps: ex.reps,
-          completed_sets: 0,
-          type: 'exercise',
-          category: 'fitness',
-          instructions: ex.instructions,
-          rest_seconds: ex.rest_seconds
-        })),
-        status: 'not_started'
+        preference_type: 'custom_fitness_workout',
+        preference_value: JSON.stringify({
+          name: `${level.toUpperCase()} ${selectedParts.join(' + ')} Workout`,
+          level: level,
+          parts: selectedParts,
+          goal: goal,
+          exercises: generatedWorkout
+        })
       };
-      return await base44.entities.Workout.create(workoutData);
+      return await base44.entities.UserPreferences.create(workoutData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workouts'] });
-      toast.success('Workout saved! Ready to crush it! 🔥');
-      navigate('/');
+      queryClient.invalidateQueries({ queryKey: ['customFitnessWorkouts'] });
+      toast.success('Workout saved forever! Ready to crush it! 🔥');
+      navigate('/AIWorkout');
     },
   });
 

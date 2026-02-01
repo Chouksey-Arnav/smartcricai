@@ -57,13 +57,29 @@ export default function MentalTrainingCreator() {
     enabled: !!user?.email,
   });
 
+  const { data: customMentalRoutines = [] } = useQuery({
+    queryKey: ['customMentalRoutines', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      return await base44.entities.UserPreferences.filter({
+        user_email: user.email,
+        preference_type: 'custom_mental_routine'
+      });
+    },
+    enabled: !!user?.email,
+  });
+
   const saveMentalRoutineMutation = useMutation({
     mutationFn: async (routine) => {
-      return await base44.entities.MentalRoutine.create(routine);
+      return await base44.entities.UserPreferences.create({
+        user_email: user.email,
+        preference_type: 'custom_mental_routine',
+        preference_value: JSON.stringify(routine)
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
-      toast.success('Mental routine saved! 🧠');
+      queryClient.invalidateQueries({ queryKey: ['customMentalRoutines'] });
+      toast.success('Mental routine saved forever! 🧠');
       navigate('/MentalCoaching');
     },
   });
