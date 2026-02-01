@@ -27,19 +27,17 @@ export default function AIWorkout() {
   });
 
   const { data: workouts } = useQuery({
-    queryKey: ['workouts', user?.email],
+    queryKey: ['preGeneratedWorkouts', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      return await base44.entities.Workout.filter({ 
-        user_email: user.email,
-        status: 'not_started' 
-      });
+      const preGen = await base44.entities.PreGeneratedWorkout.filter({ created_by: user.email });
+      return preGen.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
     enabled: !!user?.email,
   });
 
   const activeWorkout = workouts?.[0];
-  const exercises = activeWorkout?.drills || [];
+  const exercises = activeWorkout?.exercises || [];
   const currentExercise = exercises[currentExerciseIndex];
 
   // Rest timer
@@ -57,13 +55,10 @@ export default function AIWorkout() {
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
-      return await base44.entities.Workout.update(activeWorkout.id, {
-        status: 'completed',
-        completed_date: new Date().toISOString()
-      });
+      return await base44.entities.PreGeneratedWorkout.delete(activeWorkout.id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['preGeneratedWorkouts'] });
       confetti({
         particleCount: 100,
         spread: 70,
@@ -74,7 +69,7 @@ export default function AIWorkout() {
   });
 
   const handleCompleteSet = () => {
-    const exerciseId = currentExercise.drill_id;
+    const exerciseId = currentExercise.name || index;
     const currentSets = completedSets[exerciseId] || 0;
     const newSets = currentSets + 1;
     
@@ -83,7 +78,7 @@ export default function AIWorkout() {
     if (newSets >= currentExercise.sets) {
       // Move to next exercise
       if (currentExerciseIndex < exercises.length - 1) {
-        toast.success(`${currentExercise.drill_title} complete! 🎯`);
+        toast.success(`${currentExercise.name} complete! 🎯`);
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCompletedSets({ ...completedSets, [exerciseId]: 0 });
       } else {
@@ -163,8 +158,8 @@ export default function AIWorkout() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white"
           >
-            <h2 className="font-bold text-2xl mb-2">{activeWorkout.name}</h2>
-            <p className="text-purple-100">{exercises.length} exercises</p>
+            <h2 className="font-bold text-2xl mb-2">{activeWorkout.body_part.charAt(0).toUpperCase() + activeWorkout.body_part.slice(1)} Workout</h2>
+            <p className="text-purple-100">{exercises.length} exercises • {activeWorkout.level}</p>
           </motion.div>
 
           <div className="space-y-3">
@@ -181,7 +176,7 @@ export default function AIWorkout() {
                     <span className="font-bold text-purple-600">{index + 1}</span>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-slate-800">{exercise.drill_title}</h4>
+                    <h4 className="font-bold text-slate-800">{exercise.name}</h4>
                     <p className="text-sm text-slate-600 mt-1">
                       {exercise.sets} sets × {exercise.reps} reps
                     </p>
@@ -261,7 +256,7 @@ export default function AIWorkout() {
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">💪</div>
               <h2 className="text-3xl font-bold text-slate-800 mb-2">
-                {currentExercise.drill_title}
+                {currentExercise.name}
               </h2>
               <p className="text-slate-600">
                 Set {currentSets + 1} of {currentExercise.sets}
@@ -283,10 +278,10 @@ export default function AIWorkout() {
               </div>
             </div>
 
-            {currentExercise.instructions && (
+            {currentExercise.notes && (
               <div className="bg-slate-50 rounded-2xl p-4 mb-6">
                 <h4 className="font-semibold text-slate-800 mb-2">Instructions:</h4>
-                <p className="text-sm text-slate-600">{currentExercise.instructions}</p>
+                <p className="text-sm text-slate-600">{currentExercise.notes}</p>
               </div>
             )}
 

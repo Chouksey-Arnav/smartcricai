@@ -65,6 +65,7 @@ export default function DrillDetail() {
   const [isStarted, setIsStarted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [audioElement, setAudioElement] = useState(null);
+  const [youtubeError, setYoutubeError] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],

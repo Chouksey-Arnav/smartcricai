@@ -30,7 +30,7 @@ export default function Schedule() {
       if (!user?.email) return [];
       const prefs = await base44.entities.UserPreferences.filter({ 
         user_email: user.email,
-        preference_type: { $in: ['schedule_activity', 'confidence_checkin'] }
+        preference_type: 'schedule_activity'
       });
       return prefs;
     },
