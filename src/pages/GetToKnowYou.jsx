@@ -171,10 +171,11 @@ export default function GetToKnowYou() {
         match_iq_rating: 50 // Starting IQ
       };
 
+      let profile;
       if (existingProfile?.id) {
-        await base44.entities.UserProfile.update(existingProfile.id, userProfileData);
+        profile = await base44.entities.UserProfile.update(existingProfile.id, userProfileData);
       } else {
-        await base44.entities.UserProfile.create(userProfileData);
+        profile = await base44.entities.UserProfile.create(userProfileData);
       }
 
       // Save username to Profile entity
@@ -187,10 +188,108 @@ export default function GetToKnowYou() {
           username: username || user.full_name?.split(' ')[0] || 'Player'
         });
       }
+
+      // === RULE-BASED AUTO-CONFIGURATION - NO LLM CREDITS USED ===
+      
+      // 1. Determine skill level based on experience
+      const experienceYears = profileData.experience_years || 1;
+      let skillLevel = 'beginner';
+      if (experienceYears >= 5) skillLevel = 'advanced';
+      else if (experienceYears >= 3) skillLevel = 'intermediate';
+
+      // 2. Auto-create UserProgress if doesn't exist
+      const existingProgress = await base44.entities.UserProgress.filter({ user_email: user.email });
+      if (existingProgress.length === 0) {
+        await base44.entities.UserProgress.create({
+          user_email: user.email,
+          display_name: username || 'Player',
+          skill_level: skillLevel,
+          completed_drills: [],
+          completed_quizzes: [],
+          total_practice_minutes: 0,
+          current_streak: 0,
+          longest_streak: 0,
+          badges: [],
+          onboarding_complete: true,
+          total_xp: 0
+        });
+      }
+
+      // 3. Auto-create SkillPath based on role and level
+      const existingSkillPath = await base44.entities.SkillPath.filter({ user_email: user.email });
+      if (existingSkillPath.length === 0) {
+        await base44.entities.SkillPath.create({
+          user_email: user.email,
+          level: skillLevel,
+          completed_items: [],
+          badges_earned: [],
+          xp: 0
+        });
+      }
+
+      // 4. Auto-create starter fitness workout from PreGeneratedWorkout
+      const mainGoals = profileData.main_goals || [];
+      const weakAreas = profileData.weak_areas || [];
+      
+      // Determine fitness focus based on goals
+      let fitnessGoal = 'strength';
+      if (mainGoals.includes('fitness')) fitnessGoal = 'endurance';
+      if (weakAreas.includes('power')) fitnessGoal = 'strength';
+      if (weakAreas.includes('speed')) fitnessGoal = 'endurance';
+
+      // Find matching pre-generated workout
+      const preGenWorkouts = await base44.entities.PreGeneratedWorkout.filter({
+        body_part: 'full_body',
+        goal: fitnessGoal,
+        level: skillLevel,
+        duration: 20
+      });
+
+      if (preGenWorkouts.length > 0) {
+        const selectedWorkout = preGenWorkouts[0];
+        
+        // Create workout from pre-generated plan
+        const drills = selectedWorkout.exercises.map(ex => ({
+          drill_id: 'fitness_' + Math.random().toString(36).substr(2, 9),
+          drill_title: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          completed_sets: 0,
+          type: 'exercise',
+          category: 'fitness',
+          instructions: ex.notes,
+          rest_seconds: ex.rest_seconds
+        }));
+
+        await base44.entities.Workout.create({
+          user_email: user.email,
+          name: `Starter ${skillLevel.toUpperCase()} ${fitnessGoal.toUpperCase()} Workout`,
+          drills: drills,
+          status: 'not_started'
+        });
+      }
+
+      // 5. Create Leaderboard entry
+      const existingLeaderboard = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      if (existingLeaderboard.length === 0) {
+        await base44.entities.Leaderboard.create({
+          user_email: user.email,
+          username: username || 'Player',
+          total_xp: 0,
+          drills_completed: 0,
+          quizzes_passed: 0,
+          current_streak: 0,
+          match_iq: 50,
+          weekly_minutes: 0
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['skillPath'] });
+      queryClient.invalidateQueries({ queryKey: ['workouts'] });
       toast.success('Profile saved! Your training is now personalized! 🎉');
       navigate('/');
     },

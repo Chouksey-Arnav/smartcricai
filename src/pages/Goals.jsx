@@ -156,15 +156,111 @@ export default function Goals() {
         goals_completed: true,
       };
 
+      let updatedProfile;
       if (existingGoals?.id) {
-        return await base44.entities.UserProfile.update(existingGoals.id, goalsData);
+        updatedProfile = await base44.entities.UserProfile.update(existingGoals.id, goalsData);
       } else {
-        return await base44.entities.UserProfile.create(goalsData);
+        updatedProfile = await base44.entities.UserProfile.create(goalsData);
+      }
+
+      // === RULE-BASED AUTO-CONFIGURATION BASED ON GOALS - NO LLM CREDITS ===
+      
+      // 1. Create recommended workout based on fitness goals
+      const fitnessGoals = answers.fitness_goals || [];
+      const mentalGoals = answers.mental_goals || [];
+      
+      // Get user's current skill level
+      const progress = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const skillLevel = progress[0]?.skill_level || 'beginner';
+
+      // Determine workout type based on fitness goals
+      let workoutGoal = 'strength';
+      let bodyPart = 'full_body';
+      
+      if (fitnessGoals.includes('speed') || fitnessGoals.includes('stamina')) {
+        workoutGoal = 'endurance';
+      }
+      if (fitnessGoals.includes('flexibility')) {
+        workoutGoal = 'flexibility';
+      }
+      if (fitnessGoals.includes('strength')) {
+        workoutGoal = 'strength';
+      }
+
+      // Find and create goal-specific workout
+      const goalWorkouts = await base44.entities.PreGeneratedWorkout.filter({
+        body_part: bodyPart,
+        goal: workoutGoal,
+        level: skillLevel,
+        duration: 30
+      });
+
+      if (goalWorkouts.length > 0) {
+        const selectedWorkout = goalWorkouts[0];
+        const drills = selectedWorkout.exercises.map(ex => ({
+          drill_id: 'goal_' + Math.random().toString(36).substr(2, 9),
+          drill_title: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          completed_sets: 0,
+          type: 'exercise',
+          category: 'fitness',
+          instructions: ex.notes,
+          rest_seconds: ex.rest_seconds
+        }));
+
+        await base44.entities.Workout.create({
+          user_email: user.email,
+          name: `Goal-Based ${workoutGoal.toUpperCase()} Training`,
+          drills: drills,
+          status: 'not_started'
+        });
+      }
+
+      // 2. Create mental routine if mental goals selected
+      if (mentalGoals.length > 0) {
+        const mentalCategories = {
+          'stay_calm': 'pressure',
+          'confidence': 'confidence',
+          'focus': 'focus',
+          'positive_mindset': 'match-day-calm',
+          'no_fear': 'confidence'
+        };
+
+        const primaryMentalGoal = mentalGoals[0];
+        const mentalCategory = mentalCategories[primaryMentalGoal] || 'focus';
+
+        const existingRoutines = await base44.entities.MentalRoutine.filter({
+          category: mentalCategory,
+          difficulty: skillLevel
+        });
+
+        // If no routine exists for this category, create one
+        if (existingRoutines.length === 0) {
+          const routineData = {
+            title: `${mentalCategory.charAt(0).toUpperCase() + mentalCategory.slice(1)} Training`,
+            category: mentalCategory,
+            duration_seconds: 600,
+            description: `Build your ${mentalCategory} skills`,
+            difficulty: skillLevel,
+            calming_sound: 'https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3',
+            steps: [
+              { instruction: 'Close your eyes and take 3 deep breaths', duration_seconds: 60 },
+              { instruction: 'Focus on your breathing rhythm', duration_seconds: 120 },
+              { instruction: 'Visualize yourself succeeding in your goal', duration_seconds: 180 },
+              { instruction: 'Feel the confidence building within you', duration_seconds: 120 },
+              { instruction: 'Open your eyes feeling refreshed and ready', duration_seconds: 120 }
+            ]
+          };
+          await base44.entities.MentalRoutine.create(routineData);
+        }
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userGoals'] });
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
       toast.success('Goals saved! Your training is now ultra-personalized! 🎯');
       navigate('/NewHome');
     },
