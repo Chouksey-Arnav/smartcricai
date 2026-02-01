@@ -246,7 +246,7 @@ export default function DrillDetail() {
                     <Video className="w-5 h-5 text-red-500" />
                     Video Tutorial
                   </h3>
-                  <div className="aspect-video rounded-xl overflow-hidden bg-slate-100">
+                  <div className="aspect-video rounded-xl overflow-hidden bg-slate-100 relative">
                     <iframe
                       width="100%"
                       height="100%"
@@ -255,8 +255,14 @@ export default function DrillDetail() {
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
+                      onError={() => setYoutubeError(true)}
                       className="w-full h-full"
                     />
+                    {youtubeError && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 text-white p-4 text-center">
+                        <p>Video failed to load. Please check the URL or try again later.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
