@@ -10,15 +10,16 @@ export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
 
   useEffect(() => {
-    // Load SmartTrick Coach script
-    const script = document.createElement('script');
-    script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
-    script.async = true;
-    document.body.appendChild(script);
+    // Noupe AI Coach script commented out - domain not accessible
+    // If you have a valid AI coach script, replace the URL below
+    // const script = document.createElement('script');
+    // script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
+    // script.async = true;
+    // document.body.appendChild(script);
     
-    return () => {
-      document.body.removeChild(script);
-    };
+    // return () => {
+    //   document.body.removeChild(script);
+    // };
   }, []);
 
   // Mock daily challenges - would come from backend
@@ -195,13 +196,7 @@ export default function Layout({ children, currentPageName }) {
       
       {children}
       
-      {/* SmartTrick Coach Indicator - Minimal Arrow */}
-      <div className="smarttrick-indicator flex items-center gap-1">
-        <div className="text-xs font-semibold text-slate-700 bg-white px-2 py-1 rounded-lg shadow-md">
-          AI Coach
-        </div>
-        <div className="text-2xl">↓</div>
-      </div>
+      {/* AI Coach indicator removed - script not active */}
 
       {showNav && <BottomNav />}
     </div>

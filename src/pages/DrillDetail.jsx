@@ -19,6 +19,29 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+const getYouTubeEmbedUrl = (url) => {
+  if (!url) return '';
+  
+  // Handle standard watch URLs
+  const watchMatch = url.match(/(?:\/|%3D|v=)([0-9A-Za-z_-]{11})(?:[?&%]|$)/);
+  if (watchMatch) {
+    return `https://www.youtube.com/embed/${watchMatch[1]}`;
+  }
+  
+  // Handle short URLs (youtu.be)
+  const shortUrlMatch = url.match(/youtu\.be\/([0-9A-Za-z_-]{11})/);
+  if (shortUrlMatch) {
+    return `https://www.youtube.com/embed/${shortUrlMatch[1]}`;
+  }
+  
+  // If it's already an embed URL, return as is
+  if (url.includes('youtube.com/embed/')) {
+    return url;
+  }
+  
+  return '';
+};
+
 const categoryColors = {
   batting: 'from-blue-500 to-blue-600',
   bowling: 'from-red-500 to-red-600',
@@ -226,7 +249,7 @@ export default function DrillDetail() {
                     <iframe
                       width="100%"
                       height="100%"
-                      src={drill.video_url.replace('watch?v=', 'embed/')}
+                      src={getYouTubeEmbedUrl(drill.video_url)}
                       title="Drill Tutorial"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

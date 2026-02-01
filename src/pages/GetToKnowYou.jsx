@@ -291,7 +291,7 @@ export default function GetToKnowYou() {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       toast.success('Profile saved! Your training is now personalized! 🎉');
-      navigate('/');
+      navigate('/NewHome');
     },
   });
 
