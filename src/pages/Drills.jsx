@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Target, Heart } from 'lucide-react';
+import { Search, Target, Heart, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 
 export default function Drills() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('drills'); // 'drills' or 'saved'
@@ -84,6 +85,16 @@ export default function Drills() {
   const proDrills = filteredDrills.filter(d => d.skill_level === 'pro');
 
   const completedDrillIds = progress?.completed_drills || [];
+
+  const deleteWorkoutMutation = useMutation({
+    mutationFn: async (workoutId) => {
+      await base44.entities.CustomDrillWorkout.delete(workoutId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
+      toast.success('Workout deleted');
+    },
+  });
 
   const renderDrillGroup = (title, drills, color) => {
     if (drills.length === 0) return null;
@@ -235,7 +246,20 @@ export default function Drills() {
                         <span>{workout.num_drills} drills</span>
                       </div>
                     </div>
-                    <Heart className="w-6 h-6 text-red-500 fill-red-500" />
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-6 h-6 text-red-500 fill-red-500" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm('Delete this workout? This cannot be undone.')) {
+                            deleteWorkoutMutation.mutate(workout.id);
+                          }
+                        }}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5 text-red-500" />
+                      </button>
+                    </div>
                   </div>
                   
                   {workout.drills && workout.drills.length > 0 && (
