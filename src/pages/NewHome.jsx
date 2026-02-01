@@ -93,6 +93,16 @@ export default function NewHome() {
     enabled: !!user?.email,
   });
 
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const profiles = await base44.entities.Profile.filter({ user_email: user.email });
+      return profiles[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
   const { data: scenarioCompletions } = useQuery({
     queryKey: ['scenarioCompletions', user?.email],
     queryFn: async () => {
@@ -103,17 +113,49 @@ export default function NewHome() {
   });
 
   const { data: smartDrills, isLoading: loadingSmartDrills } = useQuery({
-    queryKey: ['smartDrills', userProfile?.weak_areas],
+    queryKey: ['smartDrills', userProfile?.weak_areas, userProfile?.cricket_role, userProfile?.main_goals],
     queryFn: async () => {
-      if (!userProfile?.weak_areas || userProfile.weak_areas.length === 0) {
-        // Default recommendations
-        const allDrills = await base44.entities.Drill.list();
+      const allDrills = await base44.entities.Drill.list();
+      
+      if (!userProfile?.weak_areas && !userProfile?.main_goals && !userProfile?.cricket_role) {
         return allDrills.slice(0, 3);
       }
       
-      // Get drills matching weak areas
-      const allDrills = await base44.entities.Drill.list();
-      return allDrills.slice(0, 3); // For now, return top 3
+      // Match drills to user profile
+      const scoredDrills = allDrills.map(drill => {
+        let score = 0;
+        
+        // Match weak areas to target skills
+        if (userProfile?.weak_areas) {
+          userProfile.weak_areas.forEach(weakness => {
+            if (drill.target_skill?.toLowerCase().includes(weakness.toLowerCase())) {
+              score += 10;
+            }
+          });
+        }
+        
+        // Match goals to drill categories
+        if (userProfile?.main_goals) {
+          userProfile.main_goals.forEach(goal => {
+            if (goal.includes('technique') && drill.category === 'batting') score += 5;
+            if (goal.includes('power') && drill.target_skill?.includes('power')) score += 8;
+            if (goal.includes('fitness') && drill.category === 'fitness') score += 7;
+            if (goal.includes('mental') && drill.category === 'mental') score += 7;
+          });
+        }
+        
+        // Match cricket role to drill category
+        if (userProfile?.cricket_role) {
+          if (userProfile.cricket_role === 'batsman' && drill.category === 'batting') score += 5;
+          if (userProfile.cricket_role === 'bowler' && drill.category === 'bowling') score += 5;
+          if (userProfile.cricket_role === 'all_rounder') score += 3;
+        }
+        
+        return { ...drill, matchScore: score };
+      });
+      
+      // Sort by score and return top 3
+      return scoredDrills.sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
     },
     enabled: !!userProfile,
   });
@@ -178,7 +220,7 @@ export default function NewHome() {
     }
   }, [user, userProfile, userLoading, profileLoading, hasCheckedOnboarding, navigate]);
 
-  const displayName = progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
+  const displayName = profile?.username || progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 pb-24">
