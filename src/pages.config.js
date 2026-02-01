@@ -53,7 +53,6 @@ import Chat from './pages/Chat';
 import Coach from './pages/Coach';
 import CoachVoiceMode from './pages/CoachVoiceMode';
 import ConfidenceCheckIn from './pages/ConfidenceCheckIn';
-import CricketHub from './pages/CricketHub';
 import CustomDrillWorkoutCreator from './pages/CustomDrillWorkoutCreator';
 import DrillDetail from './pages/DrillDetail';
 import DrillWorkoutCreator from './pages/DrillWorkoutCreator';
@@ -95,7 +94,6 @@ export const PAGES = {
     "Coach": Coach,
     "CoachVoiceMode": CoachVoiceMode,
     "ConfidenceCheckIn": ConfidenceCheckIn,
-    "CricketHub": CricketHub,
     "CustomDrillWorkoutCreator": CustomDrillWorkoutCreator,
     "DrillDetail": DrillDetail,
     "DrillWorkoutCreator": DrillWorkoutCreator,

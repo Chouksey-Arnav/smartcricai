@@ -25,14 +25,13 @@ export default function Schedule() {
   });
 
   const { data: activities = [] } = useQuery({
-    queryKey: ['userActivities', user?.email],
+    queryKey: ['scheduledActivities', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      const prefs = await base44.entities.UserPreferences.filter({ 
-        user_email: user.email,
-        preference_type: 'schedule_activity'
+      const activities = await base44.entities.ScheduledActivity.filter({ 
+        user_email: user.email
       });
-      return prefs;
+      return activities;
     },
     enabled: !!user?.email,
   });
@@ -41,18 +40,16 @@ export default function Schedule() {
     mutationFn: async () => {
       if (!user?.email || !activityData.title || !selectedDate) return;
       
-      await base44.entities.UserPreferences.create({
+      await base44.entities.ScheduledActivity.create({
         user_email: user.email,
-        preference_type: 'schedule_activity',
-        preference_value: JSON.stringify({
-          title: activityData.title,
-          notes: activityData.notes,
-          date: selectedDate
-        })
+        title: activityData.title,
+        notes: activityData.notes,
+        date: selectedDate,
+        activity_type: 'custom'
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['userActivities']);
+      queryClient.invalidateQueries(['scheduledActivities']);
       toast.success('Activity logged!');
       setActivityData({ title: '', notes: '' });
       setShowForm(false);
@@ -62,10 +59,10 @@ export default function Schedule() {
 
   const deleteActivityMutation = useMutation({
     mutationFn: async (activityId) => {
-      await base44.entities.UserPreferences.delete(activityId);
+      await base44.entities.ScheduledActivity.delete(activityId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['userActivities']);
+      queryClient.invalidateQueries(['scheduledActivities']);
       toast.success('Activity removed');
     },
   });
@@ -100,18 +97,11 @@ export default function Schedule() {
 
   const getActivitiesForDate = (date) => {
     const dateStr = date.toISOString().split('T')[0];
-    return activities.filter(activity => {
-      try {
-        const value = JSON.parse(activity.preference_value);
-        return value.date === dateStr;
-      } catch {
-        return false;
-      }
-    });
+    return activities.filter(activity => activity.date === dateStr);
   };
 
-  const getActivityIcon = (type) => {
-    switch (type) {
+  const getActivityIcon = (activityType) => {
+    switch (activityType) {
       case 'confidence_checkin': return <Heart className="w-4 h-4" />;
       case 'training': return <Dumbbell className="w-4 h-4" />;
       default: return <BookOpen className="w-4 h-4" />;
@@ -216,9 +206,6 @@ export default function Schedule() {
                   
                   <div className="space-y-2">
                     {dayActivities.map((activity) => {
-                      const value = JSON.parse(activity.preference_value);
-                      const type = activity.preference_type;
-                      
                       return (
                         <div
                           key={activity.id}
@@ -226,14 +213,14 @@ export default function Schedule() {
                         >
                           <div className="flex items-start gap-1">
                             <div className="text-violet-600 mt-0.5">
-                              {getActivityIcon(type)}
+                              {getActivityIcon(activity.activity_type)}
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-semibold text-slate-800 truncate">
-                                {value.title || (type === 'confidence_checkin' ? 'Confidence Check-in' : 'Activity')}
+                                {activity.title}
                               </p>
-                              {value.notes && (
-                                <p className="text-xs text-slate-500 truncate mt-0.5">{value.notes}</p>
+                              {activity.notes && (
+                                <p className="text-xs text-slate-500 truncate mt-0.5">{activity.notes}</p>
                               )}
                             </div>
                           </div>

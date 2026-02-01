@@ -22,21 +22,37 @@ import { toast } from 'sonner';
 const getYouTubeEmbedUrl = (url) => {
   if (!url) return '';
   
-  // Handle standard watch URLs
-  const watchMatch = url.match(/(?:\/|%3D|v=)([0-9A-Za-z_-]{11})(?:[?&%]|$)/);
-  if (watchMatch) {
-    return `https://www.youtube.com/embed/${watchMatch[1]}`;
-  }
-  
-  // Handle short URLs (youtu.be)
-  const shortUrlMatch = url.match(/youtu\.be\/([0-9A-Za-z_-]{11})/);
-  if (shortUrlMatch) {
-    return `https://www.youtube.com/embed/${shortUrlMatch[1]}`;
-  }
-  
-  // If it's already an embed URL, return as is
-  if (url.includes('youtube.com/embed/')) {
-    return url;
+  try {
+    // Extract video ID from various YouTube URL formats
+    let videoId = null;
+    
+    // Format: https://www.youtube.com/watch?v=VIDEO_ID
+    // Format: https://youtube.com/watch?v=VIDEO_ID
+    // Format: http://www.youtube.com/watch?v=VIDEO_ID
+    if (url.includes('youtube.com/watch')) {
+      const urlParams = new URL(url).searchParams;
+      videoId = urlParams.get('v');
+    }
+    // Format: https://youtu.be/VIDEO_ID
+    else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1]?.split('?')[0]?.split('&')[0];
+    }
+    // Format: https://www.youtube.com/embed/VIDEO_ID
+    else if (url.includes('youtube.com/embed/')) {
+      videoId = url.split('youtube.com/embed/')[1]?.split('?')[0]?.split('&')[0];
+    }
+    // Format: https://www.youtube.com/v/VIDEO_ID
+    else if (url.includes('youtube.com/v/')) {
+      videoId = url.split('youtube.com/v/')[1]?.split('?')[0]?.split('&')[0];
+    }
+    
+    // Clean the video ID (remove any trailing slashes or parameters)
+    if (videoId) {
+      videoId = videoId.replace(/[^a-zA-Z0-9_-]/g, '').substring(0, 11);
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+  } catch (error) {
+    console.error('Error parsing YouTube URL:', url, error);
   }
   
   return '';
