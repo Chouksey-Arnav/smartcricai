@@ -11,9 +11,9 @@ import toast from 'react-hot-toast';
 
 export default function Schedule() {
   const [showForm, setShowForm] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [activityData, setActivityData] = useState({
     title: '',
-    date: new Date().toISOString().split('T')[0],
     notes: ''
   });
 
@@ -39,7 +39,7 @@ export default function Schedule() {
 
   const addActivityMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.email || !activityData.title || !activityData.date) return;
+      if (!user?.email || !activityData.title || !selectedDate) return;
       
       await base44.entities.UserPreferences.create({
         user_email: user.email,
@@ -47,15 +47,16 @@ export default function Schedule() {
         preference_value: JSON.stringify({
           title: activityData.title,
           notes: activityData.notes,
-          date: activityData.date
+          date: selectedDate
         })
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userActivities']);
       toast.success('Activity logged!');
-      setActivityData({ title: '', date: new Date().toISOString().split('T')[0], notes: '' });
+      setActivityData({ title: '', notes: '' });
       setShowForm(false);
+      setSelectedDate(null);
     },
   });
 
@@ -68,6 +69,11 @@ export default function Schedule() {
       toast.success('Activity removed');
     },
   });
+
+  const handleDateClick = (date) => {
+    setSelectedDate(date);
+    setShowForm(true);
+  };
 
   const handleAddActivity = () => {
     if (!activityData.title) {
@@ -116,22 +122,7 @@ export default function Schedule() {
     <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white pb-24">
       <Header title="Schedule" showSettings={false} />
 
-      <div className="px-6 py-4 max-w-4xl mx-auto">
-        {/* Add Activity Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <Button
-            onClick={() => setShowForm(!showForm)}
-            className="w-full h-14 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-lg"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Log Activity
-          </Button>
-        </motion.div>
-
+      <div className="px-6 py-4 max-w-6xl mx-auto">
         {/* Activity Form */}
         <AnimatePresence>
           {showForm && (
@@ -141,7 +132,9 @@ export default function Schedule() {
               exit={{ opacity: 0, height: 0 }}
               className="bg-white rounded-3xl shadow-xl p-6 mb-6 overflow-hidden"
             >
-              <h3 className="font-bold text-lg text-slate-800 mb-4">Log New Activity</h3>
+              <h3 className="font-bold text-lg text-slate-800 mb-4">
+                Log Activity for {selectedDate && new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </h3>
 
               <div className="space-y-4">
                 <div>
@@ -150,16 +143,6 @@ export default function Schedule() {
                     value={activityData.title}
                     onChange={(e) => setActivityData({ ...activityData, title: e.target.value })}
                     placeholder="e.g., Morning Practice, Team Meeting"
-                    className="h-12"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">Date</label>
-                  <Input
-                    type="date"
-                    value={activityData.date}
-                    onChange={(e) => setActivityData({ ...activityData, date: e.target.value })}
                     className="h-12"
                   />
                 </div>
@@ -177,7 +160,11 @@ export default function Schedule() {
                 <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    onClick={() => setShowForm(false)}
+                    onClick={() => {
+                      setShowForm(false);
+                      setSelectedDate(null);
+                      setActivityData({ title: '', notes: '' });
+                    }}
                     className="flex-1"
                   >
                     Cancel
@@ -197,23 +184,37 @@ export default function Schedule() {
 
         {/* Weekly Calendar Grid */}
         <div className="bg-white rounded-3xl shadow-xl p-6">
-          <h3 className="font-bold text-xl text-slate-800 mb-4">This Week</h3>
+          <h3 className="font-bold text-2xl text-slate-800 mb-6">This Week</h3>
           
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-3">
             {getCurrentWeekDates().map((date, index) => {
               const dayActivities = getActivitiesForDate(date);
               const isToday = date.toDateString() === new Date().toDateString();
+              const dateStr = date.toISOString().split('T')[0];
               
               return (
-                <div key={index} className="space-y-2">
-                  <div className={`text-center p-2 rounded-xl ${isToday ? 'bg-violet-500 text-white' : 'bg-slate-50'}`}>
-                    <div className="text-xs font-medium">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                    <div className={`text-lg font-bold ${isToday ? 'text-white' : 'text-slate-800'}`}>
+                <div 
+                  key={index} 
+                  className="space-y-2 min-h-[200px] border-2 border-slate-100 rounded-xl p-3 hover:border-violet-200 transition-all"
+                >
+                  <div className={`text-center p-3 rounded-xl ${isToday ? 'bg-violet-500 text-white' : 'bg-slate-50'}`}>
+                    <div className="text-xs font-semibold uppercase tracking-wide">
+                      {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                    </div>
+                    <div className={`text-2xl font-bold ${isToday ? 'text-white' : 'text-slate-800'}`}>
                       {date.getDate()}
                     </div>
                   </div>
+
+                  <button
+                    onClick={() => handleDateClick(dateStr)}
+                    className="w-full py-2 px-3 bg-violet-50 hover:bg-violet-100 rounded-lg text-violet-600 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add
+                  </button>
                   
-                  <div className="space-y-1 min-h-[100px]">
+                  <div className="space-y-2">
                     {dayActivities.map((activity) => {
                       const value = JSON.parse(activity.preference_value);
                       const type = activity.preference_type;
@@ -228,11 +229,11 @@ export default function Schedule() {
                               {getActivityIcon(type)}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium text-slate-800 truncate">
+                              <p className="text-xs font-semibold text-slate-800 truncate">
                                 {value.title || (type === 'confidence_checkin' ? 'Confidence Check-in' : 'Activity')}
                               </p>
                               {value.notes && (
-                                <p className="text-xs text-slate-500 truncate">{value.notes}</p>
+                                <p className="text-xs text-slate-500 truncate mt-0.5">{value.notes}</p>
                               )}
                             </div>
                           </div>
