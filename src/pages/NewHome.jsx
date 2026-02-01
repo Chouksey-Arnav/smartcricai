@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
+import QuickSearch from '@/components/home/QuickSearch';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -59,7 +60,6 @@ function getCricketJoke() {
 export default function NewHome() {
   const [greeting, setGreeting] = useState('');
   const [todayConfidence, setTodayConfidence] = useState(null);
-  const [hasCheckedOnboarding, setHasCheckedOnboarding] = useState(false);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   
@@ -208,17 +208,7 @@ export default function NewHome() {
     if (saved) setTodayConfidence(saved);
   }, []);
 
-  // First-time user redirect to Get to Know You
-  useEffect(() => {
-    if (!userLoading && !profileLoading && user && !hasCheckedOnboarding) {
-      setHasCheckedOnboarding(true);
-      
-      // Check if user has completed the quiz
-      if (!userProfile || !userProfile.quiz_completed) {
-        navigate(createPageUrl('GetToKnowYou'));
-      }
-    }
-  }, [user, userProfile, userLoading, profileLoading, hasCheckedOnboarding, navigate]);
+
 
   const displayName = profile?.username || progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
 
@@ -401,6 +391,15 @@ export default function NewHome() {
             <ChevronRight className="w-6 h-6 text-white" />
           </motion.div>
         </Link>
+
+        {/* Quick Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <QuickSearch />
+        </motion.div>
       </div>
     </div>
   );
