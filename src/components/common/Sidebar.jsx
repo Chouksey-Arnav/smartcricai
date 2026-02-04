@@ -34,7 +34,6 @@ const menuItems = [
   // Community & Social
   { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
-  { name: 'Player Lookup', icon: Search, page: 'PlayerLookup', color: 'text-cyan-500' },
   { name: 'Team Mode', icon: Users, page: 'TeamMode', color: 'text-red-500' },
   
   // Training & Skills
@@ -62,7 +61,6 @@ const menuItems = [
   { name: 'Leaderboard', icon: Trophy, page: 'Leaderboard', color: 'text-amber-500' },
   
   // Resources & Profile - Always at Bottom
-  { name: 'Cricket Hub', icon: Zap, page: 'CricketHub', color: 'text-red-600' },
   { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
 ];
 

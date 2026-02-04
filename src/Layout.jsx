@@ -71,34 +71,34 @@ export default function Layout({ children, currentPageName }) {
       
       {children}
       
-      {/* Smart Trick Coach Indicator - Points to FloatingTimer */}
-      <div className="fixed bottom-[105px] right-[75px] z-[45] pointer-events-none">
+      {/* Smart Trick Coach Indicator - Points to Noupe Chatbot */}
+      <div className="fixed bottom-[80px] right-[80px] z-[45] pointer-events-none">
         <div className="flex flex-col items-end gap-1">
           <svg
-            width="60"
-            height="60"
-            viewBox="0 0 60 60"
+            width="80"
+            height="80"
+            viewBox="0 0 80 80"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className="drop-shadow-lg animate-pulse"
           >
             <path
-              d="M10 10 C 25 8, 38 12, 45 30"
+              d="M15 15 C 30 12, 45 15, 55 40"
               stroke="black"
-              strokeWidth="3"
+              strokeWidth="4"
               strokeLinecap="round"
               fill="none"
             />
             <path
-              d="M45 30 L 38 26 M45 30 L 41 32"
+              d="M55 40 L 48 35 M55 40 L 50 43"
               stroke="black"
-              strokeWidth="3"
+              strokeWidth="4"
               strokeLinecap="round"
               fill="none"
             />
           </svg>
-          <div className="bg-black text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
-            Smart Trick Coach
+          <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
+            💬 Smart Trick Coach
           </div>
         </div>
       </div>

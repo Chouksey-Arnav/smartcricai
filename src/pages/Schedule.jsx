@@ -37,15 +37,17 @@ export default function Schedule() {
   });
 
   const addActivityMutation = useMutation({
-    mutationFn: async () => {
-      if (!user?.email || !activityData.title || !selectedDate) return;
+    mutationFn: async (data) => {
+      if (!user?.email || !data.title || !data.date) {
+        throw new Error('Missing required fields');
+      }
       
       await base44.entities.ScheduledActivity.create({
         user_email: user.email,
-        title: activityData.title,
-        notes: activityData.notes,
-        date: selectedDate,
-        activity_type: 'custom'
+        title: data.title,
+        notes: data.notes || '',
+        date: data.date,
+        activity_type: data.activity_type || 'custom'
       });
     },
     onSuccess: () => {
@@ -73,11 +75,21 @@ export default function Schedule() {
   };
 
   const handleAddActivity = () => {
-    if (!activityData.title) {
+    if (!activityData.title || !activityData.title.trim()) {
       toast.error('Please enter activity title');
       return;
     }
-    addActivityMutation.mutate();
+    if (!selectedDate) {
+      toast.error('Please select a date');
+      return;
+    }
+    
+    addActivityMutation.mutate({
+      title: activityData.title,
+      notes: activityData.notes,
+      date: selectedDate,
+      activity_type: 'custom'
+    });
   };
 
   const getCurrentWeekDates = () => {
