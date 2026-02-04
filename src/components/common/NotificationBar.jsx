@@ -26,17 +26,48 @@ export default function NotificationBar({ onChallengeComplete }) {
     enabled: !!user?.email,
   });
 
-  // Dynamic challenges based on progress
+  // Get today's completed drills count
+  const today = new Date().toISOString().split('T')[0];
+  const { data: todayDrills } = useQuery({
+    queryKey: ['todayDrills', user?.email, today],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const allWorkouts = await base44.entities.Workout.filter({ user_email: user.email });
+      const todayWorkouts = allWorkouts.filter(w => 
+        w.completed_date && w.completed_date.startsWith(today)
+      );
+      return todayWorkouts;
+    },
+    enabled: !!user?.email,
+  });
+
+  // Get today's quiz attempts
+  const { data: todayQuizzes } = useQuery({
+    queryKey: ['todayQuizzes', user?.email, today],
+    queryFn: async () => {
+      if (!user?.email || !userProgress?.quiz_scores) return 0;
+      const todayQuizzes = userProgress.quiz_scores.filter(q => 
+        q.date && q.date.startsWith(today) && q.score >= 80
+      );
+      return todayQuizzes.length;
+    },
+    enabled: !!user?.email && !!userProgress,
+  });
+
+  // Dynamic challenges based on actual progress
+  const drillsCompletedToday = todayDrills?.length || 0;
+  const quizzesPassedToday = todayQuizzes || 0;
+  
   const challenges = [
     {
       id: 1,
       type: 'drill',
       title: 'Complete 3 Drills Today',
       description: 'Finish any 3 practice drills',
-      current: 0,
+      current: drillsCompletedToday,
       target: 3,
-      progress: 0,
-      completed: false,
+      progress: Math.min((drillsCompletedToday / 3) * 100, 100),
+      completed: drillsCompletedToday >= 3,
       reward: 50
     },
     {
@@ -44,10 +75,10 @@ export default function NotificationBar({ onChallengeComplete }) {
       type: 'quiz',
       title: 'Quiz Master',
       description: 'Pass 1 quiz with 80%+',
-      current: 0,
+      current: quizzesPassedToday,
       target: 1,
-      progress: 0,
-      completed: false,
+      progress: Math.min((quizzesPassedToday / 1) * 100, 100),
+      completed: quizzesPassedToday >= 1,
       reward: 30
     },
     {
@@ -63,115 +94,18 @@ export default function NotificationBar({ onChallengeComplete }) {
     },
     {
       id: 4,
-      type: 'mental',
-      title: 'Mental Training',
-      description: 'Complete 2 mental routines',
-      current: 0,
-      target: 2,
-      progress: 0,
-      completed: false,
-      reward: 40
-    },
-    {
-      id: 5,
-      type: 'scenario',
-      title: 'Mini-Match IQ',
-      description: 'Complete 5 match scenarios',
-      current: 0,
-      target: 5,
-      progress: 0,
-      completed: false,
-      reward: 55
-    },
-    {
-      id: 6,
-      type: 'fitness',
-      title: 'Fitness Focus',
-      description: 'Complete 1 workout session',
-      current: 0,
-      target: 1,
-      progress: 0,
-      completed: false,
-      reward: 45
-    },
-    {
-      id: 7,
-      type: 'coach',
-      title: 'Ask the Coach',
-      description: 'Chat with AI Coach 3 times',
-      current: 0,
-      target: 3,
-      progress: 0,
-      completed: false,
-      reward: 35
-    },
-    {
-      id: 8,
-      type: 'video',
-      title: 'Video Analysis',
-      description: 'Analyze 1 technique video',
-      current: 0,
-      target: 1,
-      progress: 0,
-      completed: false,
-      reward: 60
+      type: 'total',
+      title: 'Practice Master',
+      description: 'Complete 20 total drills',
+      current: userProgress?.completed_drills?.length || 0,
+      target: 20,
+      progress: Math.min(((userProgress?.completed_drills?.length || 0) / 20) * 100, 100),
+      completed: (userProgress?.completed_drills?.length || 0) >= 20,
+      reward: 150
     }
   ];
 
-  const { data: preferences } = useQuery({
-    queryKey: ['userPreferences', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const prefs = await base44.entities.UserPreferences.filter({ user_email: user.email });
-      return prefs[0] || null;
-    },
-    enabled: !!user?.email,
-  });
-
-  // Fetch match notifications
-  const { data: matchNotifications } = useQuery({
-    queryKey: ['matchNotifications', preferences?.favorite_teams],
-    queryFn: async () => {
-      if (!preferences?.favorite_teams?.length) return [];
-      
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Get upcoming matches in the next 24 hours for these teams: ${preferences.favorite_teams.join(', ')}.
-        
-Return match reminders with timing.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            notifications: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  team: { type: "string" },
-                  match_info: { type: "string" },
-                  time: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      });
-      
-      return response?.notifications || [];
-    },
-    enabled: !!preferences?.favorite_teams?.length,
-    refetchInterval: 600000, // Refresh every 10 minutes
-  });
-
-  const matchNots = (matchNotifications || []).map(m => ({
-    id: `match-${m.team}`,
-    type: 'match',
-    title: `🏏 ${m.team} Match Alert`,
-    description: `${m.match_info} - ${m.time}`,
-    isMatch: true,
-  }));
-
-  const allNotifications = [...matchNots, ...challenges];
+  const allNotifications = challenges;
   const unreadCount = allNotifications.filter(n => !n.completed).length;
 
   return (
@@ -246,22 +180,7 @@ Return match reminders with timing.`,
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    {notification.isMatch ? (
-                      <Link to={createPageUrl('CricketHub')} onClick={() => setIsOpen(false)}>
-                        <div className="p-4 rounded-2xl border-2 bg-gradient-to-r from-red-50 to-orange-50 border-red-200 hover:border-red-300 transition-all cursor-pointer">
-                          <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-red-500">
-                              <Calendar className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-bold text-slate-800 mb-1">{notification.title}</h3>
-                              <p className="text-sm text-slate-600">{notification.description}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    ) : (
-                      <div
+                    <div
                         className={cn(
                           "p-4 rounded-2xl border-2 transition-all",
                           notification.completed
@@ -302,7 +221,6 @@ Return match reminders with timing.`,
                           </div>
                         </div>
                       </div>
-                    )}
                   </motion.div>
                 ))
               )}
