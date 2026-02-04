@@ -53,13 +53,13 @@ export default function CustomDrillWorkoutCreator() {
           drill_title: drill.drill_title,
           is_existing: false
         })),
-        liked: true,
+        liked: false,
         saved: true
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
-      toast.success('Workout saved! 🎉');
+      toast.success('Workout saved to Drills! 🎉');
       navigate(createPageUrl('Drills'));
     },
   });

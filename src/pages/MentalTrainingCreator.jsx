@@ -64,7 +64,8 @@ export default function MentalTrainingCreator() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
-      toast.success('Mental routine saved forever! 🧠');
+      queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
+      toast.success('Saved to Mental Training! 🧠');
       navigate(createPageUrl('MentalCoaching'));
     },
   });
