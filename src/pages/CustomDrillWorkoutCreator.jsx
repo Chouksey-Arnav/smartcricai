@@ -60,7 +60,7 @@ export default function CustomDrillWorkoutCreator() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
       toast.success('Workout saved! 🎉');
-      navigate(createPageUrl('Schedule'));
+      navigate(createPageUrl('Drills'));
     },
   });
 
