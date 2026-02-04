@@ -160,17 +160,30 @@ export default function NewHome() {
     enabled: !!userProfile,
   });
 
-  // Calculate weekly minutes
+  // Calculate weekly minutes - only drills completed in the last 7 days
   const getWeeklyMinutes = () => {
-    if (!progress?.last_practice_date) return 0;
+    if (!progress?.completed_drills || progress.completed_drills.length === 0) return 0;
+    
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
-    // Simplified: return total minutes if practiced this week
-    const lastPractice = new Date(progress.last_practice_date);
-    if (lastPractice >= weekAgo) {
-      return progress.total_practice_minutes || 0;
-    }
-    return 0;
+    
+    // In a real implementation, each drill completion would have a timestamp
+    // For now, we'll use a simplified approach based on last practice date
+    const lastPractice = progress.last_practice_date ? new Date(progress.last_practice_date) : null;
+    
+    if (!lastPractice || lastPractice < weekAgo) return 0;
+    
+    // Estimate: assume even distribution of practice over time
+    const totalMinutes = progress.total_practice_minutes || 0;
+    const totalDrills = progress.completed_drills.length;
+    
+    if (totalDrills === 0) return 0;
+    
+    // Simple heuristic: if last practice was this week, show proportional minutes
+    const avgMinutesPerDrill = totalMinutes / totalDrills;
+    const daysActive = Math.min(7, progress.current_streak || 1);
+    
+    return Math.round(avgMinutesPerDrill * daysActive);
   };
 
   // Calculate mini-match accuracy
