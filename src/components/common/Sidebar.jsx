@@ -39,6 +39,7 @@ const menuItems = [
   // Training & Skills
   { name: 'Skill Paths', icon: TrendingUp, page: 'SkillPaths', color: 'text-teal-500' },
   { name: 'Drills', icon: Target, page: 'Drills', color: 'text-purple-500' },
+  { name: 'YouTube Drill Finder', icon: Video, page: 'DrillYouTubeFinder', color: 'text-red-500' },
   { name: 'Drill Workout', icon: Target, page: 'DrillWorkoutCreator', color: 'text-blue-500' },
   
   // Fitness & Workouts
@@ -52,7 +53,6 @@ const menuItems = [
   { name: 'Quizzes', icon: BookOpen, page: 'Quizzes', color: 'text-amber-500' },
   
   // Game & Performance
-  { name: 'Video Analysis', icon: Video, page: 'VideoAnalysis', color: 'text-rose-500' },
   { name: 'Match Tracker', icon: Trophy, page: 'MatchTracker', color: 'text-green-600' },
   { name: 'Mini-Match', icon: Zap, page: 'MiniMatch', color: 'text-orange-500' },
   { name: 'Schedule', icon: Calendar, page: 'Schedule', color: 'text-violet-500' },

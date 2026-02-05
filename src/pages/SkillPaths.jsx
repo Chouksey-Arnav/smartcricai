@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, CheckCircle, Lock, Star, Zap, Target } from 'lucide-react';
+import { Trophy, CheckCircle, Lock, Star, Zap, Target, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import toast from 'react-hot-toast';
 
 const pathData = {
   beginner: {
@@ -115,6 +116,16 @@ export default function SkillPaths() {
     },
   });
 
+  const resetPathMutation = useMutation({
+    mutationFn: async () => {
+      return await base44.entities.SkillPath.delete(skillPath.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['skillPath'] });
+      toast.success('Skill path reset! Choose a new path.');
+    },
+  });
+
   const handleStartPath = (level) => {
     createPath.mutate(level);
   };
@@ -168,8 +179,19 @@ export default function SkillPaths() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-6 mb-6 text-white"
+            className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-6 mb-6 text-white relative"
           >
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to reset your current skill path? This will allow you to choose a new path.')) {
+                  resetPathMutation.mutate();
+                }
+              }}
+              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+              title="Reset skill path"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-amber-100 text-sm mb-1">Total XP</p>

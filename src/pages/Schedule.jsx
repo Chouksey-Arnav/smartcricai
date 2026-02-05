@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 export default function Schedule() {
   const [showForm, setShowForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const [activityData, setActivityData] = useState({
     title: '',
     notes: ''
@@ -49,9 +50,21 @@ export default function Schedule() {
         date: data.date,
         activity_type: data.activity_type || 'custom'
       });
+
+      // Create notification
+      const dateObj = new Date(data.date);
+      const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      await base44.entities.Notification.create({
+        user_email: user.email,
+        type: 'schedule',
+        title: 'Activity Scheduled! 📅',
+        message: `"${data.title}" added to ${formattedDate}`,
+        related_id: data.date
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['scheduledActivities']);
+      queryClient.invalidateQueries(['notifications']);
       toast.success('Activity logged!');
       setActivityData({ title: '', notes: '' });
       setShowForm(false);
@@ -221,7 +234,8 @@ export default function Schedule() {
                       return (
                         <div
                           key={activity.id}
-                          className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-2 relative group"
+                          onClick={() => setSelectedActivity(activity)}
+                          className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-2 relative group cursor-pointer hover:from-violet-100 hover:to-purple-100 transition-colors"
                         >
                           <div className="flex items-start gap-1">
                             <div className="text-violet-600 mt-0.5">
@@ -237,7 +251,10 @@ export default function Schedule() {
                             </div>
                           </div>
                           <button
-                            onClick={() => deleteActivityMutation.mutate(activity.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteActivityMutation.mutate(activity.id);
+                            }}
                             className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -251,6 +268,66 @@ export default function Schedule() {
             })}
           </div>
         </div>
+
+        {/* Activity Detail Modal */}
+        <AnimatePresence>
+          {selectedActivity && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedActivity(null)}
+                className="fixed inset-0 bg-black/50 z-40"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-6 w-[90%] max-w-md z-50"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-slate-800">Activity Details</h3>
+                  <button
+                    onClick={() => setSelectedActivity(null)}
+                    className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5 text-slate-500" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-slate-500 mb-1">Title</p>
+                    <p className="font-semibold text-slate-800">{selectedActivity.title}</p>
+                  </div>
+                  {selectedActivity.notes && (
+                    <div>
+                      <p className="text-sm text-slate-500 mb-1">Notes</p>
+                      <p className="text-slate-700">{selectedActivity.notes}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-slate-500 mb-1">Date</p>
+                    <p className="text-slate-700">
+                      {new Date(selectedActivity.date).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setSelectedActivity(null)}
+                    className="w-full bg-violet-500 hover:bg-violet-600"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

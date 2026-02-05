@@ -15,6 +15,18 @@ export default function NotificationBar({ onChallengeComplete }) {
     queryFn: () => base44.auth.me(),
   });
 
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const results = await base44.entities.Notification.filter({ 
+        user_email: user.email 
+      });
+      return results.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 10);
+    },
+    enabled: !!user?.email,
+  });
+
   // Generate dynamic challenges based on user progress
   const { data: userProgress } = useQuery({
     queryKey: ['userProgress', user?.email],
@@ -105,8 +117,8 @@ export default function NotificationBar({ onChallengeComplete }) {
     }
   ];
 
-  const allNotifications = challenges;
-  const unreadCount = allNotifications.filter(n => !n.completed).length;
+  const allNotifications = [...notifications, ...challenges];
+  const unreadCount = notifications.filter(n => !n.is_read).length + challenges.filter(n => !n.completed).length;
 
   return (
     <>
@@ -173,14 +185,17 @@ export default function NotificationBar({ onChallengeComplete }) {
                   <p className="text-slate-500">No notifications!</p>
                 </div>
               ) : (
-                allNotifications.map((notification, index) => (
+                allNotifications.map((notification, index) => {
+                  const isChallenge = notification.target !== undefined;
+                  return (
                   <motion.div
-                    key={notification.id}
+                    key={notification.id || `challenge-${notification.id}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <div
+                    {isChallenge ? (
+                      <div
                         className={cn(
                           "p-4 rounded-2xl border-2 transition-all",
                           notification.completed
@@ -221,8 +236,29 @@ export default function NotificationBar({ onChallengeComplete }) {
                           </div>
                         </div>
                       </div>
+                    ) : (
+                      <div className="p-4 rounded-2xl border-2 bg-white border-blue-200">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500">
+                            {notification.type === 'drill' && <Target className="w-5 h-5 text-white" />}
+                            {notification.type === 'workout' && <Trophy className="w-5 h-5 text-white" />}
+                            {notification.type === 'mental' && <Trophy className="w-5 h-5 text-white" />}
+                            {notification.type === 'quiz' && <Trophy className="w-5 h-5 text-white" />}
+                            {notification.type === 'schedule' && <Calendar className="w-5 h-5 text-white" />}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-bold text-slate-800 mb-1">{notification.title}</h3>
+                            <p className="text-sm text-slate-600">{notification.message}</p>
+                            <p className="text-xs text-slate-400 mt-1">
+                              {new Date(notification.created_date).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
-                ))
+                  );
+                })
               )}
             </div>
           </motion.div>

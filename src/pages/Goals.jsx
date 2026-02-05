@@ -262,7 +262,11 @@ export default function Goals() {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
       toast.success('Goals saved! Your training is now ultra-personalized! 🎯');
-      navigate(createPageUrl('NewHome'));
+      
+      // Redirect to home page
+      setTimeout(() => {
+        navigate(createPageUrl('NewHome'));
+      }, 500);
     },
   });
 

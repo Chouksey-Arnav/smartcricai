@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Target, Heart, Trash2, MessageSquare } from 'lucide-react';
+import { Search, Target, Heart, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
@@ -22,25 +22,7 @@ export default function Drills() {
   const initialTab = urlParams.get('tab') || 'drills';
   const [activeTab, setActiveTab] = useState(initialTab);
 
-  // Load Drill Agent chatbot
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.defer = true;
-    script.setAttribute('data-relevanceai-share-id', 'bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064');
-    script.src = 'https://app.relevanceai.com/embed/chat-bubble.js';
-    script.setAttribute('data-share-styles', 'hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false');
-    
-    if (!document.querySelector(`script[src="${script.src}"]`)) {
-      document.body.appendChild(script);
-    }
 
-    return () => {
-      const existingScript = document.querySelector(`script[src="${script.src}"]`);
-      if (existingScript) {
-        document.body.removeChild(existingScript);
-      }
-    };
-  }, []);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -162,23 +144,6 @@ export default function Drills() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white pb-24">
       <Header title="Practice Drills" showSettings={false} />
-      
-      {/* Drill AI Agent Prompt */}
-      <div className="px-4 pt-4 max-w-lg mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 mb-4 text-white shadow-lg"
-        >
-          <div className="flex items-center gap-3">
-            <MessageSquare className="w-5 h-5 shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-semibold mb-1">🎯 Need a specific drill?</p>
-              <p className="text-xs text-purple-100">Click the chat bubble below and ask our Drill Agent for YouTube videos of any cricket drill!</p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
 
       <div className="px-4 py-4 max-w-lg mx-auto space-y-6">
         {/* Tab Switcher */}

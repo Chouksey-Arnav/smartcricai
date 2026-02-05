@@ -6,6 +6,7 @@ import { ChevronRight, CheckCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
@@ -291,7 +292,11 @@ export default function GetToKnowYou() {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       toast.success('Profile saved! Your training is now personalized! 🎉');
-      navigate(createPageUrl('NewHome'));
+      
+      // Redirect to home page
+      setTimeout(() => {
+        navigate(createPageUrl('NewHome'));
+      }, 500);
     },
   });
 

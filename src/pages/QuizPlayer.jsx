@@ -56,6 +56,16 @@ export default function QuizPlayer() {
     mutationFn: async (finalScore) => {
       if (!user?.email || !quiz) return;
 
+      // Create notification
+      const percentage = Math.round((finalScore / questions.length) * 100);
+      await base44.entities.Notification.create({
+        user_email: user.email,
+        type: 'quiz',
+        title: 'Quiz Completed! 📚',
+        message: `You scored ${percentage}% on "${quiz.title}"!`,
+        related_id: quiz.id
+      });
+
       const completedQuizzes = progress?.completed_quizzes || [];
       const quizScores = progress?.quiz_scores || [];
       const newBadges = [...(progress?.badges || [])];
@@ -92,6 +102,7 @@ export default function QuizPlayer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userProgress']);
+      queryClient.invalidateQueries(['notifications']);
     },
   });
 

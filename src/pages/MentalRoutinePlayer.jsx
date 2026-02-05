@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, 
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 
 export default function MentalRoutinePlayer() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const routineId = urlParams.get('id');
 
@@ -26,6 +27,11 @@ export default function MentalRoutinePlayer() {
   const [audioElement, setAudioElement] = useState(null);
   const intervalRef = useRef(null);
 
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
   const { data: routine, isLoading } = useQuery({
     queryKey: ['mentalRoutine', routineId],
     queryFn: async () => {
@@ -33,6 +39,23 @@ export default function MentalRoutinePlayer() {
       return routines[0];
     },
     enabled: !!routineId,
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: async () => {
+      if (user?.email && routine) {
+        await base44.entities.Notification.create({
+          user_email: user.email,
+          type: 'mental',
+          title: 'Mental Training Completed! 🧠',
+          message: `Great job completing "${routine.title}"!`,
+          related_id: routine.id
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
   });
 
   const steps = routine?.steps || [];
@@ -56,6 +79,7 @@ export default function MentalRoutinePlayer() {
             } else {
               setIsPlaying(false);
               setIsCompleted(true);
+              completeMutation.mutate();
               return 0;
             }
           }
