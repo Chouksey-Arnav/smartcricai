@@ -55,10 +55,21 @@ export default function AIWorkout() {
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
+      // Create notification
+      if (user?.email && activeWorkout) {
+        await base44.entities.Notification.create({
+          user_email: user.email,
+          type: 'workout',
+          title: 'Workout Completed! 💪',
+          message: `Crushed the ${activeWorkout.body_part} ${activeWorkout.level} workout!`,
+          related_id: activeWorkout.id
+        });
+      }
       return await base44.entities.PreGeneratedWorkout.delete(activeWorkout.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['preGeneratedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
       confetti({
         particleCount: 100,
         spread: 70,
