@@ -144,7 +144,7 @@ export default function FitnessBuilder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['preGeneratedWorkouts'] });
-      toast.success('Workout saved forever! Ready to crush it! 🔥');
+      toast.success('Workout saved to AI Workout! 💪');
       navigate(createPageUrl('AIWorkout'));
     },
   });
