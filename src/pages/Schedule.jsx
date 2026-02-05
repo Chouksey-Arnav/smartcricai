@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Heart, Dumbbell, BookOpen } from 'lucide-react';
+import { Plus, Trash2, Heart, Dumbbell, BookOpen, CheckCircle, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function Schedule() {
   const [showForm, setShowForm] = useState(false);
@@ -17,6 +18,7 @@ export default function Schedule() {
     title: '',
     notes: ''
   });
+  const [newChecklistItem, setNewChecklistItem] = useState('');
 
   const queryClient = useQueryClient();
 
@@ -37,16 +39,25 @@ export default function Schedule() {
     enabled: !!user?.email,
   });
 
+  const { data: checklistItems = [] } = useQuery({
+    queryKey: ['checklistItems', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      return await base44.entities.ChecklistItem.filter({ user_email: user.email });
+    },
+    enabled: !!user?.email,
+  });
+
   const addActivityMutation = useMutation({
     mutationFn: async (data) => {
-      if (!user?.email || !data.title || !data.date) {
+      if (!user?.email || !data.title?.trim() || !data.date) {
         throw new Error('Missing required fields');
       }
       
       await base44.entities.ScheduledActivity.create({
         user_email: user.email,
-        title: data.title,
-        notes: data.notes || '',
+        title: data.title.trim(),
+        notes: data.notes?.trim() || '',
         date: data.date,
         activity_type: data.activity_type || 'custom'
       });
@@ -70,6 +81,10 @@ export default function Schedule() {
       setShowForm(false);
       setSelectedDate(null);
     },
+    onError: (error) => {
+      console.error('Failed to save activity:', error);
+      toast.error('Failed to save activity. Please try again.');
+    },
   });
 
   const deleteActivityMutation = useMutation({
@@ -82,12 +97,50 @@ export default function Schedule() {
     },
   });
 
+  const addChecklistItemMutation = useMutation({
+    mutationFn: async (title) => {
+      if (!user?.email || !title?.trim()) {
+        throw new Error('Missing required fields');
+      }
+      await base44.entities.ChecklistItem.create({
+        user_email: user.email,
+        title: title.trim(),
+        is_completed: false
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['checklistItems']);
+      setNewChecklistItem('');
+      toast.success('Task added!');
+    },
+  });
+
+  const toggleChecklistItemMutation = useMutation({
+    mutationFn: async ({ id, is_completed }) => {
+      await base44.entities.ChecklistItem.update(id, { is_completed: !is_completed });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['checklistItems']);
+    },
+  });
+
+  const deleteChecklistItemMutation = useMutation({
+    mutationFn: async (id) => {
+      await base44.entities.ChecklistItem.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['checklistItems']);
+      toast.success('Task deleted');
+    },
+  });
+
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setShowForm(true);
   };
 
-  const handleAddActivity = () => {
+  const handleAddActivity = (e) => {
+    e.preventDefault();
     if (!activityData.title || !activityData.title.trim()) {
       toast.error('Please enter activity title');
       return;
@@ -103,6 +156,15 @@ export default function Schedule() {
       date: selectedDate,
       activity_type: 'custom'
     });
+  };
+
+  const handleAddChecklistItem = (e) => {
+    e.preventDefault();
+    if (!newChecklistItem.trim()) {
+      toast.error('Please enter a task');
+      return;
+    }
+    addChecklistItemMutation.mutate(newChecklistItem);
   };
 
   const getCurrentWeekDates = () => {
@@ -151,7 +213,7 @@ export default function Schedule() {
                 Log Activity for {selectedDate && new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </h3>
 
-              <div className="space-y-4">
+              <form onSubmit={handleAddActivity} className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-2 block">Activity Title</label>
                   <Input
@@ -159,6 +221,7 @@ export default function Schedule() {
                     onChange={(e) => setActivityData({ ...activityData, title: e.target.value })}
                     placeholder="e.g., Morning Practice, Team Meeting"
                     className="h-12"
+                    autoFocus
                   />
                 </div>
 
@@ -174,6 +237,7 @@ export default function Schedule() {
 
                 <div className="flex gap-3 pt-2">
                   <Button
+                    type="button"
                     variant="outline"
                     onClick={() => {
                       setShowForm(false);
@@ -185,14 +249,14 @@ export default function Schedule() {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleAddActivity}
+                    type="submit"
                     disabled={addActivityMutation.isPending}
                     className="flex-1 bg-violet-500 hover:bg-violet-600"
                   >
                     {addActivityMutation.isPending ? 'Saving...' : 'Save Activity'}
                   </Button>
                 </div>
-              </div>
+              </form>
             </motion.div>
           )}
         </AnimatePresence>
@@ -326,9 +390,70 @@ export default function Schedule() {
                 </div>
               </motion.div>
             </>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
+            )}
+            </AnimatePresence>
+
+            {/* Checklist Section */}
+            <div className="bg-white rounded-3xl shadow-xl p-6 mt-8">
+            <h3 className="font-bold text-2xl text-slate-800 mb-6">My Tasks</h3>
+
+            {/* Add New Task */}
+            <form onSubmit={handleAddChecklistItem} className="flex gap-3 mb-6">
+            <Input
+              value={newChecklistItem}
+              onChange={(e) => setNewChecklistItem(e.target.value)}
+              placeholder="Add a new task..."
+              className="h-12"
+            />
+            <Button 
+              type="submit"
+              disabled={addChecklistItemMutation.isPending}
+              className="bg-violet-500 hover:bg-violet-600 shrink-0"
+            >
+              <Plus className="w-5 h-5" />
+            </Button>
+            </form>
+
+            {/* Checklist Items */}
+            <div className="space-y-3">
+            {checklistItems.length === 0 ? (
+              <div className="text-center py-8">
+                <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No tasks yet. Add one above!</p>
+              </div>
+            ) : (
+              checklistItems.map((item) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors group"
+                >
+                  <button
+                    onClick={() => toggleChecklistItemMutation.mutate({ id: item.id, is_completed: item.is_completed })}
+                    className="shrink-0"
+                  >
+                    {item.is_completed ? (
+                      <CheckCircle className="w-6 h-6 text-emerald-500" />
+                    ) : (
+                      <Circle className="w-6 h-6 text-slate-300" />
+                    )}
+                  </button>
+                  <span className={`flex-1 ${item.is_completed ? 'line-through text-slate-400' : 'text-slate-700'}`}>
+                    {item.title}
+                  </span>
+                  <button
+                    onClick={() => deleteChecklistItemMutation.mutate(item.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-50 rounded-lg"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </button>
+                </motion.div>
+              ))
+            )}
+            </div>
+            </div>
+            </div>
+            </div>
+            );
+            }
