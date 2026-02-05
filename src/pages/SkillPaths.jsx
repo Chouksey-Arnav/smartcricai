@@ -50,6 +50,22 @@ const pathData = {
     ],
     badge: 'Advanced Elite',
     unlockXP: 1000
+  },
+  pro: {
+    name: 'Pro Path',
+    color: 'amber',
+    icon: '👑',
+    items: [
+      { id: 'elite-technique', name: 'Elite Technical Mastery', xp: 250 },
+      { id: 'game-reading', name: 'Advanced Game Reading', xp: 300 },
+      { id: 'tactical-genius', name: 'Tactical Genius Training', xp: 250 },
+      { id: 'captaincy', name: 'Captaincy & Leadership', xp: 300 },
+      { id: 'pro-fitness', name: 'Professional Fitness Regime', xp: 250 },
+      { id: 'mental-mastery', name: 'Elite Mental Training', xp: 400 }
+    ],
+    badge: 'Pro Champion',
+    unlockXP: 2000,
+    isPremium: true
   }
 };
 
@@ -145,8 +161,19 @@ export default function SkillPaths() {
   const getNextLevel = (currentLevel) => {
     if (currentLevel === 'beginner') return 'intermediate';
     if (currentLevel === 'intermediate') return 'advanced';
+    if (currentLevel === 'advanced') return 'pro';
     return null;
   };
+
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const subscriptions = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      return subscriptions[0] || null;
+    },
+    enabled: !!user?.email,
+  });
 
   const canUnlockNext = (currentLevel) => {
     const path = pathData[currentLevel];
@@ -221,43 +248,54 @@ export default function SkillPaths() {
         {!skillPath ? (
           <div className="space-y-4">
             <h2 className="font-semibold text-slate-800 mb-4">Choose Your Starting Path</h2>
-            {Object.entries(pathData).map(([key, path], index) => (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-                className={`bg-white rounded-2xl shadow-lg p-6 border-2 border-${path.color}-200`}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="text-4xl">{path.icon}</div>
-                  <div>
-                    <h3 className={`text-xl font-bold text-${path.color}-700`}>{path.name}</h3>
-                    <p className="text-sm text-slate-500">{path.items.length} items to complete</p>
-                  </div>
-                </div>
-                
-                <ul className="space-y-2 mb-4">
-                  {path.items.slice(0, 3).map((item) => (
-                    <li key={item.id} className="text-sm text-slate-600 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-slate-400" />
-                      {item.name}
-                    </li>
-                  ))}
-                  {path.items.length > 3 && (
-                    <li className="text-sm text-slate-400">+ {path.items.length - 3} more...</li>
-                  )}
-                </ul>
-
-                <Button
-                  onClick={() => handleStartPath(key)}
-                  disabled={key !== 'beginner' && createPath.isPending}
-                  className={`w-full bg-${path.color}-600 hover:bg-${path.color}-700`}
+            {Object.entries(pathData).map(([key, path], index) => {
+              const isLocked = path.isPremium && !premiumStatus?.is_premium;
+              
+              return (
+                <motion.div
+                  key={key}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className={`bg-white rounded-2xl shadow-lg p-6 border-2 border-${path.color}-200 relative`}
                 >
-                  {key === 'beginner' ? 'Start Here!' : 'Choose This Path'}
-                </Button>
-              </motion.div>
-            ))}
+                  {isLocked && (
+                    <div className="absolute top-4 right-4">
+                      <Lock className="w-6 h-6 text-amber-500" />
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="text-4xl">{path.icon}</div>
+                    <div>
+                      <h3 className={`text-xl font-bold text-${path.color}-700`}>{path.name}</h3>
+                      <p className="text-sm text-slate-500">{path.items.length} items to complete</p>
+                      {isLocked && <p className="text-xs text-amber-600 font-semibold mt-1">🔒 Premium Required</p>}
+                    </div>
+                  </div>
+                  
+                  <ul className="space-y-2 mb-4">
+                    {path.items.slice(0, 3).map((item) => (
+                      <li key={item.id} className="text-sm text-slate-600 flex items-center gap-2">
+                        <Target className="w-4 h-4 text-slate-400" />
+                        {item.name}
+                      </li>
+                    ))}
+                    {path.items.length > 3 && (
+                      <li className="text-sm text-slate-400">+ {path.items.length - 3} more...</li>
+                    )}
+                  </ul>
+
+                  <Button
+                    onClick={() => isLocked ? null : handleStartPath(key)}
+                    disabled={(key !== 'beginner' && createPath.isPending) || isLocked}
+                    className={`w-full bg-${path.color}-600 hover:bg-${path.color}-700 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {isLocked ? '🔒 Premium Only' : key === 'beginner' ? 'Start Here!' : 'Choose This Path'}
+                  </Button>
+                </motion.div>
+              );
+            })}
           </div>
         ) : (
           <div className="space-y-4">

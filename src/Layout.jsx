@@ -71,37 +71,7 @@ export default function Layout({ children, currentPageName }) {
       
       {children}
       
-      {/* Smart Trick Coach Indicator - Points to Noupe Chatbot */}
-      <div className="fixed bottom-[80px] right-[80px] z-[45] pointer-events-none">
-        <div className="flex flex-col items-end gap-1">
-          <svg
-            width="80"
-            height="80"
-            viewBox="0 0 80 80"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="drop-shadow-lg animate-pulse"
-          >
-            <path
-              d="M15 15 C 30 12, 45 15, 55 40"
-              stroke="black"
-              strokeWidth="4"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d="M55 40 L 48 35 M55 40 L 50 43"
-              stroke="black"
-              strokeWidth="4"
-              strokeLinecap="round"
-              fill="none"
-            />
-          </svg>
-          <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
-            💬 Smart Trick Coach
-          </div>
-        </div>
-      </div>
+
 
       {showNav && <BottomNav />}
     </div>
