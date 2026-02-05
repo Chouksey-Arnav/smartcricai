@@ -91,16 +91,28 @@ export default function ConfidenceCheckIn() {
     mutationFn: async (confidenceData) => {
       // Save confidence check-in to Schedule entity as an activity
       const today = new Date().toISOString().split('T')[0];
-      return await base44.entities.ScheduledActivity.create({
+      const activity = await base44.entities.ScheduledActivity.create({
         user_email: user.email,
         title: confidenceData.title || 'Confidence Check-in',
         notes: `Feeling: ${confidenceData.level}`,
         date: today,
         activity_type: 'confidence_checkin'
       });
+
+      // Create notification
+      await base44.entities.Notification.create({
+        user_email: user.email,
+        type: 'schedule',
+        title: 'Confidence Check-in Logged! 💙',
+        message: `Added "${confidenceData.title}" to your schedule for today`,
+        related_id: activity.id
+      });
+
+      return activity;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['scheduledActivities']);
+      queryClient.invalidateQueries(['notifications']);
       toast.success('Logged to your schedule! 💙');
     }
   });

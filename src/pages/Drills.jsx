@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Target, Heart, Trash2 } from 'lucide-react';
+import { Search, Target, Heart, Trash2, Video } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
@@ -146,6 +146,22 @@ export default function Drills() {
       <Header title="Practice Drills" showSettings={false} />
 
       <div className="px-4 py-4 max-w-lg mx-auto space-y-6">
+        {/* YouTube Drill Finder Redirect */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate(createPageUrl('DrillYouTubeFinder'))}
+          className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white shadow-lg cursor-pointer hover:scale-105 transition-transform"
+        >
+          <div className="flex items-center gap-3">
+            <Video className="w-5 h-5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold mb-1">🎯 Need drill videos?</p>
+              <p className="text-xs text-purple-100">Tap here to find YouTube videos for any cricket drill!</p>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Tab Switcher */}
         <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-lg">
           <button

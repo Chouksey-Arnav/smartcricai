@@ -56,6 +56,7 @@ import ConfidenceCheckIn from './pages/ConfidenceCheckIn';
 import CustomDrillWorkoutCreator from './pages/CustomDrillWorkoutCreator';
 import DrillDetail from './pages/DrillDetail';
 import DrillWorkoutCreator from './pages/DrillWorkoutCreator';
+import DrillYouTubeFinder from './pages/DrillYouTubeFinder';
 import Drills from './pages/Drills';
 import FitnessBuilder from './pages/FitnessBuilder';
 import GetToKnowYou from './pages/GetToKnowYou';
@@ -82,7 +83,6 @@ import TeamMode from './pages/TeamMode';
 import Timer from './pages/Timer';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
-import DrillYouTubeFinder from './pages/DrillYouTubeFinder';
 import __Layout from './Layout.jsx';
 
 
@@ -96,6 +96,7 @@ export const PAGES = {
     "CustomDrillWorkoutCreator": CustomDrillWorkoutCreator,
     "DrillDetail": DrillDetail,
     "DrillWorkoutCreator": DrillWorkoutCreator,
+    "DrillYouTubeFinder": DrillYouTubeFinder,
     "Drills": Drills,
     "FitnessBuilder": FitnessBuilder,
     "GetToKnowYou": GetToKnowYou,
@@ -122,7 +123,6 @@ export const PAGES = {
     "Timer": Timer,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
-    "DrillYouTubeFinder": DrillYouTubeFinder,
 }
 
 export const pagesConfig = {

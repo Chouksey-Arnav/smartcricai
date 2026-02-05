@@ -46,14 +46,27 @@ export default function MatchTracker() {
 
   const saveMatchMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.entities.Match.create({
+      const match = await base44.entities.Match.create({
         ...data,
         user_email: user.email
       });
+
+      // Create notification
+      const resultEmoji = data.result === 'won' ? '🏆' : data.result === 'lost' ? '😔' : '🤝';
+      await base44.entities.Notification.create({
+        user_email: user.email,
+        type: 'achievement',
+        title: `Match Logged! ${resultEmoji}`,
+        message: `${data.match_type} match on ${new Date(data.match_date).toLocaleDateString()} - Result: ${data.result}`,
+        related_id: match.id
+      });
+
+      return match;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['matches'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Match saved! 🏏');
       navigate(createPageUrl('Home'));
     },
