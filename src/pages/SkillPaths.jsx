@@ -186,6 +186,21 @@ export default function SkillPaths() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 pb-24 pt-6">
       <div className="max-w-lg mx-auto px-6">
+        {/* Exit Button */}
+        {skillPath && (
+          <button
+            onClick={() => {
+              if (confirm(`Are you sure you want to exit your current ${currentPathData.name}? All progress will be lost.`)) {
+                resetPathMutation.mutate();
+              }
+            }}
+            className="mb-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2"
+          >
+            <X className="w-4 h-4" />
+            Exit Skill Path
+          </button>
+        )}
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -208,17 +223,7 @@ export default function SkillPaths() {
             transition={{ delay: 0.1 }}
             className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-6 mb-6 text-white relative"
           >
-            <button
-              onClick={() => {
-                if (confirm('Are you sure you want to reset your current skill path? This will allow you to choose a new path.')) {
-                  resetPathMutation.mutate();
-                }
-              }}
-              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-              title="Reset skill path"
-            >
-              <X className="w-5 h-5" />
-            </button>
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-amber-100 text-sm mb-1">Total XP</p>

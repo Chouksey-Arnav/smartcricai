@@ -10,10 +10,12 @@ import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import WorkoutChatbot from '@/components/fitness/WorkoutChatbot';
 
 export default function AIWorkout() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutCompleted, setWorkoutCompleted] = useState(false);
@@ -36,9 +38,39 @@ export default function AIWorkout() {
     enabled: !!user?.email,
   });
 
-  const activeWorkout = workouts?.[0];
+  const activeWorkout = selectedWorkoutId 
+    ? workouts?.find(w => w.id === selectedWorkoutId) 
+    : null;
   const exercises = activeWorkout?.exercises || [];
   const currentExercise = exercises[currentExerciseIndex];
+
+  // Save workout progress to localStorage
+  React.useEffect(() => {
+    if (workoutStarted && activeWorkout) {
+      const progress = {
+        workoutId: activeWorkout.id,
+        currentExerciseIndex,
+        completedSets,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('workoutProgress', JSON.stringify(progress));
+    }
+  }, [workoutStarted, currentExerciseIndex, completedSets, activeWorkout]);
+
+  // Restore workout progress on mount
+  React.useEffect(() => {
+    const savedProgress = localStorage.getItem('workoutProgress');
+    if (savedProgress && workouts) {
+      const progress = JSON.parse(savedProgress);
+      const workout = workouts.find(w => w.id === progress.workoutId);
+      if (workout) {
+        setSelectedWorkoutId(progress.workoutId);
+        setCurrentExerciseIndex(progress.currentExerciseIndex);
+        setCompletedSets(progress.completedSets);
+        setWorkoutStarted(true);
+      }
+    }
+  }, [workouts]);
 
   // Rest timer
   React.useEffect(() => {
@@ -65,6 +97,8 @@ export default function AIWorkout() {
           related_id: activeWorkout.id
         });
       }
+      // Clear saved progress
+      localStorage.removeItem('workoutProgress');
       return await base44.entities.PreGeneratedWorkout.delete(activeWorkout.id);
     },
     onSuccess: () => {
@@ -111,7 +145,54 @@ export default function AIWorkout() {
     setRestTime(0);
   };
 
-  if (!activeWorkout) {
+  if (!selectedWorkoutId && workouts && workouts.length > 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+        <Header title="AI Workout" showSettings={false} />
+        <div className="px-6 py-6 max-w-lg mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white mb-6"
+          >
+            <h2 className="font-bold text-2xl mb-2">Your Workouts</h2>
+            <p className="text-purple-100">Choose a workout to begin</p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {workouts.map((workout, index) => (
+              <motion.div
+                key={workout.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-2xl shadow-lg p-5"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-lg capitalize">{workout.body_part} Workout</h3>
+                    <p className="text-sm text-slate-600">{workout.exercises.length} exercises • {workout.level}</p>
+                  </div>
+                  <div className="px-3 py-1 bg-purple-100 rounded-full text-xs font-bold text-purple-700">
+                    {workout.duration} min
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setSelectedWorkoutId(workout.id)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Select Workout
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!workouts || workouts.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
         <Header title="AI Workout" showSettings={false} />
@@ -122,7 +203,7 @@ export default function AIWorkout() {
             className="bg-white rounded-3xl shadow-xl p-8"
           >
             <Sparkles className="w-16 h-16 text-purple-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800 mb-3">No Active Workout</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-3">No Saved Workouts</h2>
             <p className="text-slate-600 mb-6">Create a workout from the Fitness Builder to get started!</p>
             <Button onClick={() => navigate(createPageUrl('FitnessBuilder'))} className="bg-purple-500 hover:bg-purple-600">
               Go to Fitness Builder
@@ -197,13 +278,22 @@ export default function AIWorkout() {
             ))}
           </div>
 
-          <Button
-            onClick={() => setWorkoutStarted(true)}
-            className="w-full h-16 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl font-bold"
-          >
-            <Play className="w-6 h-6 mr-2" />
-            Start Workout
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setSelectedWorkoutId(null)}
+              variant="outline"
+              className="flex-1"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={() => setWorkoutStarted(true)}
+              className="flex-1 h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-bold"
+            >
+              <Play className="w-6 h-6 mr-2" />
+              Start Workout
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -306,6 +396,9 @@ export default function AIWorkout() {
           </motion.div>
         )}
       </div>
+
+      {/* Chatbot - show when workout is active */}
+      {workoutStarted && !workoutCompleted && <WorkoutChatbot />}
     </div>
   );
 }
