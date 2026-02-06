@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const drillCategories = [
@@ -244,25 +244,26 @@ export default function DrillWorkoutCreator() {
 
             <div className="space-y-4 mb-6">
               {matchingDrills.map((drill, index) => (
-                <motion.div
-                  key={drill.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border-2 border-blue-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
-                      {index + 1}
+                <Link key={drill.id} to={createPageUrl(`DrillDetail?id=${drill.id}`)}>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-slate-800">{drill.title}</h4>
+                        <p className="text-xs text-slate-600">
+                          {drill.duration_minutes} min • {drill.target_skill}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-800">{drill.title}</h4>
-                      <p className="text-xs text-slate-600">
-                        {drill.duration_minutes} min • {drill.target_skill}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               ))}
             </div>
 

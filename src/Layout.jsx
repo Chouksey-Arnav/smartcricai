@@ -8,8 +8,7 @@ const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'Qu
 
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
-
-
+  const isHomePage = currentPageName === 'Home';
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -67,9 +66,16 @@ export default function Layout({ children, currentPageName }) {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-10px); }
         }
-      `}</style>
-      
-      {children}
+
+        /* Page content padding for notification bar and timer */
+        .page-content-wrapper {
+          padding-top: ${isHomePage ? '0' : '80px'};
+        }
+        `}</style>
+
+        <div className={isHomePage ? '' : 'page-content-wrapper'}>
+        {children}
+        </div>
       
 
 

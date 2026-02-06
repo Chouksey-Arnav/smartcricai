@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { getPreGeneratedFitnessPlan } from '@/components/fitness/PreGeneratedFitnessPlans';
+import { generateWorkout } from '@/utils/exercisePools';
 
 const bodyParts = [
   { id: 'arm', label: 'Arms', emoji: '💪' },
@@ -76,17 +76,11 @@ export default function FitnessBuilder() {
     setSelectedParts([part]);
   };
 
-  const generateWorkout = async () => {
+  const handleGenerateWorkout = async () => {
     if (selectedParts.length === 0) {
       toast.error('Please select at least one body part');
       return;
     }
-
-    const isFullBody = selectedParts.includes('full_body');
-    const targetAreaString = isFullBody ? 'Full Body' : selectedParts[0].charAt(0).toUpperCase() + selectedParts[0].slice(1);
-    const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
-    const fitnessGoalString = fitnessGoals.find(g => g.id === goal).label;
-    const fitnessLevelString = levels.find(l => l.id === level).label;
 
     setIsGenerating(true);
 
@@ -94,23 +88,21 @@ export default function FitnessBuilder() {
     await new Promise(resolve => setTimeout(resolve, 800));
 
     try {
-      // Use pre-generated fitness plan - NO INTEGRATION CREDITS USED!
-      const preGeneratedPlan = getPreGeneratedFitnessPlan(
-        targetAreaString,
-        fitnessLevelString,
-        targetDurationMinutes,
-        fitnessGoalString
-      );
-
-      if (preGeneratedPlan) {
-        setGeneratedWorkout(preGeneratedPlan.exercises);
+      const bodyPart = selectedParts[0];
+      const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
+      
+      // Generate unique workout from curated exercise pools
+      const workout = generateWorkout(bodyPart, goal, level, targetDurationMinutes);
+      
+      if (workout && workout.length >= 10) {
+        setGeneratedWorkout(workout);
         setStep(3);
-        toast.success('Workout generated! 💪');
+        toast.success(`Workout generated! ${workout.length} exercises 💪`);
       } else {
-        toast.error('No pre-generated plan found for these criteria. Please try different options.');
+        toast.error('Unable to generate workout. Please try different options.');
       }
     } catch (error) {
-      console.error('Failed to get pre-generated workout:', error);
+      console.error('Failed to generate workout:', error);
       toast.error('Failed to generate workout. Please try again.');
     } finally {
       setIsGenerating(false);
@@ -293,7 +285,7 @@ export default function FitnessBuilder() {
                 Back
               </Button>
               <Button
-                onClick={generateWorkout}
+                onClick={handleGenerateWorkout}
                 disabled={isGenerating}
                 className="flex-1 bg-orange-500 hover:bg-orange-600"
               >
@@ -342,7 +334,6 @@ export default function FitnessBuilder() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-800">{exercise.name}</h4>
-                      <p className="text-sm text-slate-600">{exercise.target}</p>
                     </div>
                   </div>
                   
@@ -361,7 +352,7 @@ export default function FitnessBuilder() {
                     </div>
                   </div>
 
-                  <p className="text-sm text-slate-600">{exercise.instructions}</p>
+                  <p className="text-sm text-slate-600">{exercise.notes}</p>
                 </motion.div>
               ))}
             </div>
