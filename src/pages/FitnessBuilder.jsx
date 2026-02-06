@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { generateWorkout } from '@/utils/exercisePools';
+import { generateWorkout } from '@/components/fitness/exercisePools';
 
 const bodyParts = [
   { id: 'arm', label: 'Arms', emoji: '💪' },
