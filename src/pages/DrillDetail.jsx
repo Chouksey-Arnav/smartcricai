@@ -178,7 +178,12 @@ export default function DrillDetail() {
       const audio = new Audio(drill.soundtrack_url);
       audio.loop = true;
       audio.volume = 0.3;
-      audio.play();
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Silently handle autoplay restrictions
+        });
+      }
       setAudioElement(audio);
     }
     
