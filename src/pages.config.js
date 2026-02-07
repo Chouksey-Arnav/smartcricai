@@ -83,6 +83,8 @@ import TeamMode from './pages/TeamMode';
 import Timer from './pages/Timer';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
+import WorkoutHistory from './pages/WorkoutHistory';
+import AdvancedPathDetails from './pages/AdvancedPathDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -123,6 +125,8 @@ export const PAGES = {
     "Timer": Timer,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
+    "WorkoutHistory": WorkoutHistory,
+    "AdvancedPathDetails": AdvancedPathDetails,
 }
 
 export const pagesConfig = {

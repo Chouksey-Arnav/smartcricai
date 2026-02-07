@@ -358,21 +358,28 @@ export default function FitnessBuilder() {
               ))}
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                onClick={() => { setStep(2); setGeneratedWorkout(null); }}
-                variant="outline"
-                className="flex-1"
-              >
-                Regenerate
-              </Button>
+            <div className="space-y-3">
               <Button
                 onClick={() => saveWorkoutMutation.mutate()}
                 disabled={saveWorkoutMutation.isPending}
-                className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+                className="w-full bg-emerald-500 hover:bg-emerald-600"
               >
                 <Play className="w-5 h-5 mr-2" />
-                {saveWorkoutMutation.isPending ? 'Saving...' : 'Save & Start'}
+                {saveWorkoutMutation.isPending ? 'Saving...' : '💾 Save This Workout'}
+              </Button>
+              <Button
+                onClick={() => { setStep(2); setGeneratedWorkout(null); }}
+                variant="outline"
+                className="w-full"
+              >
+                🔄 Regenerate Different Workout
+              </Button>
+              <Button
+                onClick={() => navigate(createPageUrl('Home'))}
+                variant="outline"
+                className="w-full border-slate-300"
+              >
+                ❌ Discard & Go Home
               </Button>
             </div>
           </motion.div>
