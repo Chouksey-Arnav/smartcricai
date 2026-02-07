@@ -1,14 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight } from 'lucide-react';
+import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check if dark mode is enabled
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('darkMode', newMode.toString());
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -31,6 +53,7 @@ export default function Settings() {
       title: 'App',
       items: [
         { icon: Shield, label: 'Privacy', action: () => {} },
+        { icon: darkMode ? Sun : Moon, label: 'Dark Mode', action: 'toggle', isToggle: true },
       ]
     }
   ];
@@ -75,17 +98,22 @@ export default function Settings() {
               {section.items.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <button
+                  <div
                     key={index}
-                    onClick={item.action}
                     className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <Icon className="w-5 h-5 text-slate-400" />
                       <span className="font-medium text-slate-800">{item.label}</span>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-slate-300" />
-                  </button>
+                    {item.isToggle ? (
+                      <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
+                    ) : (
+                      <button onClick={item.action}>
+                        <ChevronRight className="w-5 h-5 text-slate-300" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
