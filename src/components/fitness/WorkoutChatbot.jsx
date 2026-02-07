@@ -27,7 +27,7 @@ export default function WorkoutChatbot() {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5 }}
-      className="fixed bottom-28 right-6 z-30 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 shadow-2xl max-w-xs"
+      className="fixed bottom-32 right-6 z-30 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 shadow-2xl max-w-xs"
     >
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">

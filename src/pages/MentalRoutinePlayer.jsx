@@ -41,20 +41,40 @@ export default function MentalRoutinePlayer() {
     enabled: !!routineId,
   });
 
+  const { data: progress } = useQuery({
+    queryKey: ['userProgress', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      return results[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
   const completeMutation = useMutation({
     mutationFn: async () => {
       if (user?.email && routine) {
+        const xpEarned = routine.xp_value || 75;
+        
+        // Update user progress with XP
+        if (progress?.id) {
+          await base44.entities.UserProgress.update(progress.id, {
+            total_xp: (progress.total_xp || 0) + xpEarned
+          });
+        }
+        
         await base44.entities.Notification.create({
           user_email: user.email,
           type: 'mental',
           title: 'Mental Training Completed! 🧠',
-          message: `Great job completing "${routine.title}"!`,
+          message: `Great job completing "${routine.title}"! +${xpEarned} XP`,
           related_id: routine.id
         });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
     },
   });
 
@@ -148,6 +168,9 @@ export default function MentalRoutinePlayer() {
         
         <h1 className="text-2xl font-bold text-white mb-2">{routine.title}</h1>
         <p className="text-white/60 text-sm">{routine.description}</p>
+        <div className="mt-2 inline-block px-3 py-1 rounded-full bg-amber-400 text-amber-900 text-xs font-bold">
+          +{routine.xp_value || 75} XP
+        </div>
       </div>
 
       {/* Main Content */}
@@ -165,7 +188,10 @@ export default function MentalRoutinePlayer() {
                 <CheckCircle2 className="w-12 h-12 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Great Job! 🧠</h2>
-              <p className="text-white/60 mb-8">You've completed this mental routine.</p>
+              <p className="text-white/60 mb-2">You've completed this mental routine.</p>
+              <div className="mb-6 px-4 py-2 bg-amber-400 rounded-full inline-block">
+                <span className="text-amber-900 font-bold">+{routine.xp_value || 75} XP Earned!</span>
+              </div>
               <Button
                 onClick={() => navigate(-1)}
                 className="bg-white text-purple-900 hover:bg-white/90"

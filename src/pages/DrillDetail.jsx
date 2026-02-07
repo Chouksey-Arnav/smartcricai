@@ -147,6 +147,7 @@ export default function DrillDetail() {
         newBadges.push('drill-master');
       }
 
+      const xpEarned = drill.xp_value || 50;
       const updateData = {
         completed_drills: [...new Set([...completedDrills, drill.id])],
         total_practice_minutes: (progress?.total_practice_minutes || 0) + (drill.duration_minutes || 0),
@@ -154,6 +155,7 @@ export default function DrillDetail() {
         longest_streak: Math.max(newStreak, progress?.longest_streak || 0),
         last_practice_date: today,
         badges: newBadges,
+        total_xp: (progress?.total_xp || 0) + xpEarned,
       };
 
       if (progress?.id) {
@@ -240,6 +242,9 @@ export default function DrillDetail() {
             levelColors[drill.skill_level]
           )}>
             {drill.skill_level}
+          </span>
+          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-400 text-amber-900">
+            +{drill.xp_value || 50} XP
           </span>
           </div>
           {drill.soundtrack_url && (
