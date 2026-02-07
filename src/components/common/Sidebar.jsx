@@ -22,6 +22,7 @@ import {
   User,
   Sparkles,
   MessageCircle,
+  Flame,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
