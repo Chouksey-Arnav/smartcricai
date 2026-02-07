@@ -41,7 +41,7 @@ export default function MentalRoutinePlayer() {
     enabled: !!routineId,
   });
 
-  const { data: progress } = useQuery({
+  const { data: userProgress } = useQuery({
     queryKey: ['userProgress', user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
@@ -57,9 +57,9 @@ export default function MentalRoutinePlayer() {
         const xpEarned = routine.xp_value || 75;
         
         // Update user progress with XP
-        if (progress?.id) {
-          await base44.entities.UserProgress.update(progress.id, {
-            total_xp: (progress.total_xp || 0) + xpEarned
+        if (userProgress?.id) {
+          await base44.entities.UserProgress.update(userProgress.id, {
+            total_xp: (userProgress.total_xp || 0) + xpEarned
           });
         }
         
