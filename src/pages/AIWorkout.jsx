@@ -10,7 +10,6 @@ import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import WorkoutChatbot from '@/components/fitness/WorkoutChatbot';
 
 export default function AIWorkout() {
   const navigate = useNavigate();
@@ -396,9 +395,6 @@ export default function AIWorkout() {
           </motion.div>
         )}
       </div>
-
-      {/* Chatbot - show when workout is active */}
-      {workoutStarted && !workoutCompleted && <WorkoutChatbot />}
     </div>
   );
 }
