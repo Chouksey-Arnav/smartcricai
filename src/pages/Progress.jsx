@@ -187,19 +187,62 @@ export default function Progress() {
           <ProgressTracker progress={progress} />
         </motion.div>
 
-        {/* Badges Section */}
+        {/* Earned Badges Section - 3D Style */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
+          className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl shadow-xl border-2 border-amber-200 p-6 relative overflow-hidden"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Trophy className="w-5 h-5 text-amber-500" />
-            <h2 className="font-bold text-slate-800">Your Badges</h2>
-          </div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/30 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-200/30 to-transparent rounded-full blur-2xl" />
           
-          <BadgeDisplay badges={progress?.badges || []} size="md" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-6 h-6 text-amber-600" />
+                <h2 className="font-bold text-slate-800 text-lg">Earned Badges</h2>
+              </div>
+              <Link to={createPageUrl('ExtendedMilestones')}>
+                <button className="text-sm font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1">
+                  View All
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+            
+            {(progress?.badges || []).length === 0 ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 mx-auto mb-3 bg-amber-100 rounded-2xl flex items-center justify-center">
+                  <Trophy className="w-8 h-8 text-amber-400" />
+                </div>
+                <p className="text-slate-600 text-sm">Complete challenges to earn badges!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 gap-3">
+                {(progress?.badges || []).slice(0, 8).map((badge, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="relative group"
+                  >
+                    <div className="w-full aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl shadow-lg flex items-center justify-center text-3xl transform transition-all group-hover:scale-110 group-hover:shadow-2xl group-hover:rotate-6 border-2 border-amber-300">
+                      {badge === 'first_steps' && '👟'}
+                      {badge === 'rising_star' && '⭐'}
+                      {badge === 'on_fire' && '🔥'}
+                      {badge === 'drill_master' && '💪'}
+                      {badge === 'quiz_expert' && '🧠'}
+                      {badge === 'week_warrior' && '⏰'}
+                      {!['first_steps', 'rising_star', 'on_fire', 'drill_master', 'quiz_expert', 'week_warrior'].includes(badge) && '🏆'}
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-amber-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
         </motion.div>
 
         {/* Quiz Scores */}

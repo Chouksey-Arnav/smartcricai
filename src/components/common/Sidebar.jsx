@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   // Top 3 - Always Fixed
+  { name: '🔥 30-Day Challenge', icon: Flame, page: 'ThirtyDayChallenge', color: 'text-orange-500', highlight: true },
   { name: '✨ Get to Know You', icon: Sparkles, page: 'GetToKnowYou', color: 'text-pink-500', highlight: true },
   { name: 'Home', icon: Home, page: 'NewHome', color: 'text-emerald-500' },
   { name: '🎯 Goals', icon: Target, page: 'Goals', color: 'text-purple-600', highlight: true },

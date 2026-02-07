@@ -201,8 +201,12 @@ export default function Drills() {
               />
             </div>
 
-            {/* Categories */}
-            <CategoryFilter selected={category} onChange={setCategory} />
+            {/* Categories - Horizontal Scroll */}
+            <div className="overflow-x-auto pb-2 scrollbar-hide">
+              <div className="flex gap-2 min-w-max">
+                <CategoryFilter selected={category} onChange={setCategory} />
+              </div>
+            </div>
 
             {/* Drills List - Organized by Difficulty */}
             {isLoading ? (

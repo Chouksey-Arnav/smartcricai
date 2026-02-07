@@ -56,6 +56,7 @@ export default function MentalCoaching() {
   const urlParams = new URLSearchParams(window.location.search);
   const initialTab = urlParams.get('tab') || 'all';
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -98,10 +99,10 @@ export default function MentalCoaching() {
     },
   });
 
-  // Sort by duration (easier/shorter first)
-  const sortedRoutines = [...routines].sort((a, b) => 
-    (a.duration_seconds || 0) - (b.duration_seconds || 0)
-  );
+  // Sort and filter by search
+  const sortedRoutines = [...routines]
+    .filter(r => !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => (a.duration_seconds || 0) - (b.duration_seconds || 0));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
@@ -109,6 +110,18 @@ export default function MentalCoaching() {
       
       {/* Hero */}
       <div className="px-6 py-6 max-w-lg mx-auto">
+        {/* Search Bar */}
+        <div className="relative mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search mental routines..."
+            className="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 focus:border-purple-500 focus:outline-none"
+          />
+          <Brain className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        </div>
+
         {/* Mindfulness Quote of the Day */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -3,6 +3,7 @@ import BottomNav from '@/components/common/BottomNav';
 import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
 import FloatingTimer from '@/components/common/FloatingTimer';
+import ConditionalChatbot from '@/components/common/ConditionalChatbot';
 
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 
@@ -15,6 +16,7 @@ export default function Layout({ children, currentPageName }) {
       <Sidebar />
       <NotificationBar />
       <FloatingTimer />
+      <ConditionalChatbot currentPageName={currentPageName} />
       <style>{`
         :root {
           --primary: 16 185 129;

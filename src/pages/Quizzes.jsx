@@ -24,15 +24,18 @@ const difficultyColors = {
 export default function Quizzes() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: quizzes = [], isLoading } = useQuery({
     queryKey: ['quizzes'],
     queryFn: () => base44.entities.Quiz.list(),
   });
 
-  const filteredQuizzes = selectedCategory === 'all'
-    ? quizzes
-    : quizzes.filter(q => q.category === selectedCategory);
+  const filteredQuizzes = quizzes.filter(q => {
+    const matchesCategory = selectedCategory === 'all' || q.category === selectedCategory;
+    const matchesSearch = !searchQuery || q.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const categories = ['all', 'rules', 'techniques', 'history', 'strategy'];
 
@@ -41,6 +44,18 @@ export default function Quizzes() {
       <Header title="Cricket Quizzes" showSettings={false} />
       
       <div className="px-6 py-4 max-w-lg mx-auto space-y-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search quizzes..."
+            className="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 focus:border-amber-500 focus:outline-none"
+          />
+          <BookOpen className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        </div>
+
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
