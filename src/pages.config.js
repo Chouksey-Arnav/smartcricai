@@ -49,6 +49,7 @@
  */
 import AIDrillRecommendation from './pages/AIDrillRecommendation';
 import AIWorkout from './pages/AIWorkout';
+import AdvancedPathDetails from './pages/AdvancedPathDetails';
 import Chat from './pages/Chat';
 import Coach from './pages/Coach';
 import CoachVoiceMode from './pages/CoachVoiceMode';
@@ -84,13 +85,14 @@ import Timer from './pages/Timer';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
-import AdvancedPathDetails from './pages/AdvancedPathDetails';
+import ExtendedMilestones from './pages/ExtendedMilestones';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AIDrillRecommendation": AIDrillRecommendation,
     "AIWorkout": AIWorkout,
+    "AdvancedPathDetails": AdvancedPathDetails,
     "Chat": Chat,
     "Coach": Coach,
     "CoachVoiceMode": CoachVoiceMode,
@@ -126,7 +128,7 @@ export const PAGES = {
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
-    "AdvancedPathDetails": AdvancedPathDetails,
+    "ExtendedMilestones": ExtendedMilestones,
 }
 
 export const pagesConfig = {

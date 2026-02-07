@@ -76,9 +76,12 @@ export default function DrillCard({ drill, onClick, isCompleted, isPremium, isLo
             )}>
               {drill.skill_level}
             </span>
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+              +{drill.xp_value || 50} XP
+            </span>
             {isLocked && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
-                Premium
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-amber-400 to-orange-500 text-white">
+                💎 Premium
               </span>
             )}
           </div>

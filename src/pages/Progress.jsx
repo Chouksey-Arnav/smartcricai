@@ -171,9 +171,17 @@ export default function Progress() {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
         >
-          <div className="flex items-center gap-2 mb-5">
-            <TrendingUp className="w-5 h-5 text-purple-500" />
-            <h2 className="font-bold text-slate-800">Your Milestones</h2>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-purple-500" />
+              <h2 className="font-bold text-slate-800">Your Milestones</h2>
+            </div>
+            <Link to={createPageUrl('ExtendedMilestones')}>
+              <button className="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                View All
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </Link>
           </div>
           
           <ProgressTracker progress={progress} />

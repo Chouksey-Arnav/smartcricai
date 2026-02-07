@@ -66,9 +66,12 @@ export default function MentalRoutineCard({ routine, onClick, isLocked }) {
                 <Clock className="w-4 h-4" />
                 {Math.round(routine.duration_seconds / 60)} min
               </span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                +{routine.xp_value || 75} XP
+              </span>
               {isLocked && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
-                  Premium
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-amber-400 to-orange-500 text-white">
+                  💎 Premium
                 </span>
               )}
             </div>
