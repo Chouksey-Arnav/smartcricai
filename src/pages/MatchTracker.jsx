@@ -61,6 +61,15 @@ export default function MatchTracker() {
         related_id: match.id
       });
 
+      // Add to schedule
+      await base44.entities.ScheduledActivity.create({
+        user_email: user.email,
+        title: `🏏 ${data.match_type.charAt(0).toUpperCase() + data.match_type.slice(1)} Match (${data.result})`,
+        notes: data.notes || `Result: ${data.result}`,
+        date: data.match_date,
+        activity_type: 'match'
+      });
+
       return match;
     },
     onSuccess: () => {
@@ -85,6 +94,17 @@ export default function MatchTracker() {
       <Header title="Match Tracker" showSettings={false} />
 
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
+        {/* View Match History Button */}
+        <motion.button
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate(createPageUrl('MatchHistory'))}
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-2xl p-4 flex items-center justify-center gap-2 shadow-lg"
+        >
+          <Trophy className="w-5 h-5" />
+          <span className="font-semibold">View All Logged Matches</span>
+        </motion.button>
+
         {/* Header Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

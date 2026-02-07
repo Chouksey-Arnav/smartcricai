@@ -200,6 +200,16 @@ export default function Schedule() {
       <Header title="Schedule" showSettings={false} />
 
       <div className="px-6 py-4 max-w-6xl mx-auto">
+        {/* Extended View Button */}
+        <motion.button
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate(createPageUrl('ScheduleExtendedView'))}
+          className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-2xl p-4 mb-6 flex items-center justify-center gap-2 shadow-lg"
+        >
+          <Calendar className="w-5 h-5" />
+          <span className="font-semibold">Open Extended View</span>
+        </motion.button>
         {/* Activity Form */}
         <AnimatePresence>
           {showForm && (

@@ -86,6 +86,9 @@ import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
 import ExtendedMilestones from './pages/ExtendedMilestones';
+import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
+import ScheduleExtendedView from './pages/ScheduleExtendedView';
+import MatchHistory from './pages/MatchHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -129,6 +132,9 @@ export const PAGES = {
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
     "ExtendedMilestones": ExtendedMilestones,
+    "ThirtyDayChallenge": ThirtyDayChallenge,
+    "ScheduleExtendedView": ScheduleExtendedView,
+    "MatchHistory": MatchHistory,
 }
 
 export const pagesConfig = {
