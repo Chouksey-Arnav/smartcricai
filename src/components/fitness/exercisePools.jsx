@@ -124,24 +124,31 @@ export function generateWorkout(bodyPart, goal, level, duration) {
   const exercises = [];
   const usedExercises = new Set();
 
-  // Map body part to exercise categories
+  // Enhanced body part mapping covering ALL possible selections
   const bodyPartMapping = {
+    full_body: ['lowerBody.strength', 'upperBody.push', 'upperBody.pull', 'core', 'mobility'],
+    chest: ['upperBody.push', 'core', 'shoulderHealth'],
+    back: ['upperBody.pull', 'core', 'lowerBody.strength'],
+    legs: ['lowerBody.strength', 'lowerBody.power', 'mobility'],
+    arms: ['upperBody.push', 'upperBody.pull'],
+    shoulders: ['upperBody.push', 'shoulderHealth', 'core'],
+    core: ['core', 'coreWeighted', 'mobility'],
+    // Alternative spellings
     arm: ['upperBody.push', 'upperBody.pull'],
-    chest: ['upperBody.push', 'core'],
-    back: ['upperBody.pull', 'core'],
     leg: ['lowerBody.strength', 'lowerBody.power'],
-    shoulder: ['upperBody.push', 'shoulderHealth'],
-    core: ['core', 'coreWeighted'],
-    full_body: ['lowerBody.strength', 'upperBody.push', 'upperBody.pull', 'core']
+    shoulder: ['upperBody.push', 'shoulderHealth']
   };
 
   const goalMapping = {
+    strength: 'strength',
+    endurance: 'endurance',
+    flexibility: 'flexibility',
     lose_weight: 'endurance',
     build_muscle: 'strength',
     keep_fit: 'strength'
   };
 
-  const mappedGoal = goalMapping[goal] || goal;
+  const mappedGoal = goalMapping[goal] || 'strength';
   const categories = bodyPartMapping[bodyPart] || bodyPartMapping.full_body;
 
   // Helper to get exercises from a category path

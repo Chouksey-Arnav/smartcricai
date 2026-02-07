@@ -69,7 +69,17 @@ export default function Layout({ children, currentPageName }) {
 
         /* Page content padding for notification bar and timer */
         .page-content-wrapper {
-          padding-top: ${isHomePage ? '0' : '80px'};
+          padding-top: ${isHomePage ? '0' : '100px'};
+        }
+
+        /* Dark mode support */
+        .dark {
+          --background: 222 47% 11%;
+          --foreground: 210 40% 98%;
+        }
+
+        .dark body {
+          background: linear-gradient(to bottom, #1e293b, #0f172a);
         }
         `}</style>
 
