@@ -166,6 +166,15 @@ export default function DrillDetail() {
           ...updateData,
         });
       }
+
+      // Create notification
+      await base44.entities.Notification.create({
+        user_email: user.email,
+        type: 'drill',
+        title: `Drill Completed! 🎯 +${xpEarned} XP`,
+        message: `"${drill.title}" completed! Keep up the great work!`,
+        related_id: drill.id
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userProgress']);

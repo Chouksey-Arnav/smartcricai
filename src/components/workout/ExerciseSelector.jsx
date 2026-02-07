@@ -1,25 +1,49 @@
 import React, { useState, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Dumbbell, X } from 'lucide-react';
+import { Search, Dumbbell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { BODYWEIGHT_EXERCISES, WEIGHTED_EXERCISES } from '@/components/fitness/exercisePools';
 
 export default function ExerciseSelector({ onSelect, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
   
-  const { data: exercises, isLoading } = useQuery({
-    queryKey: ['exercises'],
-    queryFn: async () => {
-      const allExercises = await base44.entities.Exercise.list();
-      return allExercises.sort((a, b) => a.name.localeCompare(b.name));
-    },
-    initialData: [],
-    staleTime: 600000,
-    retry: 3,
-  });
+  // Generate exercises from pools
+  const getAllExercises = () => {
+    const exercises = [];
+    
+    // Bodyweight exercises
+    Object.entries(BODYWEIGHT_EXERCISES).forEach(([category, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(name => exercises.push({ id: `bw_${name}`, name, category: 'bodyweight' }));
+      } else if (typeof value === 'object') {
+        Object.values(value).forEach(arr => {
+          if (Array.isArray(arr)) {
+            arr.forEach(name => exercises.push({ id: `bw_${name}`, name, category: 'bodyweight' }));
+          }
+        });
+      }
+    });
+    
+    // Weighted exercises
+    Object.entries(WEIGHTED_EXERCISES).forEach(([category, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(name => exercises.push({ id: `w_${name}`, name, category: 'weighted' }));
+      } else if (typeof value === 'object') {
+        Object.values(value).forEach(arr => {
+          if (Array.isArray(arr)) {
+            arr.forEach(name => exercises.push({ id: `w_${name}`, name, category: 'weighted' }));
+          }
+        });
+      }
+    });
+    
+    return [...new Set(exercises.map(e => JSON.stringify(e)))].map(e => JSON.parse(e)).sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  const exercises = getAllExercises();
+  const isLoading = false;
 
   // Filter and sort exercises
   const filteredExercises = useMemo(() => {

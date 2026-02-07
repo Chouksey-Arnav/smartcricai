@@ -63,11 +63,12 @@ export default function MentalRoutinePlayer() {
           });
         }
         
+        // Create notification
         await base44.entities.Notification.create({
           user_email: user.email,
           type: 'mental',
-          title: 'Mental Training Completed! 🧠',
-          message: `Great job completing "${routine.title}"! +${xpEarned} XP`,
+          title: `Mental Training Completed! 🧠 +${xpEarned} XP`,
+          message: `"${routine.title}" completed! Your mind is getting stronger!`,
           related_id: routine.id
         });
       }

@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, Trophy, Target, Flame, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function NotificationBar({ onChallengeComplete }) {
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -117,14 +118,36 @@ export default function NotificationBar({ onChallengeComplete }) {
     }
   ];
 
+  const markAllReadMutation = useMutation({
+    mutationFn: async () => {
+      const unreadNotifications = notifications.filter(n => !n.is_read);
+      await Promise.all(
+        unreadNotifications.map(n => 
+          base44.entities.Notification.update(n.id, { is_read: true })
+        )
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+
   const allNotifications = [...notifications, ...challenges];
   const unreadCount = notifications.filter(n => !n.is_read).length + challenges.filter(n => !n.completed).length;
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    // Mark all as read when opening
+    if (unreadCount > 0) {
+      markAllReadMutation.mutate();
+    }
+  };
 
   return (
     <>
       {/* Bell Button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className="fixed top-20 right-4 z-40 p-2 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all"
       >
         <div className="relative">

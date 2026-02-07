@@ -10,7 +10,6 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { generateWorkout } from '@/components/fitness/exercisePools';
-import WorkoutChatbot from '@/components/fitness/WorkoutChatbot';
 
 const bodyParts = [
   { id: 'arm', label: 'Arms', emoji: '💪' },
@@ -385,9 +384,6 @@ export default function FitnessBuilder() {
           </motion.div>
         )}
       </div>
-
-      {/* Chatbot - only show when workout is generated */}
-      {step === 3 && generatedWorkout && <WorkoutChatbot />}
     </div>
   );
 }
