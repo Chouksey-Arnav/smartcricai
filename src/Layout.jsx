@@ -52,19 +52,7 @@ export default function Layout({ children, currentPageName }) {
           background: #059669;
         }
 
-        /* SmartTrick Coach Indicator */
-        .smarttrick-indicator {
-          position: fixed;
-          bottom: 90px;
-          right: 20px;
-          z-index: 40;
-          animation: bounce 2s infinite;
-        }
 
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
 
         /* Page content padding for notification bar and timer */
         .page-content-wrapper {
@@ -79,6 +67,30 @@ export default function Layout({ children, currentPageName }) {
 
         .dark body {
           background: linear-gradient(to bottom, #1e293b, #0f172a);
+        }
+
+        .dark .bg-white {
+          background-color: #1e293b !important;
+        }
+
+        .dark .text-slate-800 {
+          color: #e2e8f0 !important;
+        }
+
+        .dark .text-slate-700 {
+          color: #cbd5e1 !important;
+        }
+
+        .dark .text-slate-600 {
+          color: #94a3b8 !important;
+        }
+
+        .dark .border-slate-200 {
+          border-color: #334155 !important;
+        }
+
+        .dark .bg-slate-50 {
+          background-color: #334155 !important;
         }
         `}</style>
 

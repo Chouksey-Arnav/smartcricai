@@ -15,7 +15,9 @@ import {
   Sparkles,
   Star,
   TrendingDown,
-  Search
+  Search,
+  Moon,
+  Sun
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
@@ -68,6 +70,54 @@ const cricketJokes = [
   "Why was the cricketer always calm? They knew how to handle the pressure!",
   "What do you call a cricket ball that won't stop talking? A chatterbox!",
   "Why did the wicket keeper go to art class? To work on their catches!",
+  "How does a cricket team stay cool? They stand near the fans!",
+  "What's a bowler's favorite subject? Spin class!",
+  "Why did the cricket bat go to the doctor? It had a bad case of the runs!",
+  "What do you call a cricket player with no arms? Armless - but still a great fielder in spirit!",
+  "Why was the cricket stadium so hot? All the fans left!",
+  "What did the cricket ball say to the bat? Catch you later!",
+  "Why don't cricket players ever get hungry? They're always at the crease!",
+  "What's a cricketer's least favorite vegetable? A bowl of beans!",
+  "Why did the umpire bring a ladder? To give a high decision!",
+  "What do you call a cricket match between cats? A meow-t!",
+  "Why did the bowler bring a map? To find the right line and length!",
+  "What's a batsman's favorite dessert? A sweet spot!",
+  "Why did the fielder bring a calendar? To catch the date!",
+  "What do you call a cricket player who loves to garden? A groundskeeper!",
+  "Why was the cricket ball unhappy? It was always getting hit!",
+];
+
+const cricketFacts = [
+  "The fastest recorded cricket ball was bowled at 161.3 km/h (100.2 mph) by Shoaib Akhtar!",
+  "The longest cricket match lasted 14 days between England and South Africa in 1939!",
+  "Sachin Tendulkar holds the record for most runs in international cricket with 34,357 runs!",
+  "The first-ever Test match was played in 1877 between Australia and England!",
+  "A cricket ball can swing due to the Magnus effect and seam position!",
+  "The highest team score in ODI cricket is 498/4 by England against Netherlands!",
+  "Muttiah Muralitharan has the most Test wickets with 800!",
+  "Cricket was originally called 'creag' which means 'stick' in old English!",
+  "The Cricket World Cup trophy weighs 11 kilograms!",
+  "A red cricket ball is used in Test matches and white/pink in limited overs!",
+  "The term 'duck' comes from 'duck's egg' because 0 looks like an egg!",
+  "India has won the Cricket World Cup twice (1983 and 2011)!",
+  "The fastest Test century was scored in just 35 balls by AB de Villiers!",
+  "Cricket stumps are exactly 28 inches (71.1 cm) high!",
+  "The boundary rope must be at least 64 meters from the pitch center!",
+  "A Test match can have a maximum of 450 overs bowled!",
+  "The heaviest cricket bat ever used weighed 5 pounds!",
+  "Shane Warne's 'Ball of the Century' spun 18 inches!",
+  "Cricket balls are made from cork and leather with 5-6 layers!",
+  "The Ashes urn is only 11cm tall and is never awarded to the winner!",
+  "Brian Lara holds the record for highest Test innings: 400 not out!",
+  "A cricket ball loses about 25% of its hardness after 30 overs!",
+  "The DRS (Decision Review System) was first used in 2008!",
+  "Willow wood is specifically chosen for cricket bats for its strength!",
+  "The fastest ODI century was scored in 31 balls by AB de Villiers!",
+  "Cricket whites became standard in the 1890s for better visibility!",
+  "The bail groove in stumps is exactly 1/2 inch deep!",
+  "Women's cricket was first played in 1745 in England!",
+  "A perfect yorker lands at the batsman's toes, targeting base of stumps!",
+  "The googly was invented by Bernard Bosanquet in 1900!",
 ];
 
 function getCricketJoke() {
@@ -85,10 +135,28 @@ function getCricketJoke() {
   return randomJoke;
 }
 
+function getCricketFact() {
+  const today = new Date().toDateString();
+  const stored = localStorage.getItem('cricket_fact_date');
+  const storedFact = localStorage.getItem('cricket_fact');
+  
+  if (stored === today && storedFact) {
+    return storedFact;
+  }
+  
+  const randomFact = cricketFacts[Math.floor(Math.random() * cricketFacts.length)];
+  localStorage.setItem('cricket_fact_date', today);
+  localStorage.setItem('cricket_fact', randomFact);
+  return randomFact;
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
   
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
@@ -136,6 +204,17 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, []);
 
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', newMode);
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  }, []);
+
   // Redirect to Get to Know You if not completed - only once per session
   useEffect(() => {
     const hasRedirected = sessionStorage.getItem('onboarding_redirect_done');
@@ -157,9 +236,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 pb-24">
+    <div className={`min-h-screen pb-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50'}`}>
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 px-6 pt-8 pb-24">
+      <div className={`relative overflow-hidden px-6 pt-8 pb-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800' : 'bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500'}`}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-24 -translate-x-24" />
         <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
@@ -177,6 +256,37 @@ export default function Home() {
             </div>
             <p className="text-white/90 text-sm leading-relaxed">{getCricketJoke()}</p>
           </motion.div>
+
+          {/* Cricket Fact of the Day */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-4"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">🏏</span>
+              <h3 className="font-bold text-white text-sm">Cricket Fact of the Day</h3>
+            </div>
+            <p className="text-white/90 text-sm leading-relaxed">{getCricketFact()}</p>
+          </motion.div>
+
+          {/* Dark Mode Toggle */}
+          <motion.button
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            onClick={toggleDarkMode}
+            className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-4 flex items-center justify-between hover:bg-white/20 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              {isDarkMode ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
+              <span className="font-bold text-white text-sm">
+                {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              </span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-white" />
+          </motion.button>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -32,6 +32,7 @@ export default function WorkoutBuilder() {
   const [selectedDrills, setSelectedDrills] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [exerciseDialogOpen, setExerciseDialogOpen] = useState(false);
+  const [filteredDrills, setFilteredDrills] = useState(null);
 
   const addDrill = (drill) => {
     setSelectedDrills([
@@ -145,12 +146,26 @@ export default function WorkoutBuilder() {
                 Add Drill
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogContent className="max-h-[80vh] flex flex-col p-0">
+              <DialogHeader className="p-4 pb-0">
                 <DialogTitle>Select a Drill</DialogTitle>
               </DialogHeader>
-              <div className="space-y-2">
-                {drills.map(drill => (
+              <div className="px-4 pt-2 pb-3">
+                <Input
+                  placeholder="Search drills..."
+                  onChange={(e) => {
+                    const query = e.target.value.toLowerCase();
+                    const filtered = drills.filter(d => 
+                      d.title.toLowerCase().includes(query) || 
+                      d.category.toLowerCase().includes(query)
+                    );
+                    setFilteredDrills(filtered);
+                  }}
+                  className="h-10"
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-visible">
+                {(filteredDrills || drills).map(drill => (
                   <button
                     key={drill.id}
                     onClick={() => addDrill(drill)}

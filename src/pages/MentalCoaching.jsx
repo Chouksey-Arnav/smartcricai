@@ -99,6 +99,18 @@ export default function MentalCoaching() {
     },
   });
 
+  const deleteAllRoutinesMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(
+        savedRoutines.map(routine => base44.entities.MentalRoutine.delete(routine.id))
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
+      toast.success('All routines deleted');
+    },
+  });
+
   // Sort and filter by search
   const sortedRoutines = [...routines]
     .filter(r => !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.description.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -232,6 +244,21 @@ export default function MentalCoaching() {
         ) : (
           // Saved Routines Tab
           <div className="space-y-4">
+            {savedRoutines.length > 0 && (
+              <Button
+                onClick={() => {
+                  if (confirm('Delete ALL your saved routines? This cannot be undone.')) {
+                    deleteAllRoutinesMutation.mutate();
+                  }
+                }}
+                disabled={deleteAllRoutinesMutation.isPending}
+                variant="destructive"
+                className="w-full bg-red-500 hover:bg-red-600"
+              >
+                <Trash2 className="w-5 h-5 mr-2" />
+                {deleteAllRoutinesMutation.isPending ? 'Deleting...' : 'Delete All Routines'}
+              </Button>
+            )}
             {savedRoutines.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
