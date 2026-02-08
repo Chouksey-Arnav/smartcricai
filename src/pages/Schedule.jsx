@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tantml:react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Heart, Dumbbell, BookOpen, CheckCircle, Circle } from 'lucide-react';
+import { Plus, Trash2, Heart, Dumbbell, BookOpen, CheckCircle, Circle, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Header from '@/components/common/Header';
 import toast from 'react-hot-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function Schedule() {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -196,7 +199,7 @@ export default function Schedule() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white pb-52">
       <Header title="Schedule" showSettings={false} />
 
       <div className="px-6 py-4 max-w-6xl mx-auto">
@@ -210,6 +213,7 @@ export default function Schedule() {
           <Calendar className="w-5 h-5" />
           <span className="font-semibold">Open Extended View</span>
         </motion.button>
+        
         {/* Activity Form */}
         <AnimatePresence>
           {showForm && (
@@ -400,15 +404,15 @@ export default function Schedule() {
                 </div>
               </motion.div>
             </>
-            )}
-            </AnimatePresence>
+          )}
+        </AnimatePresence>
 
-            {/* Checklist Section */}
-            <div className="bg-white rounded-3xl shadow-xl p-6 mt-8">
-            <h3 className="font-bold text-2xl text-slate-800 mb-6">My Tasks</h3>
+        {/* Checklist Section */}
+        <div className="bg-white rounded-3xl shadow-xl p-6 mt-8">
+          <h3 className="font-bold text-2xl text-slate-800 mb-6">My Tasks</h3>
 
-            {/* Add New Task */}
-            <form onSubmit={handleAddChecklistItem} className="flex gap-3 mb-6">
+          {/* Add New Task */}
+          <form onSubmit={handleAddChecklistItem} className="flex gap-3 mb-6">
             <Input
               value={newChecklistItem}
               onChange={(e) => setNewChecklistItem(e.target.value)}
@@ -422,10 +426,10 @@ export default function Schedule() {
             >
               <Plus className="w-5 h-5" />
             </Button>
-            </form>
+          </form>
 
-            {/* Checklist Items */}
-            <div className="space-y-3">
+          {/* Checklist Items */}
+          <div className="space-y-3">
             {checklistItems.length === 0 ? (
               <div className="text-center py-8">
                 <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -461,9 +465,9 @@ export default function Schedule() {
                 </motion.div>
               ))
             )}
-            </div>
-            </div>
-            </div>
-            </div>
-            );
-            }
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
