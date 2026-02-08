@@ -1,30 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Header from '@/components/common/Header';
-
-// Load Noupe Chatbot on mount
-const loadNoupeChatbot = () => {
-  if (typeof window !== 'undefined' && !window.noupeChatbotLoaded) {
-    window.noupeChatbotLoaded = true;
-    const script = document.createElement('script');
-    script.src = 'https://www.noupe.com/embed/019c14d6aefb7a3d99c0ee195238531bd9ba.js';
-    script.async = true;
-    document.head.appendChild(script);
-  }
-};
 
 export default function Coach() {
   const [isLoading, setIsLoading] = React.useState(true);
-
-  useEffect(() => {
-    loadNoupeChatbot();
-    
-    // Set loading to false after 2 seconds (enough time for iframe to load)
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className="min-h-screen bg-white pb-0">

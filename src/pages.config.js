@@ -60,10 +60,15 @@ import DrillWorkoutCreator from './pages/DrillWorkoutCreator';
 import DrillYouTubeFinder from './pages/DrillYouTubeFinder';
 import Drills from './pages/Drills';
 import ExtendedMilestones from './pages/ExtendedMilestones';
+import FitnessBuilder from './pages/FitnessBuilder';
+import GetToKnowYou from './pages/GetToKnowYou';
+import Goals from './pages/Goals';
 import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import MatchHistory from './pages/MatchHistory';
 import MatchTracker from './pages/MatchTracker';
+import MentalCoaching from './pages/MentalCoaching';
+import MentalRoutinePlayer from './pages/MentalRoutinePlayer';
 import MentalTrainingCreator from './pages/MentalTrainingCreator';
 import MiniMatch from './pages/MiniMatch';
 import NewHome from './pages/NewHome';
@@ -73,22 +78,17 @@ import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import QuizPlayer from './pages/QuizPlayer';
 import Quizzes from './pages/Quizzes';
+import SavedDrillWorkout from './pages/SavedDrillWorkout';
 import Schedule from './pages/Schedule';
 import ScheduleExtendedView from './pages/ScheduleExtendedView';
 import Settings from './pages/Settings';
 import SkillPaths from './pages/SkillPaths';
 import Social from './pages/Social';
+import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
 import Timer from './pages/Timer';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
-import WorkoutHistory from './pages/WorkoutHistory';
-import MentalRoutinePlayer from './pages/MentalRoutinePlayer';
-import FitnessBuilder from './pages/FitnessBuilder';
-import MentalCoaching from './pages/MentalCoaching';
-import GetToKnowYou from './pages/GetToKnowYou';
 import WorkoutBuilder from './pages/WorkoutBuilder';
-import Goals from './pages/Goals';
-import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
-import SavedDrillWorkout from './pages/SavedDrillWorkout';
+import WorkoutHistory from './pages/WorkoutHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -106,10 +106,15 @@ export const PAGES = {
     "DrillYouTubeFinder": DrillYouTubeFinder,
     "Drills": Drills,
     "ExtendedMilestones": ExtendedMilestones,
+    "FitnessBuilder": FitnessBuilder,
+    "GetToKnowYou": GetToKnowYou,
+    "Goals": Goals,
     "Home": Home,
     "Leaderboard": Leaderboard,
     "MatchHistory": MatchHistory,
     "MatchTracker": MatchTracker,
+    "MentalCoaching": MentalCoaching,
+    "MentalRoutinePlayer": MentalRoutinePlayer,
     "MentalTrainingCreator": MentalTrainingCreator,
     "MiniMatch": MiniMatch,
     "NewHome": NewHome,
@@ -119,22 +124,17 @@ export const PAGES = {
     "Progress": Progress,
     "QuizPlayer": QuizPlayer,
     "Quizzes": Quizzes,
+    "SavedDrillWorkout": SavedDrillWorkout,
     "Schedule": Schedule,
     "ScheduleExtendedView": ScheduleExtendedView,
     "Settings": Settings,
     "SkillPaths": SkillPaths,
     "Social": Social,
+    "ThirtyDayChallenge": ThirtyDayChallenge,
     "Timer": Timer,
     "WhyDidIGetOut": WhyDidIGetOut,
-    "WorkoutHistory": WorkoutHistory,
-    "MentalRoutinePlayer": MentalRoutinePlayer,
-    "FitnessBuilder": FitnessBuilder,
-    "MentalCoaching": MentalCoaching,
-    "GetToKnowYou": GetToKnowYou,
     "WorkoutBuilder": WorkoutBuilder,
-    "Goals": Goals,
-    "ThirtyDayChallenge": ThirtyDayChallenge,
-    "SavedDrillWorkout": SavedDrillWorkout,
+    "WorkoutHistory": WorkoutHistory,
 }
 
 export const pagesConfig = {
