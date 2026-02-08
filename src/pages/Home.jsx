@@ -349,15 +349,15 @@ export default function Home() {
                 <p className="text-xs text-emerald-50">Level up now</p>
               </motion.div>
             </Link>
-            <Link to={createPageUrl('TeamMode')}>
+            <Link to={createPageUrl('Leaderboard')}>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">👥</div>
-                <h3 className="font-bold text-white text-sm mb-1">Team Mode</h3>
-                <p className="text-xs text-amber-50">Join your team</p>
+                <div className="text-4xl mb-2">🏆</div>
+                <h3 className="font-bold text-white text-sm mb-1">Leaderboard</h3>
+                <p className="text-xs text-amber-50">Compete globally</p>
               </motion.div>
             </Link>
             <Link to={createPageUrl('DrillWorkoutCreator')}>

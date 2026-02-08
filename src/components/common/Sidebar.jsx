@@ -36,7 +36,6 @@ const menuItems = [
   // Community & Social
   { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
-  { name: 'Team Mode', icon: Users, page: 'TeamMode', color: 'text-red-500' },
   
   // Training & Skills
   { name: 'Skill Paths', icon: TrendingUp, page: 'SkillPaths', color: 'text-teal-500' },

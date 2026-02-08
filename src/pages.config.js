@@ -83,7 +83,6 @@ import ScheduleExtendedView from './pages/ScheduleExtendedView';
 import Settings from './pages/Settings';
 import SkillPaths from './pages/SkillPaths';
 import Social from './pages/Social';
-import TeamMode from './pages/TeamMode';
 import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
 import Timer from './pages/Timer';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
@@ -129,7 +128,6 @@ export const PAGES = {
     "Settings": Settings,
     "SkillPaths": SkillPaths,
     "Social": Social,
-    "TeamMode": TeamMode,
     "ThirtyDayChallenge": ThirtyDayChallenge,
     "Timer": Timer,
     "WhyDidIGetOut": WhyDidIGetOut,
