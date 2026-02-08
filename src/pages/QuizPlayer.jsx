@@ -56,12 +56,14 @@ export default function QuizPlayer() {
     mutationFn: async (finalScore) => {
       if (!user?.email || !quiz) return;
 
-      // Create notification
       const percentage = Math.round((finalScore / questions.length) * 100);
+      const xpEarned = percentage >= 80 ? 100 : percentage >= 50 ? 50 : 25;
+
+      // Create notification
       await base44.entities.Notification.create({
         user_email: user.email,
         type: 'quiz',
-        title: 'Quiz Completed! 📚',
+        title: `Quiz Completed! 📚 +${xpEarned} XP`,
         message: `You scored ${percentage}% on "${quiz.title}"!`,
         related_id: quiz.id
       });
@@ -89,6 +91,7 @@ export default function QuizPlayer() {
           }
         ],
         badges: newBadges,
+        total_xp: (progress?.total_xp || 0) + xpEarned,
       };
 
       if (progress?.id) {
@@ -97,6 +100,15 @@ export default function QuizPlayer() {
         await base44.entities.UserProgress.create({
           user_email: user.email,
           ...updateData,
+        });
+      }
+
+      // Update Leaderboard
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      if (leaderboards.length > 0) {
+        await base44.entities.Leaderboard.update(leaderboards[0].id, {
+          total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
+          quizzes_passed: (leaderboards[0].quizzes_passed || 0) + (percentage >= 80 ? 1 : 0)
         });
       }
     },

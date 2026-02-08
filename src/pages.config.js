@@ -88,6 +88,7 @@ import GetToKnowYou from './pages/GetToKnowYou';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import Goals from './pages/Goals';
 import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
+import SavedDrillWorkout from './pages/SavedDrillWorkout';
 import __Layout from './Layout.jsx';
 
 
@@ -133,6 +134,7 @@ export const PAGES = {
     "WorkoutBuilder": WorkoutBuilder,
     "Goals": Goals,
     "ThirtyDayChallenge": ThirtyDayChallenge,
+    "SavedDrillWorkout": SavedDrillWorkout,
 }
 
 export const pagesConfig = {

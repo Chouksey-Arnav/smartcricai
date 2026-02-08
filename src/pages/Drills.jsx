@@ -305,10 +305,7 @@ export default function Drills() {
                   
                   <Button
                     onClick={() => {
-                      // Navigate to first drill in workout
-                      if (workout.drills?.[0]?.drill_id) {
-                        navigate(createPageUrl(`DrillDetail?id=${workout.drills[0].drill_id}`));
-                      }
+                      navigate(createPageUrl(`SavedDrillWorkout?id=${workout.id}`));
                     }}
                     className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                   >
