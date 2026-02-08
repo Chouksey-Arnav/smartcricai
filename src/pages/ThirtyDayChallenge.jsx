@@ -55,10 +55,13 @@ export default function ThirtyDayChallenge() {
       await base44.entities.Notification.create({
         user_email: user.email,
         type: 'achievement',
-        title: '🎉 30-Day Challenge Started!',
-        message: 'Your journey to becoming a cricket champion begins now. Stay consistent!',
-        related_id: 'challenge_start'
+        title: '🎉 30-Day Challenge Started - Day 1!',
+        message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
+        related_id: 'challenge_day_1'
       });
+
+      // Store challenge start date for daily notifications
+      localStorage.setItem('challenge_start_date', today);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
@@ -108,7 +111,7 @@ export default function ThirtyDayChallenge() {
                 </div>
               )}
               <iframe 
-                src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/96280cd8-d70c-48d3-a1fd-0736eb4ab744/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false" 
+                src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/96280cd8-d70c-48d3-a1fd-0736eb4ab744/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false"
                 width="100%" 
                 height="800px" 
                 frameBorder="0" 
