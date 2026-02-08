@@ -21,6 +21,52 @@ export default function Layout({ children, currentPageName }) {
         :root {
           --primary: 16 185 129;
           --primary-foreground: 255 255 255;
+          --background: 255 255 255;
+          --foreground: 15 23 42;
+        }
+
+        .dark {
+          --background: 15 23 42;
+          --foreground: 248 250 252;
+        }
+
+        .dark body {
+          background: linear-gradient(to bottom, #1e293b, #0f172a);
+        }
+
+        .dark .bg-white {
+          background-color: rgb(30 41 59);
+        }
+
+        .dark .text-slate-800,
+        .dark .text-slate-700 {
+          color: rgb(241 245 249);
+        }
+
+        .dark .text-slate-600 {
+          color: rgb(203 213 225);
+        }
+
+        .dark .text-slate-500 {
+          color: rgb(148 163 184);
+        }
+
+        .dark .border-slate-200,
+        .dark .border-slate-300 {
+          border-color: rgb(51 65 85);
+        }
+
+        .dark .bg-slate-50 {
+          background-color: rgb(51 65 85);
+        }
+
+        .dark .bg-slate-100 {
+          background-color: rgb(71 85 105);
+        }
+
+        .dark .shadow-lg,
+        .dark .shadow-xl {
+          box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
         }
         
         body {

@@ -20,7 +20,7 @@ export default function MentalRoutinePlayer() {
   const urlParams = new URLSearchParams(window.location.search);
   const routineId = urlParams.get('id');
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [stepTimeRemaining, setStepTimeRemaining] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -83,8 +83,9 @@ export default function MentalRoutinePlayer() {
   const currentStep = steps[currentStepIndex];
 
   useEffect(() => {
-    if (routine && steps.length > 0 && !isPlaying && stepTimeRemaining === 0) {
+    if (routine && steps.length > 0 && stepTimeRemaining === 0) {
       setStepTimeRemaining(steps[0]?.duration_seconds || 10);
+      setIsPlaying(true);
     }
   }, [routine]);
 
