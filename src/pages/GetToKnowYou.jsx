@@ -295,7 +295,7 @@ export default function GetToKnowYou() {
       
       // Redirect to home page
       setTimeout(() => {
-        navigate(createPageUrl('Home'));
+        navigate(createPageUrl('NewHome'));
       }, 500);
     },
   });

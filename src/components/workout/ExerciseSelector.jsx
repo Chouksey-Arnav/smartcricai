@@ -4,19 +4,61 @@ import { Search, Dumbbell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ALL_CORE_POOL_EXERCISES } from '@/components/workout/CorePoolExercises';
+import { BODYWEIGHT_EXERCISES, WEIGHTED_EXERCISES } from '@/components/fitness/exercisePools';
 
 export default function ExerciseSelector({ onSelect, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Generate exercises from pools
+  const getAllExercises = () => {
+    const exercises = [];
+    
+    // Bodyweight exercises
+    Object.entries(BODYWEIGHT_EXERCISES).forEach(([category, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(name => exercises.push({ id: `bw_${name}`, name, category: 'bodyweight' }));
+      } else if (typeof value === 'object') {
+        Object.values(value).forEach(arr => {
+          if (Array.isArray(arr)) {
+            arr.forEach(name => exercises.push({ id: `bw_${name}`, name, category: 'bodyweight' }));
+          }
+        });
+      }
+    });
+    
+    // Weighted exercises
+    Object.entries(WEIGHTED_EXERCISES).forEach(([category, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(name => exercises.push({ id: `w_${name}`, name, category: 'weighted' }));
+      } else if (typeof value === 'object') {
+        Object.values(value).forEach(arr => {
+          if (Array.isArray(arr)) {
+            arr.forEach(name => exercises.push({ id: `w_${name}`, name, category: 'weighted' }));
+          }
+        });
+      }
+    });
+    
+    return [...new Set(exercises.map(e => JSON.stringify(e)))].map(e => JSON.parse(e)).sort((a, b) => a.name.localeCompare(b.name));
+  };
 
+  const exercises = getAllExercises();
+  const isLoading = false;
+
+  // Filter and sort exercises
   const filteredExercises = useMemo(() => {
-    if (!searchQuery) return ALL_CORE_POOL_EXERCISES;
-    return ALL_CORE_POOL_EXERCISES.filter(ex => 
-      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.base?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.variation?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+    let filtered = exercises;
+    
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = exercises.filter(ex => 
+        ex.name.toLowerCase().includes(query)
+      );
+    }
+    
+    // Sort alphabetically
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }, [exercises, searchQuery]);
 
   return (
     <div className="flex flex-col h-full">
@@ -37,8 +79,14 @@ export default function ExerciseSelector({ onSelect, onClose }) {
       </div>
 
       {/* Exercise List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-visible">
-        {filteredExercises.length === 0 ? (
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-2">
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto" />
+              <p className="text-slate-600 mt-3">Loading exercises...</p>
+            </div>
+          ) : filteredExercises.length === 0 ? (
             <div className="text-center py-12">
               <Dumbbell className="w-12 h-12 text-slate-300 mx-auto mb-3" />
               <p className="text-slate-600">No exercises found</p>
@@ -73,7 +121,8 @@ export default function ExerciseSelector({ onSelect, onClose }) {
               </motion.button>
             ))
           )}
-      </div>
+        </div>
+      </ScrollArea>
     </div>
   );
 }

@@ -265,7 +265,7 @@ export default function Goals() {
       
       // Redirect to home page
       setTimeout(() => {
-        navigate(createPageUrl('Home'));
+        navigate(createPageUrl('NewHome'));
       }, 500);
     },
   });

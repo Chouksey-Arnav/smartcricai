@@ -9,24 +9,22 @@ import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { getPreGeneratedFitnessPlan } from '@/components/fitness/PreGeneratedFitnessPlans';
+import { generateWorkout } from '@/components/fitness/exercisePools';
 
 const bodyParts = [
-  { id: 'Upper Body', label: 'Upper Body', emoji: '💪' },
-  { id: 'Lower Body', label: 'Lower Body', emoji: '🦵' },
-  { id: 'Core', label: 'Core', emoji: '🔥' },
-  { id: 'Cardio', label: 'Cardio', emoji: '🏃' },
-  { id: 'Flexibility', label: 'Flexibility', emoji: '🧘' },
-  { id: 'Agility', label: 'Agility', emoji: '⚡' },
-  { id: 'Full Body', label: 'Full Body', emoji: '🌟' }
+  { id: 'arm', label: 'Arms', emoji: '💪' },
+  { id: 'chest', label: 'Chest', emoji: '🦸' },
+  { id: 'core', label: 'Core', emoji: '🔥' },
+  { id: 'leg', label: 'Legs', emoji: '🦵' },
+  { id: 'shoulder', label: 'Shoulders', emoji: '💥' },
+  { id: 'back', label: 'Back', emoji: '🏋️' },
+  { id: 'full_body', label: 'Full Body', emoji: '⚡' }
 ];
 
 const fitnessGoals = [
-  { id: 'Strength', label: 'Strength', icon: '💪' },
-  { id: 'Endurance', label: 'Endurance', icon: '🔥' },
-  { id: 'Power', label: 'Power', icon: '⚡' },
-  { id: 'Fat Loss', label: 'Fat Loss', icon: '🏃' },
-  { id: 'Muscle Gain', label: 'Muscle Gain', icon: '🏋️' }
+  { id: 'lose_weight', label: 'Lose Weight', icon: '🔥' },
+  { id: 'build_muscle', label: 'Build Muscle', icon: '💪' },
+  { id: 'keep_fit', label: 'Keep Fit', icon: '✨' }
 ];
 
 const durations = [
@@ -38,10 +36,10 @@ const durations = [
 ];
 
 const levels = [
-{ id: 'Beginner', label: 'Beginner', color: 'bg-green-100 text-green-700', locked: false },
-{ id: 'Intermediate', label: 'Intermediate', color: 'bg-amber-100 text-amber-700', locked: false },
-{ id: 'Advanced', label: 'Advanced', color: 'bg-red-100 text-red-700', locked: false },
-{ id: 'Pro', label: 'Pro', color: 'bg-purple-100 text-purple-700', locked: true }
+  { id: 'beginner', label: 'Beginner', color: 'bg-green-100 text-green-700', locked: false },
+  { id: 'intermediate', label: 'Intermediate', color: 'bg-amber-100 text-amber-700', locked: false },
+  { id: 'advanced', label: 'Advanced', color: 'bg-red-100 text-red-700', locked: false },
+  { id: 'pro', label: 'Pro', color: 'bg-purple-100 text-purple-700', locked: true }
 ];
 
 export default function FitnessBuilder() {
@@ -49,8 +47,9 @@ export default function FitnessBuilder() {
   const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
   const [selectedParts, setSelectedParts] = useState([]);
-  const [level, setLevel] = useState('Beginner');
-  const [goal, setGoal] = useState('Strength');
+  const [level, setLevel] = useState('beginner');
+  const [injuredArea, setInjuredArea] = useState(null);
+  const [goal, setGoal] = useState('keep_fit');
   const [duration, setDuration] = useState('medium');
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -88,47 +87,49 @@ export default function FitnessBuilder() {
     // Simulate brief loading for better UX
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    const targetArea = selectedParts[0];
+    try {
+      const bodyPart = selectedParts[0];
       const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
       
-      // Use pre-generated plan from library (NO AI CREDITS!)
-      const plan = getPreGeneratedFitnessPlan(targetArea, level, targetDurationMinutes, goal);
+      // Generate unique workout from curated exercise pools
+      const workout = generateWorkout(bodyPart, goal, level, targetDurationMinutes);
       
-      if (plan && plan.exercises && plan.exercises.length > 0) {
-        const workout = plan.exercises.map(ex => ({
-          name: ex.name,
-          sets: ex.sets,
-          reps: ex.reps,
-          rest_seconds: ex.rest,
-          notes: ex.notes || ''
-        }));
-        
+      if (workout && workout.length >= 10) {
         setGeneratedWorkout(workout);
         setStep(3);
         toast.success(`Workout generated! ${workout.length} exercises 💪`);
       } else {
-        toast.error('No pre-generated plan available for this combination.');
+        toast.error('Unable to generate workout. Please try different options.');
       }
-      
+    } catch (error) {
+      console.error('Failed to generate workout:', error);
+      toast.error('Failed to generate workout. Please try again.');
+    } finally {
       setIsGenerating(false);
+    }
   };
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
-      const targetArea = selectedParts[0] || 'Full Body';
+      const bodyPart = selectedParts[0] || 'full_body';
+      const goalMapping = {
+        'lose_weight': 'endurance',
+        'build_muscle': 'strength',
+        'keep_fit': 'flexibility'
+      };
       const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
       
       const workoutData = {
-        body_part: targetArea.toLowerCase().replace(' ', '_'),
-        goal: goal.toLowerCase().replace(' ', '_'),
+        body_part: bodyPart,
+        goal: goalMapping[goal] || 'strength',
         duration: targetDurationMinutes,
-        level: level.toLowerCase(),
+        level: level,
         exercises: generatedWorkout.map(ex => ({
           name: ex.name,
           sets: ex.sets || 3,
           reps: ex.reps || '12',
           rest_seconds: ex.rest_seconds || 60,
-          notes: ex.notes || ''
+          notes: ex.instructions || ''
         }))
       };
       return await base44.entities.PreGeneratedWorkout.create(workoutData);

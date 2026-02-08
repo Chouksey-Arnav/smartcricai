@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import toast from 'react-hot-toast';
 import ExerciseSelector from '@/components/workout/ExerciseSelector';
-import DrillSelector from '@/components/workout/DrillSelector';
 
 export default function WorkoutBuilder() {
   const navigate = useNavigate();
@@ -146,15 +145,22 @@ export default function WorkoutBuilder() {
                 Add Drill
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[80vh] p-0">
-              <DialogHeader className="p-4 pb-0">
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
                 <DialogTitle>Select a Drill</DialogTitle>
               </DialogHeader>
-              <DrillSelector 
-                drills={drills} 
-                onSelect={addDrill} 
-                onClose={() => setDialogOpen(false)}
-              />
+              <div className="space-y-2">
+                {drills.map(drill => (
+                  <button
+                    key={drill.id}
+                    onClick={() => addDrill(drill)}
+                    className="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors"
+                  >
+                    <h4 className="font-semibold text-slate-800">{drill.title}</h4>
+                    <p className="text-sm text-slate-600">{drill.category} • {drill.skill_level}</p>
+                  </button>
+                ))}
+              </div>
             </DialogContent>
           </Dialog>
 

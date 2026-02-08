@@ -10,7 +10,6 @@ import MentalRoutineCard from '@/components/mental/MentalRoutineCard';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const mindfulnessQuotes = [
   "The mind is everything. What you think, you become.",
@@ -97,20 +96,6 @@ export default function MentalCoaching() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('Routine deleted');
-    },
-  });
-
-  const deleteAllRoutinesMutation = useMutation({
-    mutationFn: async () => {
-      // Delete all routines created by this user
-      const deletePromises = savedRoutines.map(routine => 
-        base44.entities.MentalRoutine.delete(routine.id)
-      );
-      await Promise.all(deletePromises);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
-      toast.success('All routines deleted');
     },
   });
 
@@ -247,36 +232,6 @@ export default function MentalCoaching() {
         ) : (
           // Saved Routines Tab
           <div className="space-y-4">
-            {savedRoutines.length > 0 && (
-              <div className="flex justify-end">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50">
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete All Routines
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Delete All Routines?</DialogTitle>
-                    </DialogHeader>
-                    <p className="text-slate-600 my-4">
-                      Are you sure you want to delete all {savedRoutines.length} saved routine(s)? This action cannot be undone.
-                    </p>
-                    <div className="flex gap-3 justify-end">
-                      <Button variant="outline">Cancel</Button>
-                      <Button
-                        onClick={() => deleteAllRoutinesMutation.mutate()}
-                        disabled={deleteAllRoutinesMutation.isPending}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        {deleteAllRoutinesMutation.isPending ? 'Deleting...' : 'Delete All'}
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            )}
             {savedRoutines.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
