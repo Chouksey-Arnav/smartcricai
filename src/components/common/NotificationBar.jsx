@@ -133,7 +133,7 @@ export default function NotificationBar({ onChallengeComplete }) {
   });
 
   const allNotifications = [...notifications, ...challenges];
-  const unreadCount = notifications.filter(n => !n.is_read).length + challenges.filter(n => !n.completed).length;
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -149,9 +149,9 @@ export default function NotificationBar({ onChallengeComplete }) {
         className="fixed top-4 right-4 z-40 p-2 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all"
       >
         <div className="relative">
-          <Bell className="w-6 h-6 text-slate-700" />
+          <Bell className="w-7 h-7 text-slate-700 dark:text-white" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+            <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
               {unreadCount}
             </span>
           )}

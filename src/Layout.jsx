@@ -20,8 +20,10 @@ export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-slate-50">
       <Sidebar />
-      <NotificationBar />
-      <FloatingTimer />
+      <div className="fixed top-4 right-4 z-50 flex items-start gap-2">
+        <NotificationBar />
+        <FloatingTimer />
+      </div>
       <ThirtyDayNotifications user={user} />
       <style>{`
         :root {
@@ -69,37 +71,72 @@ export default function Layout({ children, currentPageName }) {
         }
 
         /* Dark mode support */
-        .dark {
+        html.dark {
           --background: 222 47% 11%;
           --foreground: 210 40% 98%;
         }
 
-        .dark body {
-          background: linear-gradient(to bottom, #1e293b, #0f172a);
+        html.dark body {
+          background: linear-gradient(to bottom, #0f172a, #020617) !important;
         }
 
-        .dark .bg-white {
+        html.dark .bg-white {
           background-color: #1e293b !important;
-        }
-
-        .dark .text-slate-800 {
           color: #e2e8f0 !important;
         }
 
-        .dark .text-slate-700 {
+        html.dark .bg-gradient-to-b {
+          background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
+        }
+
+        html.dark .text-slate-800 {
+          color: #f1f5f9 !important;
+        }
+
+        html.dark .text-slate-700 {
+          color: #e2e8f0 !important;
+        }
+
+        html.dark .text-slate-600 {
           color: #cbd5e1 !important;
         }
 
-        .dark .text-slate-600 {
+        html.dark .text-slate-500 {
           color: #94a3b8 !important;
         }
 
-        .dark .border-slate-200 {
+        html.dark .border-slate-200 {
+          border-color: #475569 !important;
+        }
+
+        html.dark .border-slate-100 {
           border-color: #334155 !important;
         }
 
-        .dark .bg-slate-50 {
+        html.dark .bg-slate-50 {
+          background-color: #1e293b !important;
+        }
+
+        html.dark .bg-slate-100 {
           background-color: #334155 !important;
+        }
+
+        html.dark .shadow-lg {
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        html.dark .shadow-xl {
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        html.dark input, html.dark textarea, html.dark select {
+          background-color: #334155 !important;
+          color: #f1f5f9 !important;
+          border-color: #475569 !important;
+        }
+
+        html.dark button {
+          color-scheme: dark;
         }
         `}</style>
 
