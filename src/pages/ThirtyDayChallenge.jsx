@@ -111,7 +111,7 @@ export default function ThirtyDayChallenge() {
                 src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/96280cd8-d70c-48d3-a1fd-0736eb4ab744/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false" 
                 width="100%" 
                 height="800px" 
-                frameBorder="0" 
+                frameborder="0" 
                 allow="microphone"
                 className="rounded-2xl"
                 onLoad={() => setIframeLoading(false)}
