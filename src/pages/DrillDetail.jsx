@@ -167,6 +167,16 @@ export default function DrillDetail() {
         });
       }
 
+      // Update Leaderboard
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      if (leaderboards.length > 0) {
+        await base44.entities.Leaderboard.update(leaderboards[0].id, {
+          total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
+          drills_completed: (leaderboards[0].drills_completed || 0) + 1,
+          current_streak: newStreak
+        });
+      }
+
       // Create notification
       await base44.entities.Notification.create({
         user_email: user.email,

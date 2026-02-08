@@ -62,6 +62,14 @@ export default function MentalRoutinePlayer() {
             total_xp: (userProgress.total_xp || 0) + xpEarned
           });
         }
+
+        // Update Leaderboard
+        const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+        if (leaderboards.length > 0) {
+          await base44.entities.Leaderboard.update(leaderboards[0].id, {
+            total_xp: (leaderboards[0].total_xp || 0) + xpEarned
+          });
+        }
         
         // Create notification
         await base44.entities.Notification.create({

@@ -1,19 +1,28 @@
 import React, { useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import BottomNav from '@/components/common/BottomNav';
 import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
 import FloatingTimer from '@/components/common/FloatingTimer';
+import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
   const isHomePage = currentPageName === 'Home';
 
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Sidebar />
       <NotificationBar />
       <FloatingTimer />
+      <ThirtyDayNotifications user={user} />
       <style>{`
         :root {
           --primary: 16 185 129;
