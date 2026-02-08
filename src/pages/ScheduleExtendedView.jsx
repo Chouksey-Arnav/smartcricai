@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function ScheduleExtendedView() {
+  const navigate = useNavigate();
   const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date()));
 
   const { data: user } = useQuery({
@@ -65,25 +68,34 @@ export default function ScheduleExtendedView() {
       <div className="px-4 py-4 max-w-6xl mx-auto space-y-4">
         {/* Navigation */}
         <div className="flex items-center justify-between bg-white rounded-2xl p-4 shadow-lg">
-          <Button onClick={prevWeek} variant="outline" size="icon">
-            <ChevronLeft className="w-5 h-5" />
+          <Button onClick={() => navigate(createPageUrl('Schedule'))} variant="outline" className="gap-2">
+            <X className="w-4 h-4" />
+            Exit
           </Button>
           
-          <div className="text-center">
-            <h3 className="font-bold text-slate-800">
-              {format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d, yyyy')}
-            </h3>
-            <button
-              onClick={goToToday}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Today
-            </button>
-          </div>
+          <div className="flex items-center gap-4">
+            <Button onClick={prevWeek} variant="outline" size="icon">
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            
+            <div className="text-center">
+              <h3 className="font-bold text-slate-800">
+                {format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d, yyyy')}
+              </h3>
+              <button
+                onClick={goToToday}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Today
+              </button>
+            </div>
 
-          <Button onClick={nextWeek} variant="outline" size="icon">
-            <ChevronRight className="w-5 h-5" />
-          </Button>
+            <Button onClick={nextWeek} variant="outline" size="icon">
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+          
+          <div className="w-24" />
         </div>
 
         {/* Week Grid */}
