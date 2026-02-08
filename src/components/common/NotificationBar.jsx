@@ -133,14 +133,12 @@ export default function NotificationBar({ onChallengeComplete }) {
   });
 
   const allNotifications = [...notifications, ...challenges];
-  const unreadCount = notifications.filter(n => !n.is_read).length + challenges.filter(n => !n.completed).length;
+  const unreadCount = isOpen ? 0 : (notifications.filter(n => !n.is_read).length + challenges.filter(n => !n.completed).length);
 
   const handleOpen = () => {
     setIsOpen(true);
-    // Mark all as read when opening
-    if (unreadCount > 0) {
-      markAllReadMutation.mutate();
-    }
+    // Mark all as read immediately when opening
+    markAllReadMutation.mutate();
   };
 
   return (
