@@ -992,7 +992,7 @@ export const scenarioDatabase = [
       { text: 'That ball is done. Reset. This ball is everything.', correct: true, explanation: 'Elite short-term memory. Cannot change past ball. Full focus on next delivery.' },
       { text: 'Panic about losing the match', correct: false, explanation: '2 runs to defend, 5 balls left. Very possible! Stay in the fight!' },
       { text: 'Get angry and bowl bouncer at head', correct: false, explanation: 'Emotion-driven cricket fails. Stay calm, execute smart plan.' },
-      { text: 'Give up mentally', correct: false, explanation: 'Match isn't over! Champions fight until the last ball.' }
+      { text: 'Give up mentally', correct: false, explanation: 'Match is not over! Champions fight until the last ball.' }
     ]
   },
   {
