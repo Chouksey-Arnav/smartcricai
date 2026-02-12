@@ -964,7 +964,7 @@ export const scenarioDatabase = [
     question: 'How do you mentally recover?',
     options: [
       { text: 'Dwell on it for the rest of the match', correct: false, explanation: 'Ruins your fielding and team energy. Let it go.' },
-      { text: 'Accept it, refocus on contributing in field, move on', correct: true, explanation: 'Perfect! Can't bat again this innings. Control what you CAN control now.' },
+      { text: 'Accept it, refocus on contributing in field, move on', correct: true, explanation: 'Perfect! Cannot bat again this innings. Control what you CAN control now.' },
       { text: 'Blame pitch, umpire, bowler', correct: false, explanation: 'Excuses don't help you improve. Own it and grow.' },
       { text: 'Quit cricket forever', correct: false, explanation: 'Every great player has failed. Resilience defines champions.' }
     ]
