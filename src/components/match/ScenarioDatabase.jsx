@@ -912,7 +912,7 @@ export const scenarioDatabase = [
       { text: 'Save both for overs 19 and 20', correct: false, explanation: 'Could be too late if they accelerate now. Strike when you have control.' },
       { text: 'Bowl him over 17 and 19 to control middle and end', correct: true, explanation: 'Smart! Break current momentum AND have him for penultimate over. Best of both worlds.' },
       { text: 'Bowl him now for consecutive overs 17-18', correct: false, explanation: 'Leaves weak bowlers for crucial final overs. Poor resource management.' },
-      { text: 'Don't bowl him, save for next match', correct: false, explanation: 'Absurd! Use your best resources to win THIS match.' }
+      { text: 'Do not bowl him, save for next match', correct: false, explanation: 'Absurd! Use your best resources to win THIS match.' }
     ]
   },
   {
