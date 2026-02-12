@@ -946,7 +946,7 @@ export const scenarioDatabase = [
     category: 'strategy',
     difficulty: 'hard',
     situation: 'Your star batsman has mild injury. Semi-final tomorrow. Risk playing him or rest?',
-    question: 'What's your call as captain?',
+    question: 'What is your call as captain?',
     options: [
       { text: 'Play him, we need him to win', correct: false, explanation: 'Could worsen injury and lose him for final if you win. Risky.' },
       { text: 'Assess on match day morning, have backup ready, decide based on severity', correct: true, explanation: 'Smart captaincy! Get medical clearance, have contingency. Informed decision.' },
