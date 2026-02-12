@@ -146,7 +146,7 @@ export default function NotificationBar({ onChallengeComplete }) {
       {/* Bell Button */}
       <button
         onClick={handleOpen}
-        className="fixed top-4 right-4 z-40 p-2 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all"
+        className="p-2 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all"
       >
         <div className="relative">
           <Bell className="w-7 h-7 text-slate-700 dark:text-white" />

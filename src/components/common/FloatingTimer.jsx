@@ -75,7 +75,7 @@ export default function FloatingTimer() {
       {/* Floating Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-20 right-20 z-40 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-2xl flex items-center justify-center text-white hover:scale-110 transition-transform"
+        className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-2xl flex items-center justify-center text-white hover:scale-110 transition-transform"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -86,11 +86,11 @@ export default function FloatingTimer() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-36 right-14 z-40 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-4 w-64"
-          >
+              initial={{ opacity: 0, y: -20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.9 }}
+              className="fixed top-20 right-4 z-40 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-4 w-64"
+            >
             <div className="flex items-center justify-between mb-3">
               <div className="flex gap-2">
                 <button

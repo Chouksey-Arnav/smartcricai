@@ -6,6 +6,7 @@ import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
 import FloatingTimer from '@/components/common/FloatingTimer';
 import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
+import RelevanceChatBubble from '@/components/common/RelevanceChatBubble';
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 
 export default function Layout({ children, currentPageName }) {
@@ -25,6 +26,7 @@ export default function Layout({ children, currentPageName }) {
         <FloatingTimer />
       </div>
       <ThirtyDayNotifications user={user} />
+      <RelevanceChatBubble />
       <style>{`
         :root {
           --primary: 16 185 129;
