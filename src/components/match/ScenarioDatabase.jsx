@@ -973,7 +973,7 @@ export const scenarioDatabase = [
     id: 'mental_002',
     category: 'mental',
     difficulty: 'easy',
-    situation: 'Big match tomorrow. You can't sleep, feeling nervous.',
+    situation: 'Big match tomorrow. You cannot sleep, feeling nervous.',
     question: 'Best approach?',
     options: [
       { text: 'Deep breathing, visualization of success, trust preparation', correct: true, explanation: 'Nerves are normal. Control breathing, visualize success, remember your training.' },
