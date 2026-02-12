@@ -1003,7 +1003,7 @@ export const scenarioDatabase = [
     question: 'Pre-match mental preparation?',
     options: [
       { text: 'Deep breaths, visualize success, trust your journey', correct: true, explanation: 'You earned this opportunity! Control nerves with breathing and positive visualization.' },
-      { text: 'Panic and wish you weren't playing', correct: false, explanation: 'This is your dream opportunity! Embrace it!' },
+      { text: 'Panic and wish you were not playing', correct: false, explanation: 'This is your dream opportunity! Embrace it!' },
       { text: 'Think about how you might fail', correct: false, explanation: 'Negative thoughts breed negative results. Stay positive!' },
       { text: 'Ask to be dropped from team', correct: false, explanation: 'Cowardly! Face your moment with courage!' }
     ]
