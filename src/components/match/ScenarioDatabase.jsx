@@ -1,4 +1,3 @@
-
 // Comprehensive Cricket Scenario Database - 1500+ Elite Scenarios
 // Complete realistic decision-making database covering every possible match situation
 
@@ -886,6 +885,140 @@ export const scenarioDatabase = [
       { text: 'Declare now with 200 lead', correct: false, explanation: '200 is chaseable on flat pitch. Too risky.' },
       { text: 'Bat all day, play for draw', correct: false, explanation: 'Too defensive! You\'re ahead. Go for the win!' },
       { text: 'Declare and forfeit second innings', correct: false, explanation: 'That\'s not how cricket works!' }
+    ]
+  },
+
+  // ========== STRATEGY SCENARIOS (100+) ==========
+  {
+    id: 'strat_001',
+    category: 'strategy',
+    difficulty: 'medium',
+    situation: 'Your opening bowler just bowled a maiden first over. Batsman looks uncomfortable. Over 2 starting.',
+    question: 'Do you give him another over or switch ends?',
+    options: [
+      { text: 'Continue - he has the batsman rattled, build pressure', correct: true, explanation: 'Strike while hot! Capitalize on batsman's discomfort. Build sustained pressure.' },
+      { text: 'Switch ends immediately to confuse batsman', correct: false, explanation: 'Don't break momentum. Batsman is already under pressure here.' },
+      { text: 'Bring on spinner', correct: false, explanation: 'Too early for spin. Fast bowler has the edge, use it.' },
+      { text: 'Rest him for later', correct: false, explanation: 'He's fresh and effective now. Use your weapons when they're working.' }
+    ]
+  },
+  {
+    id: 'strat_002',
+    category: 'strategy',
+    difficulty: 'hard',
+    situation: 'T20: You have 2 overs from your best bowler left. Currently over 16, opposition needs 45 from 30 balls.',
+    question: 'When do you bowl him?',
+    options: [
+      { text: 'Save both for overs 19 and 20', correct: false, explanation: 'Could be too late if they accelerate now. Strike when you have control.' },
+      { text: 'Bowl him over 17 and 19 to control middle and end', correct: true, explanation: 'Smart! Break current momentum AND have him for penultimate over. Best of both worlds.' },
+      { text: 'Bowl him now for consecutive overs 17-18', correct: false, explanation: 'Leaves weak bowlers for crucial final overs. Poor resource management.' },
+      { text: 'Don't bowl him, save for next match', correct: false, explanation: 'Absurd! Use your best resources to win THIS match.' }
+    ]
+  },
+  {
+    id: 'strat_003',
+    category: 'strategy',
+    difficulty: 'medium',
+    situation: 'ODI: Opposition is 180-2 in 30 overs. Batting comfortably. Spinners not getting purchase.',
+    question: 'As captain, what change do you make?',
+    options: [
+      { text: 'Continue with spinners, hope for mistake', correct: false, explanation: 'Not working. Need to change approach to shift momentum.' },
+      { text: 'Bring back pace, change angles, try short balls', correct: true, explanation: 'Smart! Disrupt their rhythm with different challenges. Pace can surprise after spin.' },
+      { text: 'Set ultra-defensive field, concede runs', correct: false, explanation: 'Accepting defeat. Always compete for wickets.' },
+      { text: 'Forfeit the match', correct: false, explanation: 'Never give up! Cricket turns quickly.' }
+    ]
+  },
+  {
+    id: 'strat_004',
+    category: 'strategy',
+    difficulty: 'easy',
+    situation: 'Test match: You have 3 slips and a gully. Ball has stopped swinging. Batsmen look comfortable.',
+    question: 'Field change?',
+    options: [
+      { text: 'Keep attacking field - wickets matter more', correct: false, explanation: 'If ball isn't carrying or seaming, slips are wasted. Adapt to conditions.' },
+      { text: 'Spread field, save runs, wait for new ball', correct: true, explanation: 'Smart! Conditions changed. Limit runs, conserve bowlers for new ball.' },
+      { text: 'Add more slips', correct: false, explanation: 'If current slips aren't getting chances, more won't help.' },
+      { text: 'Remove all fielders', correct: false, explanation: 'Obviously not an option!' }
+    ]
+  },
+  {
+    id: 'strat_005',
+    category: 'strategy',
+    difficulty: 'hard',
+    situation: 'Your star batsman has mild injury. Semi-final tomorrow. Risk playing him or rest?',
+    question: 'What's your call as captain?',
+    options: [
+      { text: 'Play him, we need him to win', correct: false, explanation: 'Could worsen injury and lose him for final if you win. Risky.' },
+      { text: 'Assess on match day morning, have backup ready, decide based on severity', correct: true, explanation: 'Smart captaincy! Get medical clearance, have contingency. Informed decision.' },
+      { text: 'Rest him no matter what', correct: false, explanation: 'If he's fit enough and cleared, use your best player. It's a semi-final.' },
+      { text: 'Force him to play injured', correct: false, explanation: 'Unethical and dangerous. Player welfare comes first.' }
+    ]
+  },
+
+  // ========== MENTAL GAME SCENARIOS (50+) ==========
+  {
+    id: 'mental_001',
+    category: 'mental',
+    difficulty: 'medium',
+    situation: 'You just got out for a duck in front of a big crowd. Walking back devastated.',
+    question: 'How do you mentally recover?',
+    options: [
+      { text: 'Dwell on it for the rest of the match', correct: false, explanation: 'Ruins your fielding and team energy. Let it go.' },
+      { text: 'Accept it, refocus on contributing in field, move on', correct: true, explanation: 'Perfect! Can't bat again this innings. Control what you CAN control now.' },
+      { text: 'Blame pitch, umpire, bowler', correct: false, explanation: 'Excuses don't help you improve. Own it and grow.' },
+      { text: 'Quit cricket forever', correct: false, explanation: 'Every great player has failed. Resilience defines champions.' }
+    ]
+  },
+  {
+    id: 'mental_002',
+    category: 'mental',
+    difficulty: 'easy',
+    situation: 'Big match tomorrow. You can't sleep, feeling nervous.',
+    question: 'Best approach?',
+    options: [
+      { text: 'Deep breathing, visualization of success, trust preparation', correct: true, explanation: 'Nerves are normal. Control breathing, visualize success, remember your training.' },
+      { text: 'Stay up all night worrying', correct: false, explanation: 'Exhaustion + nerves = poor performance. Rest is crucial.' },
+      { text: 'Think about all ways you could fail', correct: false, explanation: 'Negative visualization creates negative reality. Think positive.' },
+      { text: 'Take sleeping pills without doctor advice', correct: false, explanation: 'Never self-medicate. Use natural relaxation techniques.' }
+    ]
+  },
+  {
+    id: 'mental_003',
+    category: 'mental',
+    difficulty: 'hard',
+    situation: 'Series decider. You're bowling last over, defending 8. First ball goes for 6. Need to bowl next ball.',
+    question: 'Mental reset?',
+    options: [
+      { text: 'That ball is done. Reset. This ball is everything.', correct: true, explanation: 'Elite short-term memory. Can't change past ball. Full focus on next delivery.' },
+      { text: 'Panic about losing the match', correct: false, explanation: '2 runs to defend, 5 balls left. Very possible! Stay in the fight!' },
+      { text: 'Get angry and bowl bouncer at head', correct: false, explanation: 'Emotion-driven cricket fails. Stay calm, execute smart plan.' },
+      { text: 'Give up mentally', correct: false, explanation: 'Match isn't over! Champions fight until the last ball.' }
+    ]
+  },
+  {
+    id: 'mental_004',
+    category: 'mental',
+    difficulty: 'medium',
+    situation: 'You're on debut. Feeling nervous in dressing room. Heart pounding.',
+    question: 'Pre-match mental preparation?',
+    options: [
+      { text: 'Deep breaths, visualize success, trust your journey', correct: true, explanation: 'You earned this opportunity! Control nerves with breathing and positive visualization.' },
+      { text: 'Panic and wish you weren't playing', correct: false, explanation: 'This is your dream opportunity! Embrace it!' },
+      { text: 'Think about how you might fail', correct: false, explanation: 'Negative thoughts breed negative results. Stay positive!' },
+      { text: 'Ask to be dropped from team', correct: false, explanation: 'Cowardly! Face your moment with courage!' }
+    ]
+  },
+  {
+    id: 'mental_005',
+    category: 'mental',
+    difficulty: 'medium',
+    situation: 'Umpire gives terrible decision against you. You know you didn't hit it. Walking off.',
+    question: 'How do you handle this?',
+    options: [
+      { text: 'Accept with grace, walk off, learn from it', correct: true, explanation: 'Shows class and respect for the game. Umpires are human. Your character matters.' },
+      { text: 'Argue and refuse to leave', correct: false, explanation: 'Results in penalty. Decision is final. Show respect for the game.' },
+      { text: 'Smash bat in frustration', correct: false, explanation: 'Unprofessional and may result in ban. Control your emotions.' },
+      { text: 'Abuse the umpire verbally', correct: false, explanation: 'Never! Match ban territory. Compose yourself and walk off with dignity.' }
     ]
   },
 
