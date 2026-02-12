@@ -896,8 +896,8 @@ export const scenarioDatabase = [
     situation: 'Your opening bowler just bowled a maiden first over. Batsman looks uncomfortable. Over 2 starting.',
     question: 'Do you give him another over or switch ends?',
     options: [
-      { text: 'Continue - he has the batsman rattled, build pressure', correct: true, explanation: 'Strike while hot! Capitalize on batsman's discomfort. Build sustained pressure.' },
-      { text: 'Switch ends immediately to confuse batsman', correct: false, explanation: 'Don't break momentum. Batsman is already under pressure here.' },
+      { text: 'Continue - he has the batsman rattled, build pressure', correct: true, explanation: 'Strike while hot! Capitalize on batsman discomfort. Build sustained pressure.' },
+      { text: 'Switch ends immediately to confuse batsman', correct: false, explanation: 'Do not break momentum. Batsman is already under pressure here.' },
       { text: 'Bring on spinner', correct: false, explanation: 'Too early for spin. Fast bowler has the edge, use it.' },
       { text: 'Rest him for later', correct: false, explanation: 'He's fresh and effective now. Use your weapons when they're working.' }
     ]
