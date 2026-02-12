@@ -999,7 +999,7 @@ export const scenarioDatabase = [
     id: 'mental_004',
     category: 'mental',
     difficulty: 'medium',
-    situation: 'You're on debut. Feeling nervous in dressing room. Heart pounding.',
+    situation: 'You are on debut. Feeling nervous in dressing room. Heart pounding.',
     question: 'Pre-match mental preparation?',
     options: [
       { text: 'Deep breaths, visualize success, trust your journey', correct: true, explanation: 'You earned this opportunity! Control nerves with breathing and positive visualization.' },
