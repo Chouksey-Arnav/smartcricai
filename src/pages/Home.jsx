@@ -155,7 +155,11 @@ export default function Home() {
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('theme') === 'dark';
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    // Default to dark mode
+    localStorage.setItem('theme', 'dark');
+    return true;
   });
   
   const { data: user, isLoading: userLoading } = useQuery({
@@ -375,7 +379,7 @@ export default function Home() {
           transition={{ delay: 0.2 }}
           className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-2xl shadow-slate-300/50 p-6 border border-white/50"
         >
-          <h2 className="font-bold text-slate-800 mb-5 flex items-center gap-2 text-lg">
+          <h2 className={`font-bold mb-5 flex items-center gap-2 text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
             <Sparkles className="w-6 h-6 text-amber-500" />
             Let's Train!
           </h2>
@@ -392,13 +396,17 @@ export default function Home() {
                   transition={{ delay: 0.1 * index }}
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-gradient-to-br from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl border border-slate-100"
+                  className={`rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl border ${
+                    isDarkMode 
+                      ? 'bg-gradient-to-br from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 border-slate-600' 
+                      : 'bg-gradient-to-br from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 border-slate-100'
+                  }`}
                 >
                   <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center mb-3 shadow-md`}>
                     <action.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-slate-800 text-sm mb-1">{action.name}</h3>
-                  <p className="text-xs text-slate-600">{action.description}</p>
+                  <h3 className={`font-bold text-sm mb-1 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>{action.name}</h3>
+                  <p className={`text-xs ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>{action.description}</p>
                 </motion.div>
               </Link>
             ))}
@@ -419,9 +427,13 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-2xl shadow-slate-300/50 p-6 border border-white/50"
+          className={`rounded-3xl shadow-2xl p-6 border ${
+            isDarkMode 
+              ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' 
+              : 'bg-gradient-to-br from-white to-purple-50/30 border-white/50'
+          }`}
         >
-          <h2 className="font-bold text-slate-800 mb-5 text-lg flex items-center gap-2">
+          <h2 className={`font-bold mb-5 text-lg flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
             <Star className="w-6 h-6 text-purple-500" />
             Explore More
           </h2>

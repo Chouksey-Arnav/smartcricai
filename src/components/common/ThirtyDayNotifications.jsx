@@ -1,6 +1,40 @@
 import { useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tantml:react-query';
+
+// 30-Day Challenge Daily Messages - Pre-Saved Database
+const thirtyDayMessages = {
+  1: "Let's set the tone. Show up and move with purpose.",
+  2: "Consistency > intensity. Stay steady.",
+  3: "Control your reps. Clean movement wins.",
+  4: "Even average days count. Train anyway.",
+  5: "Five days strong. That's momentum building.",
+  6: "Stay sharp. Small improvements add up.",
+  7: "One week complete. Keep stacking wins.",
+  8: "Reset. Refocus. Go again.",
+  9: "Move fast, but stay controlled.",
+  10: "Double digits. That's discipline.",
+  11: "Stay patient. Progress isn't loud.",
+  12: "Lean into the challenge.",
+  13: "Precision over power today.",
+  14: "Two weeks. This is becoming a habit.",
+  15: "Halfway is coming. Stay locked in.",
+  16: "You're building something real now.",
+  17: "Keep the standard high.",
+  18: "Clean reps. Strong mindset.",
+  19: "Push just a little harder today.",
+  20: "Twenty days. That's commitment.",
+  21: "Discipline is becoming identity.",
+  22: "Train smart. Recover well.",
+  23: "Stay explosive. Move like an athlete.",
+  24: "Details matter. Focus.",
+  25: "Five days left. Finish strong.",
+  26: "Fatigue fades. Strength stays.",
+  27: "Confidence comes from consistency.",
+  28: "Finish every rep clean.",
+  29: "Almost there. Stay focused.",
+  30: "Challenge complete. You leveled up."
+};
 
 export default function ThirtyDayNotifications({ user }) {
   const queryClient = useQueryClient();
@@ -62,24 +96,9 @@ export default function ThirtyDayNotifications({ user }) {
     );
 
     if (!dayNotificationExists) {
-      let title, message;
-
-      if (currentDay === 1) {
-        title = '🎉 30-Day Challenge Started - Day 1!';
-        message = 'Congratulations! Your journey begins today. Stay consistent!';
-      } else if (currentDay === 30) {
-        title = '🏆 Final Day of Your Challenge!';
-        message = 'You\'re nearing the end of your 30-day challenge! Check it out to see how much you\'ve improved!';
-      } else if (currentDay === 15) {
-        title = '🔥 Halfway There - Day 15!';
-        message = 'You\'re halfway through! Keep pushing forward!';
-      } else if (currentDay % 7 === 0) {
-        title = `✨ Week ${currentDay / 7} Complete - Day ${currentDay}!`;
-        message = `Amazing! You've completed ${currentDay / 7} weeks of your challenge!`;
-      } else {
-        title = `💪 Day ${currentDay} of 30-Day Challenge!`;
-        message = `Keep going strong! Day ${currentDay} - you're building incredible habits!`;
-      }
+      const dayMessage = thirtyDayMessages[currentDay];
+      const title = `🔥 Day ${currentDay} of 30 - Keep Going!`;
+      const message = dayMessage;
 
       createNotificationMutation.mutate({ day: currentDay, title, message });
     }
