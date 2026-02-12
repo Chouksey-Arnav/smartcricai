@@ -986,7 +986,7 @@ export const scenarioDatabase = [
     id: 'mental_003',
     category: 'mental',
     difficulty: 'hard',
-    situation: 'Series decider. You're bowling last over, defending 8. First ball goes for 6. Need to bowl next ball.',
+    situation: 'Series decider. You are bowling last over, defending 8. First ball goes for 6. Need to bowl next ball.',
     question: 'Mental reset?',
     options: [
       { text: 'That ball is done. Reset. This ball is everything.', correct: true, explanation: 'Elite short-term memory. Can't change past ball. Full focus on next delivery.' },
