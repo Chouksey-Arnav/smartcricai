@@ -935,9 +935,9 @@ export const scenarioDatabase = [
     situation: 'Test match: You have 3 slips and a gully. Ball has stopped swinging. Batsmen look comfortable.',
     question: 'Field change?',
     options: [
-      { text: 'Keep attacking field - wickets matter more', correct: false, explanation: 'If ball isn't carrying or seaming, slips are wasted. Adapt to conditions.' },
+      { text: 'Keep attacking field - wickets matter more', correct: false, explanation: 'If ball is not carrying or seaming, slips are wasted. Adapt to conditions.' },
       { text: 'Spread field, save runs, wait for new ball', correct: true, explanation: 'Smart! Conditions changed. Limit runs, conserve bowlers for new ball.' },
-      { text: 'Add more slips', correct: false, explanation: 'If current slips aren't getting chances, more won't help.' },
+      { text: 'Add more slips', correct: false, explanation: 'If current slips are not getting chances, more will not help.' },
       { text: 'Remove all fielders', correct: false, explanation: 'Obviously not an option!' }
     ]
   },
@@ -950,7 +950,7 @@ export const scenarioDatabase = [
     options: [
       { text: 'Play him, we need him to win', correct: false, explanation: 'Could worsen injury and lose him for final if you win. Risky.' },
       { text: 'Assess on match day morning, have backup ready, decide based on severity', correct: true, explanation: 'Smart captaincy! Get medical clearance, have contingency. Informed decision.' },
-      { text: 'Rest him no matter what', correct: false, explanation: 'If he's fit enough and cleared, use your best player. It's a semi-final.' },
+      { text: 'Rest him no matter what', correct: false, explanation: 'If he is fit enough and cleared, use your best player. It is a semi-final.' },
       { text: 'Force him to play injured', correct: false, explanation: 'Unethical and dangerous. Player welfare comes first.' }
     ]
   },
