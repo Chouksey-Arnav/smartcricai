@@ -2,55 +2,54 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Dumbbell, Zap, Clock, AlertCircle, Play, CheckCircle, Loader2 } from 'lucide-react';
+import { Dumbbell, Clock, Play, CheckCircle, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { generateWorkout } from '@/components/fitness/exercisePools';
+import { findWorkout, parseWorkoutIntoExercises } from '@/components/fitness/FitnessBuilderDatabase';
 
 const bodyParts = [
-  { id: 'arm', label: 'Arms', emoji: '💪' },
-  { id: 'chest', label: 'Chest', emoji: '🦸' },
-  { id: 'core', label: 'Core', emoji: '🔥' },
-  { id: 'leg', label: 'Legs', emoji: '🦵' },
-  { id: 'shoulder', label: 'Shoulders', emoji: '💥' },
-  { id: 'back', label: 'Back', emoji: '🏋️' },
-  { id: 'full_body', label: 'Full Body', emoji: '⚡' }
+  { id: 'arms', name: 'Arms', emoji: '💪' },
+  { id: 'chest', name: 'Chest', emoji: '🦸' },
+  { id: 'back', name: 'Back', emoji: '🏋️' },
+  { id: 'legs', name: 'Legs', emoji: '🦵' },
+  { id: 'shoulders', name: 'Shoulders', emoji: '💥' },
+  { id: 'core', name: 'Core', emoji: '🔥' },
+  { id: 'full body', name: 'Full Body', emoji: '⚡' }
 ];
 
 const fitnessGoals = [
-  { id: 'lose_weight', label: 'Lose Weight', icon: '🔥' },
-  { id: 'build_muscle', label: 'Build Muscle', icon: '💪' },
-  { id: 'keep_fit', label: 'Keep Fit', icon: '✨' }
+  { id: 'lose weight', name: 'Lose Weight', icon: '🔥' },
+  { id: 'build muscle', name: 'Build Muscle', icon: '💪' },
+  { id: 'keep fit', name: 'Keep Fit', icon: '✨' }
 ];
 
 const durations = [
-  { id: 'short', label: '< 10 min', minutes: 8 },
-  { id: 'medium', label: '10-15 min', minutes: 12 },
-  { id: 'long', label: '15-20 min', minutes: 18 },
-  { id: 'very_long', label: '20-25 min', minutes: 23 },
-  { id: 'ultra', label: '25+ min', minutes: 30 }
+  { id: '<10', name: 'Under 10 min', emoji: '⚡' },
+  { id: '10-15', name: '10-15 min', emoji: '⏱️' },
+  { id: '15-20', name: '15-20 min', emoji: '⏰' },
+  { id: '20-25', name: '20-25 min', emoji: '⌚' },
+  { id: '25+', name: '25+ min', emoji: '🕐' }
 ];
 
 const levels = [
-  { id: 'beginner', label: 'Beginner', color: 'bg-green-100 text-green-700', locked: false },
-  { id: 'intermediate', label: 'Intermediate', color: 'bg-amber-100 text-amber-700', locked: false },
-  { id: 'advanced', label: 'Advanced', color: 'bg-red-100 text-red-700', locked: false },
-  { id: 'pro', label: 'Pro', color: 'bg-purple-100 text-purple-700', locked: true }
+  { id: 'beginner', name: 'Beginner', color: 'bg-green-100 text-green-700' },
+  { id: 'intermediate', name: 'Intermediate', color: 'bg-amber-100 text-amber-700' },
+  { id: 'advanced', name: 'Advanced', color: 'bg-red-100 text-red-700' },
+  { id: 'pro', name: 'Pro', color: 'bg-purple-100 text-purple-700' }
 ];
 
 export default function FitnessBuilder() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
-  const [selectedParts, setSelectedParts] = useState([]);
-  const [level, setLevel] = useState('beginner');
-  const [injuredArea, setInjuredArea] = useState(null);
-  const [goal, setGoal] = useState('keep_fit');
-  const [duration, setDuration] = useState('medium');
+  const [selectedBodyPart, setSelectedBodyPart] = useState(null);
+  const [selectedLevel, setSelectedLevel] = useState('beginner');
+  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [selectedDuration, setSelectedDuration] = useState(null);
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -59,84 +58,60 @@ export default function FitnessBuilder() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: progress } = useQuery({
-    queryKey: ['userProgress', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
-      return results[0] || null;
-    },
-    enabled: !!user?.email,
-  });
-
-  // Check if pro is unlocked (e.g., completed 20+ drills)
-  const isProUnlocked = (progress?.completed_drills?.length || 0) >= 20;
-
-  const toggleBodyPart = (part) => {
-    setSelectedParts([part]);
-  };
-
   const handleGenerateWorkout = async () => {
-    if (selectedParts.length === 0) {
-      toast.error('Please select at least one body part');
+    if (!selectedBodyPart || !selectedLevel || !selectedGoal || !selectedDuration) {
+      toast.error('Please complete all selections');
       return;
     }
 
     setIsGenerating(true);
+    await new Promise(resolve => setTimeout(resolve, 600));
 
-    // Simulate brief loading for better UX
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    try {
-      const bodyPart = selectedParts[0];
-      const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
-      
-      // Generate unique workout from curated exercise pools
-      const workout = generateWorkout(bodyPart, goal, level, targetDurationMinutes);
-      
-      if (workout && workout.length >= 10) {
-        setGeneratedWorkout(workout);
-        setStep(3);
-        toast.success(`Workout generated! ${workout.length} exercises 💪`);
-      } else {
-        toast.error('Unable to generate workout. Please try different options.');
-      }
-    } catch (error) {
-      console.error('Failed to generate workout:', error);
-      toast.error('Failed to generate workout. Please try again.');
-    } finally {
+    const workoutData = findWorkout(selectedBodyPart, selectedLevel, selectedGoal, selectedDuration);
+    
+    if (!workoutData) {
+      toast.error('Workout combination not found!');
       setIsGenerating(false);
+      return;
     }
+
+    const exercises = parseWorkoutIntoExercises(workoutData.workout);
+    
+    setGeneratedWorkout({
+      exercises: exercises,
+      coachNote: workoutData.coachNote
+    });
+    
+    setStep(3);
+    setIsGenerating(false);
+    toast.success('Workout generated! 💪');
   };
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
-      const bodyPart = selectedParts[0] || 'full_body';
-      const goalMapping = {
-        'lose_weight': 'endurance',
-        'build_muscle': 'strength',
-        'keep_fit': 'flexibility'
-      };
-      const targetDurationMinutes = durations.find(d => d.id === duration).minutes;
-      
       const workoutData = {
-        body_part: bodyPart,
-        goal: goalMapping[goal] || 'strength',
-        duration: targetDurationMinutes,
-        level: level,
-        exercises: generatedWorkout.map(ex => ({
-          name: ex.name,
-          sets: ex.sets || 3,
-          reps: ex.reps || '12',
-          rest_seconds: ex.rest_seconds || 60,
-          notes: ex.instructions || ''
-        }))
+        user_email: user.email,
+        name: `${selectedGoal?.replace(' ', ' ').toUpperCase()} - ${selectedBodyPart?.toUpperCase()} Workout`,
+        drills: generatedWorkout.exercises.map(ex => ({
+          drill_id: ex.id || `fitness_${Math.random().toString(36).substr(2, 9)}`,
+          drill_title: ex.name,
+          sets: typeof ex.sets === 'number' ? ex.sets : 3,
+          reps: ex.reps || 10,
+          completed_sets: 0,
+          type: 'exercise',
+          category: 'fitness',
+          instructions: ex.instructions || '',
+          rest_seconds: ex.rest_seconds || 60
+        })),
+        status: 'not_started',
+        xp_value: 120
       };
-      return await base44.entities.PreGeneratedWorkout.create(workoutData);
+
+      return await base44.entities.Workout.create(workoutData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['preGeneratedWorkouts'] });
-      toast.success('Workout saved to AI Workout! 💪');
+      queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      toast.success('Workout saved! 💪');
       navigate(createPageUrl('AIWorkout'));
     },
   });
@@ -153,10 +128,10 @@ export default function FitnessBuilder() {
           className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-6 text-white"
         >
           <h2 className="font-bold text-xl mb-2">Build Your Fitness Plan</h2>
-          <p className="text-orange-100 text-sm">Personalized workouts for cricket fitness</p>
+          <p className="text-orange-100 text-sm">420 pre-made combinations for perfect training</p>
         </motion.div>
 
-        {/* Step 1: Body Parts */}
+        {/* Step 1: Body Part */}
         {step === 1 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -169,16 +144,16 @@ export default function FitnessBuilder() {
                 {bodyParts.map(part => (
                   <button
                     key={part.id}
-                    onClick={() => toggleBodyPart(part.id)}
+                    onClick={() => setSelectedBodyPart(part.id)}
                     className={cn(
                       "p-4 rounded-xl border-2 transition-all",
-                      selectedParts.includes(part.id)
+                      selectedBodyPart === part.id
                         ? "border-orange-500 bg-orange-50"
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
                     <div className="text-3xl mb-2">{part.emoji}</div>
-                    <div className="font-semibold text-slate-800 text-sm">{part.label}</div>
+                    <div className="font-semibold text-slate-800 text-sm">{part.name}</div>
                   </button>
                 ))}
               </div>
@@ -186,7 +161,7 @@ export default function FitnessBuilder() {
 
             <Button
               onClick={() => setStep(2)}
-              disabled={selectedParts.length === 0}
+              disabled={!selectedBodyPart}
               className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg"
             >
               Next: Choose Level & Goal
@@ -194,65 +169,56 @@ export default function FitnessBuilder() {
           </motion.div>
         )}
 
-        {/* Step 2: Level, Goal, Duration, Injury */}
+        {/* Step 2: Level, Goal, Duration */}
         {step === 2 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="space-y-4"
           >
-            {/* Fitness Level */}
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <h3 className="font-bold text-slate-800 mb-3">Fitness Level</h3>
               <div className="grid grid-cols-2 gap-3">
                 {levels.map(lv => (
                   <button
                     key={lv.id}
-                    onClick={() => !lv.locked || isProUnlocked ? setLevel(lv.id) : toast.error('Complete 20+ drills to unlock Pro')}
-                    disabled={lv.locked && !isProUnlocked}
+                    onClick={() => setSelectedLevel(lv.id)}
                     className={cn(
-                      "p-3 rounded-xl border-2 transition-all relative",
-                      level === lv.id
+                      "p-3 rounded-xl border-2 transition-all",
+                      selectedLevel === lv.id
                         ? "border-orange-500 bg-orange-50"
-                        : lv.locked && !isProUnlocked
-                        ? "border-slate-200 opacity-50 cursor-not-allowed"
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
                     <div className={cn("text-sm font-semibold", lv.color, "inline-block px-2 py-1 rounded-full")}>
-                      {lv.label}
+                      {lv.name}
                     </div>
-                    {lv.locked && !isProUnlocked && (
-                      <div className="absolute top-2 right-2 text-slate-400">🔒</div>
-                    )}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Fitness Goal */}
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <h3 className="font-bold text-slate-800 mb-3">Fitness Goal</h3>
               <div className="grid grid-cols-3 gap-3">
                 {fitnessGoals.map(g => (
                   <button
                     key={g.id}
-                    onClick={() => setGoal(g.id)}
+                    onClick={() => setSelectedGoal(g.id)}
                     className={cn(
                       "p-3 rounded-xl border-2 transition-all",
-                      goal === g.id
+                      selectedGoal === g.id
                         ? "border-orange-500 bg-orange-50"
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
                     <div className="text-2xl mb-1">{g.icon}</div>
-                    <div className="text-xs font-medium text-slate-700">{g.label}</div>
+                    <div className="text-xs font-medium text-slate-700">{g.name}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Duration */}
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
                 <Clock className="w-5 h-5" />
@@ -262,15 +228,16 @@ export default function FitnessBuilder() {
                 {durations.map(dur => (
                   <button
                     key={dur.id}
-                    onClick={() => setDuration(dur.id)}
+                    onClick={() => setSelectedDuration(dur.id)}
                     className={cn(
-                      "w-full p-3 rounded-xl border-2 transition-all text-left",
-                      duration === dur.id
+                      "w-full p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2",
+                      selectedDuration === dur.id
                         ? "border-orange-500 bg-orange-50"
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
-                    <div className="font-semibold text-slate-800">{dur.label}</div>
+                    <span className="text-xl">{dur.emoji}</span>
+                    <span className="font-semibold text-slate-800">{dur.name}</span>
                   </button>
                 ))}
               </div>
@@ -286,7 +253,7 @@ export default function FitnessBuilder() {
               </Button>
               <Button
                 onClick={handleGenerateWorkout}
-                disabled={isGenerating}
+                disabled={isGenerating || !selectedGoal || !selectedDuration}
                 className="flex-1 bg-orange-500 hover:bg-orange-600"
               >
                 {isGenerating ? (
@@ -314,18 +281,21 @@ export default function FitnessBuilder() {
                 <CheckCircle className="w-8 h-8" />
                 <h3 className="font-bold text-xl">Your Workout is Ready!</h3>
               </div>
-              <p className="text-emerald-100 text-sm">
-                {generatedWorkout.length} exercises • {level} level
+              <p className="text-emerald-100 text-sm mb-3">
+                {generatedWorkout.exercises.length} exercises • {selectedLevel} level
+              </p>
+              <p className="text-white text-sm italic">
+                💡 {generatedWorkout.coachNote}
               </p>
             </div>
 
             <div className="space-y-3">
-              {generatedWorkout.map((exercise, index) => (
+              {generatedWorkout.exercises.map((exercise, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                   className="bg-white rounded-2xl p-5 shadow-lg"
                 >
                   <div className="flex items-start gap-3 mb-3">
@@ -337,7 +307,7 @@ export default function FitnessBuilder() {
                     </div>
                   </div>
                   
-                  <div className="flex gap-4 mb-3">
+                  <div className="flex gap-4 mb-2">
                     <div className="bg-slate-50 px-3 py-2 rounded-lg">
                       <p className="text-xs text-slate-500">Sets</p>
                       <p className="font-bold text-slate-800">{exercise.sets}</p>
@@ -346,13 +316,17 @@ export default function FitnessBuilder() {
                       <p className="text-xs text-slate-500">Reps</p>
                       <p className="font-bold text-slate-800">{exercise.reps}</p>
                     </div>
-                    <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                      <p className="text-xs text-slate-500">Rest</p>
-                      <p className="font-bold text-slate-800">{exercise.rest_seconds}s</p>
-                    </div>
+                    {exercise.rest_seconds > 0 && (
+                      <div className="bg-slate-50 px-3 py-2 rounded-lg">
+                        <p className="text-xs text-slate-500">Rest</p>
+                        <p className="font-bold text-slate-800">{exercise.rest_seconds}s</p>
+                      </div>
+                    )}
                   </div>
 
-                  <p className="text-sm text-slate-600">{exercise.notes}</p>
+                  {exercise.instructions && (
+                    <p className="text-sm text-slate-600">{exercise.instructions}</p>
+                  )}
                 </motion.div>
               ))}
             </div>
@@ -361,24 +335,25 @@ export default function FitnessBuilder() {
               <Button
                 onClick={() => saveWorkoutMutation.mutate()}
                 disabled={saveWorkoutMutation.isPending}
-                className="w-full bg-emerald-500 hover:bg-emerald-600"
+                className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-lg"
               >
                 <Play className="w-5 h-5 mr-2" />
-                {saveWorkoutMutation.isPending ? 'Saving...' : '💾 Save This Workout'}
+                {saveWorkoutMutation.isPending ? 'Saving...' : 'Save to My Workouts'}
               </Button>
               <Button
                 onClick={() => { setStep(2); setGeneratedWorkout(null); }}
                 variant="outline"
-                className="w-full"
+                className="w-full h-12"
               >
-                🔄 Regenerate Different Workout
+                🔄 Generate Different Workout
               </Button>
               <Button
                 onClick={() => navigate(createPageUrl('Home'))}
                 variant="outline"
-                className="w-full border-slate-300"
+                className="w-full h-12 border-red-200 text-red-600 hover:bg-red-50"
               >
-                ❌ Discard & Go Home
+                <X className="w-5 h-5 mr-2" />
+                Discard & Go Home
               </Button>
             </div>
           </motion.div>
