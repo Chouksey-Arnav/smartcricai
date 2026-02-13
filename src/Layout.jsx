@@ -140,6 +140,18 @@ export default function Layout({ children, currentPageName }) {
         html.dark button {
           color-scheme: dark;
         }
+
+        html.dark label {
+          color: #cbd5e1 !important;
+        }
+
+        html.dark .text-slate-400 {
+          color: #cbd5e1 !important;
+        }
+
+        html.dark .text-slate-300 {
+          color: #94a3b8 !important;
+        }
         `}</style>
 
         <div className={isHomePage ? '' : 'page-content-wrapper'}>

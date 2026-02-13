@@ -25,5 +25,14 @@ export default function RelevanceChatBubble() {
     };
   }, []);
 
-  return null; // This component doesn't render anything visible
+  return (
+    <style>{`
+      [data-relevanceai-share-id] {
+        position: fixed !important;
+        bottom: 90px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
+      }
+    `}</style>
+  );
 }

@@ -199,7 +199,7 @@ export default function Schedule() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white pb-52">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white dark:from-slate-900 dark:to-slate-800 pb-52">
       <Header title="Schedule" showSettings={false} />
 
       <div className="px-6 py-4 max-w-6xl mx-auto">
@@ -221,15 +221,15 @@ export default function Schedule() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-white rounded-3xl shadow-xl p-6 mb-6 overflow-hidden"
+              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 mb-6 overflow-hidden"
             >
-              <h3 className="font-bold text-lg text-slate-800 mb-4">
+              <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 mb-4">
                 Log Activity for {selectedDate && new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </h3>
 
               <form onSubmit={handleAddActivity} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">Activity Title</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">Activity Title</label>
                   <Input
                     value={activityData.title}
                     onChange={(e) => setActivityData({ ...activityData, title: e.target.value })}
@@ -240,7 +240,7 @@ export default function Schedule() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">Notes (Optional)</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">Notes (Optional)</label>
                   <Textarea
                     value={activityData.notes}
                     onChange={(e) => setActivityData({ ...activityData, notes: e.target.value })}
@@ -276,8 +276,8 @@ export default function Schedule() {
         </AnimatePresence>
 
         {/* Weekly Calendar Grid */}
-        <div className="bg-white rounded-3xl shadow-xl p-6">
-          <h3 className="font-bold text-2xl text-slate-800 mb-6">This Week</h3>
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6">
+          <h3 className="font-bold text-2xl text-slate-800 dark:text-slate-100 mb-6">This Week</h3>
           
           <div className="grid grid-cols-7 gap-3">
             {getCurrentWeekDates().map((date, index) => {
@@ -288,20 +288,20 @@ export default function Schedule() {
               return (
                 <div 
                   key={index} 
-                  className="space-y-2 min-h-[200px] border-2 border-slate-100 rounded-xl p-3 hover:border-violet-200 transition-all"
+                  className="space-y-2 min-h-[200px] border-2 border-slate-100 dark:border-slate-600 rounded-xl p-3 hover:border-violet-200 dark:hover:border-violet-500 transition-all"
                 >
-                  <div className={`text-center p-3 rounded-xl ${isToday ? 'bg-violet-500 text-white' : 'bg-slate-50'}`}>
-                    <div className="text-xs font-semibold uppercase tracking-wide">
+                  <div className={`text-center p-3 rounded-xl ${isToday ? 'bg-violet-500 text-white' : 'bg-slate-50 dark:bg-slate-700'}`}>
+                    <div className={`text-xs font-semibold uppercase tracking-wide ${isToday ? 'text-white' : 'dark:text-slate-300'}`}>
                       {date.toLocaleDateString('en-US', { weekday: 'short' })}
                     </div>
-                    <div className={`text-2xl font-bold ${isToday ? 'text-white' : 'text-slate-800'}`}>
+                    <div className={`text-2xl font-bold ${isToday ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>
                       {date.getDate()}
                     </div>
                   </div>
 
                   <button
                     onClick={() => handleDateClick(dateStr)}
-                    className="w-full py-2 px-3 bg-violet-50 hover:bg-violet-100 rounded-lg text-violet-600 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2 px-3 bg-violet-50 dark:bg-violet-900/30 hover:bg-violet-100 dark:hover:bg-violet-800/40 rounded-lg text-violet-600 dark:text-violet-300 text-sm font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     Add
@@ -313,18 +313,18 @@ export default function Schedule() {
                         <div
                           key={activity.id}
                           onClick={() => setSelectedActivity(activity)}
-                          className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-2 relative group cursor-pointer hover:from-violet-100 hover:to-purple-100 transition-colors"
+                          className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/40 dark:to-purple-900/40 rounded-lg p-2 relative group cursor-pointer hover:from-violet-100 hover:to-purple-100 dark:hover:from-violet-800/50 dark:hover:to-purple-800/50 transition-colors"
                         >
                           <div className="flex items-start gap-1">
-                            <div className="text-violet-600 mt-0.5">
+                            <div className="text-violet-600 dark:text-violet-400 mt-0.5">
                               {getActivityIcon(activity.activity_type)}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-semibold text-slate-800 truncate">
+                              <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">
                                 {activity.title}
                               </p>
                               {activity.notes && (
-                                <p className="text-xs text-slate-500 truncate mt-0.5">{activity.notes}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">{activity.notes}</p>
                               )}
                             </div>
                           </div>
@@ -362,10 +362,10 @@ export default function Schedule() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-6 w-[90%] max-w-md z-50"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6 w-[90%] max-w-md z-50"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-slate-800">Activity Details</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Activity Details</h3>
                   <button
                     onClick={() => setSelectedActivity(null)}
                     className="p-2 hover:bg-slate-100 rounded-full transition-colors"
@@ -375,18 +375,18 @@ export default function Schedule() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-slate-500 mb-1">Title</p>
-                    <p className="font-semibold text-slate-800">{selectedActivity.title}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Title</p>
+                    <p className="font-semibold text-slate-800 dark:text-slate-100">{selectedActivity.title}</p>
                   </div>
                   {selectedActivity.notes && (
                     <div>
-                      <p className="text-sm text-slate-500 mb-1">Notes</p>
-                      <p className="text-slate-700">{selectedActivity.notes}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Notes</p>
+                      <p className="text-slate-700 dark:text-slate-200">{selectedActivity.notes}</p>
                     </div>
                   )}
                   <div>
-                    <p className="text-sm text-slate-500 mb-1">Date</p>
-                    <p className="text-slate-700">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Date</p>
+                    <p className="text-slate-700 dark:text-slate-200">
                       {new Date(selectedActivity.date).toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 
@@ -408,8 +408,8 @@ export default function Schedule() {
         </AnimatePresence>
 
         {/* Checklist Section */}
-        <div className="bg-white rounded-3xl shadow-xl p-6 mt-8">
-          <h3 className="font-bold text-2xl text-slate-800 mb-6">My Tasks</h3>
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 mt-8">
+          <h3 className="font-bold text-2xl text-slate-800 dark:text-slate-100 mb-6">My Tasks</h3>
 
           {/* Add New Task */}
           <form onSubmit={handleAddChecklistItem} className="flex gap-3 mb-6">
@@ -441,7 +441,7 @@ export default function Schedule() {
                   key={item.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors group"
+                  className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors group"
                 >
                   <button
                     onClick={() => toggleChecklistItemMutation.mutate({ id: item.id, is_completed: item.is_completed })}
@@ -450,10 +450,10 @@ export default function Schedule() {
                     {item.is_completed ? (
                       <CheckCircle className="w-6 h-6 text-emerald-500" />
                     ) : (
-                      <Circle className="w-6 h-6 text-slate-300" />
+                      <Circle className="w-6 h-6 text-slate-300 dark:text-slate-500" />
                     )}
                   </button>
-                  <span className={`flex-1 ${item.is_completed ? 'line-through text-slate-400' : 'text-slate-700'}`}>
+                  <span className={`flex-1 ${item.is_completed ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-200'}`}>
                     {item.title}
                   </span>
                   <button
