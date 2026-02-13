@@ -438,15 +438,15 @@ export default function Home() {
             Explore More
           </h2>
           <div className="grid grid-cols-2 gap-4">
-            <Link to={createPageUrl('PlayerLookup')}>
+            <Link to={createPageUrl('FitnessBuilder')}>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-gradient-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-br from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">🏏</div>
-                <h3 className="font-bold text-white text-sm mb-1">Player Lookup</h3>
-                <p className="text-xs text-blue-50">Search any player</p>
+                <div className="text-4xl mb-2">💪</div>
+                <h3 className="font-bold text-white text-sm mb-1">Fitness Builder</h3>
+                <p className="text-xs text-orange-50">AI workout plans</p>
               </motion.div>
             </Link>
             <Link to={createPageUrl('MiniMatch')}>
