@@ -11,6 +11,8 @@ import Header from '@/components/common/Header';
 export default function SkillPaths() {
   const queryClient = useQueryClient();
   const [selectedWeek, setSelectedWeek] = useState(1);
+  const [showEarlyAccessDialog, setShowEarlyAccessDialog] = useState(false);
+  const [earlyAccessTarget, setEarlyAccessTarget] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -60,8 +62,21 @@ export default function SkillPaths() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       toast.success('Skill Path started! 🎯');
+      setShowEarlyAccessDialog(false);
+      setEarlyAccessTarget(null);
     },
   });
+
+  const handleEarlyAccess = (level) => {
+    setEarlyAccessTarget(level);
+    setShowEarlyAccessDialog(true);
+  };
+
+  const confirmEarlyAccess = () => {
+    if (earlyAccessTarget) {
+      createPath.mutate(earlyAccessTarget);
+    }
+  };
 
   const completeItem = useMutation({
     mutationFn: async ({ itemId, xp }) => {
@@ -204,17 +219,69 @@ export default function SkillPaths() {
                     <p className="text-xs text-slate-600">• Unlock: {path.badge.emoji} {path.badge.name}</p>
                   </div>
 
-                  <Button
-                    onClick={() => canStart && createPath.mutate(key)}
-                    disabled={!canStart || createPath.isPending}
-                    className={`w-full ${canStart ? `bg-${path.color}-600 hover:bg-${path.color}-700` : 'bg-slate-300 cursor-not-allowed'}`}
-                  >
-                    {isLocked ? '🔒 Premium Only' : !meetsXPRequirement ? '🔒 Need More XP' : 'Start This Path'}
-                  </Button>
+                  <div className="space-y-2">
+                    <Button
+                      onClick={() => canStart && createPath.mutate(key)}
+                      disabled={!canStart || createPath.isPending}
+                      className={`w-full ${canStart ? `bg-${path.color}-600 hover:bg-${path.color}-700` : 'bg-slate-300 cursor-not-allowed'}`}
+                    >
+                      {isLocked ? '🔒 Premium Only' : !meetsXPRequirement ? '🔒 Need More XP' : 'Start This Path'}
+                    </Button>
+                    {(key === 'intermediate' || key === 'advanced') && !canStart && !isLocked && (
+                      <Button
+                        onClick={() => handleEarlyAccess(key)}
+                        variant="outline"
+                        className="w-full border-amber-500 text-amber-600 hover:bg-amber-50"
+                      >
+                        Access Early (Already Elite)
+                      </Button>
+                    )}
+                  </div>
                 </motion.div>
               );
             })}
           </div>
+
+          {/* Early Access Confirmation Dialog */}
+          {showEarlyAccessDialog && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                onClick={() => setShowEarlyAccessDialog(false)}
+                className="fixed inset-0 bg-black/60 z-50"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6 w-[90%] max-w-md z-50"
+              >
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">Access This Path Early?</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-2">
+                  This path typically requires {skillPathsData[earlyAccessTarget]?.unlockXP} XP.
+                </p>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
+                  If you are already elite at cricket and ready for this challenge, you can access it early. Are you sure you want to proceed?
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setShowEarlyAccessDialog(false)}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={confirmEarlyAccess}
+                    disabled={createPath.isPending}
+                    className="flex-1 bg-amber-500 hover:bg-amber-600"
+                  >
+                    {createPath.isPending ? 'Starting...' : 'Yes, I am Ready'}
+                  </Button>
+                </div>
+              </motion.div>
+            </>
+          )}
         </div>
       </div>
     );
