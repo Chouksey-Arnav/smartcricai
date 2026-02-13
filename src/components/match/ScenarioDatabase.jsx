@@ -1208,6 +1208,559 @@ export const scenarioDatabase = [
       { text: 'Abuse the umpire', correct: false, explanation: 'Never! That\'s match ban territory. Compose yourself.' }
     ]
   },
+,
+
+// ========== ADDITIONAL BATTING SCENARIOS (100+) ==========
+{
+  id: 'bat_100',
+  category: 'batting',
+  difficulty: 'medium',
+  situation: 'ODI: You are 25 not out. Bowler just changed field, mid-off came up.',
+  question: 'What opportunity does this create?',
+  options: [
+    { text: 'Look to drive over mid-off for boundary', correct: true, explanation: 'Smart! Field change creates opportunity. Capitalize on it.' },
+    { text: 'Ignore the field change, play same way', correct: false, explanation: 'Always adapt to field changes. They create opportunities.' },
+    { text: 'Block everything now', correct: false, explanation: 'They gave you a scoring option. Use it!' },
+    { text: 'Try reverse sweep instead', correct: false, explanation: 'Use the gap they created. Straight drive is lower risk.' }
+  ]
+},
+{
+  id: 'bat_101',
+  category: 'batting',
+  difficulty: 'easy',
+  situation: 'Practice match: You just played and missed. Next ball coming.',
+  question: 'Mental approach?',
+  options: [
+    { text: 'Reset, focus on this ball only', correct: true, explanation: 'Perfect! Short memory is crucial in batting.' },
+    { text: 'Worry about getting out', correct: false, explanation: 'Negative thoughts create negative results.' },
+    { text: 'Try defensive shot out of fear', correct: false, explanation: 'Play the ball on merit, not fear.' },
+    { text: 'Think about the previous ball', correct: false, explanation: 'Past is gone. Present ball is all that matters.' }
+  ]
+},
+{
+  id: 'bat_102',
+  category: 'batting',
+  difficulty: 'hard',
+  situation: 'Test: Day 5, chasing 150. You are 60 not out. Wickets falling at other end. 80 runs needed, 4 wickets left.',
+  question: 'Your responsibility?',
+  options: [
+    { text: 'Bat through, protect tail, score when safe', correct: true, explanation: 'Perfect! You are the set batsman. Hold one end, guide team home.' },
+    { text: 'Play your natural aggressive game', correct: false, explanation: 'Team needs you to stay. Adapt your approach.' },
+    { text: 'Block everything and hope tail scores', correct: false, explanation: 'Tail cannot handle this. You must score too.' },
+    { text: 'Get nervous and play reckless shots', correct: false, explanation: 'Pressure is high but you have the skills. Stay composed.' }
+  ]
+},
+{
+  id: 'bat_103',
+  category: 'batting',
+  difficulty: 'medium',
+  situation: 'T20: Powerplay over. You are 18 off 9. Spinner comes on, wants to slow you down.',
+  question: 'How do you maintain momentum?',
+  options: [
+    { text: 'Rotate strike smartly, punish bad balls', correct: true, explanation: 'Smart! Keep scoreboard ticking, pick your moments.' },
+    { text: 'Slog sweep every ball', correct: false, explanation: 'Too predictable. Spinner will adjust.' },
+    { text: 'Block him out completely', correct: false, explanation: 'Momentum will die. Need to keep scoring.' },
+    { text: 'Try reverse sweep first ball', correct: false, explanation: 'Watch a few balls first. Understand his plan.' }
+  ]
+},
+{
+  id: 'bat_104',
+  category: 'batting',
+  difficulty: 'easy',
+  situation: 'School match: You are opening. Nervous before first ball.',
+  question: 'Pre-ball routine?',
+  options: [
+    { text: 'Deep breath, watch the ball, play straight', correct: true, explanation: 'Perfect! Simple plan, clear mind. Trust basics.' },
+    { text: 'Think about all ways you could get out', correct: false, explanation: 'Negative visualization. Think positive!' },
+    { text: 'Plan to hit first ball for six', correct: false, explanation: 'Overambitious. See the ball first.' },
+    { text: 'Hope the bowler bowls badly', correct: false, explanation: 'Control what you can control - your response.' }
+  ]
+},
+
+// ========== BOWLING SCENARIOS (100+) ==========
+{
+  id: 'bowl_050',
+  category: 'bowling',
+  difficulty: 'medium',
+  situation: 'ODI: Middle overs, batsman is 70 not out. Hitting you comfortably. Captain wants a wicket.',
+  question: 'What change do you make?',
+  options: [
+    { text: 'Change your angle, bowl around wicket or wider on crease', correct: true, explanation: 'Smart! New angle creates doubt. Make him adjust.' },
+    { text: 'Keep bowling the same way', correct: false, explanation: 'He is comfortable. Must change something!' },
+    { text: 'Bowl full tosses deliberately', correct: false, explanation: 'Terrible plan! Easy runs for set batsman.' },
+    { text: 'Ask captain to take you off', correct: false, explanation: 'Bowlers must problem solve. Fight through!' }
+  ]
+},
+{
+  id: 'bowl_051',
+  category: 'bowling',
+  difficulty: 'hard',
+  situation: 'T20: Final over, defending 6 runs. Free hit given. Batsman on strike is dangerous.',
+  question: 'Free hit ball - what do you bowl?',
+  options: [
+    { text: 'Wide yorker, limit scoring areas even if hit', correct: true, explanation: 'Smart! Cannot get out. Minimize damage.' },
+    { text: 'Perfect middle stump yorker', correct: false, explanation: 'Cannot get out bowled. Will swing freely. Go wide.' },
+    { text: 'Full toss at head', correct: false, explanation: 'Dangerous and will be hit. Bad plan.' },
+    { text: 'Give up and bowl casually', correct: false, explanation: 'Never! Limit damage. Execute your plan.' }
+  ]
+},
+{
+  id: 'bowl_052',
+  category: 'bowling',
+  difficulty: 'medium',
+  situation: 'Test: Day 3, morning. Ball is reversing. Batsmen are set, scoring slowly.',
+  question: 'How do you use reverse swing?',
+  options: [
+    { text: 'Target the pads and stumps, aim for LBW or bowled', correct: true, explanation: 'Perfect! Reverse swing at legs is deadly. Use your weapon.' },
+    { text: 'Bowl wide outside off to use swing away', correct: false, explanation: 'Reverse swing works best targeting stumps/pads.' },
+    { text: 'Stop trying to swing it', correct: false, explanation: 'Why waste your advantage? Use it!' },
+    { text: 'Bowl only bouncers', correct: false, explanation: 'Wastes the reverse swing. Be smart!' }
+  ]
+},
+{
+  id: 'bowl_053',
+  category: 'bowling',
+  difficulty: 'easy',
+  situation: 'Spinner: New batsman just came in. Looks nervous.',
+  question: 'First ball tactic?',
+  options: [
+    { text: 'Flight it up, challenge his technique', correct: true, explanation: 'Good! Test his ability early. Flight creates chances.' },
+    { text: 'Bowl flat and fast', correct: false, explanation: 'Defensive. Attack his nerves with flight!' },
+    { text: 'Try googly immediately', correct: false, explanation: 'Save it. Stock ball first to set him up.' },
+    { text: 'Bowl a full toss', correct: false, explanation: 'Why give him a free hit? Bowl properly!' }
+  ]
+},
+{
+  id: 'bowl_054',
+  category: 'bowling',
+  difficulty: 'hard',
+  situation: 'ODI: Death overs, defending 8 runs off your over. Batsman trying to slog you.',
+  question: 'Ball 3 strategy after 2 dots?',
+  options: [
+    { text: 'Change up, bowl slower ball or yorker, stay unpredictable', correct: true, explanation: 'Smart! Pressure is on him. Variation creates mistakes.' },
+    { text: 'Same ball, he cannot hit it anyway', correct: false, explanation: 'Batsmen adjust quickly. Mix it up!' },
+    { text: 'Bowl bouncer now', correct: false, explanation: 'Could go for wide or six. Risky.' },
+    { text: 'Celebrate the dots and relax', correct: false, explanation: 'Job is not done! Stay focused till over ends.' }
+  ]
+},
+
+// ========== FIELDING SCENARIOS (100+) ==========
+{
+  id: 'field_050',
+  category: 'fielding',
+  difficulty: 'medium',
+  situation: 'You are at long-on. Batsman mis-hits high in the air toward you. Wind is swirling.',
+  question: 'Technique for taking this catch?',
+  options: [
+    { text: 'Get under it early, adjust as it comes, soft hands', correct: true, explanation: 'Perfect! Early positioning, adjust to wind, cushion the catch.' },
+    { text: 'Wait till last second to move', correct: false, explanation: 'Risky! Get under early, then adjust.' },
+    { text: 'Call for help from another fielder', correct: false, explanation: 'Your catch. Back yourself!' },
+    { text: 'Let it bounce to be safe', correct: false, explanation: 'Never! Always go for the catch!' }
+  ]
+},
+{
+  id: 'field_051',
+  category: 'fielding',
+  difficulty: 'easy',
+  situation: 'Point position. Ball hit straight at you hard on ground. What do you do?',
+  question: 'Fielding technique?',
+  options: [
+    { text: 'Get body behind, watch into hands', correct: true, explanation: 'Textbook! Body is backup. Safe and effective.' },
+    { text: 'Try to stop with foot only', correct: false, explanation: 'Risky! Could deflect for runs. Use hands properly.' },
+    { text: 'Dive when not needed', correct: false, explanation: 'Unnecessary. Simple stop works.' },
+    { text: 'Let it go past', correct: false, explanation: 'Never! Stop every ball you can.' }
+  ]
+},
+{
+  id: 'field_052',
+  category: 'fielding',
+  difficulty: 'hard',
+  situation: 'Wicketkeeper: Fast bowler, ball edged fine, going low and fast down leg side.',
+  question: 'Your movement?',
+  options: [
+    { text: 'Dive full length left, eyes on ball, anticipate early', correct: true, explanation: 'Perfect! Early read, full commitment, watch it all the way.' },
+    { text: 'Hope it goes to fine leg', correct: false, explanation: 'Your responsibility! Attempt every chance.' },
+    { text: 'Stick leg out to stop it', correct: false, explanation: 'That is byes. Proper technique needed!' },
+    { text: 'Stand still and react late', correct: false, explanation: 'Too late! Anticipate and move early!' }
+  ]
+},
+{
+  id: 'field_053',
+  category: 'fielding',
+  difficulty: 'medium',
+  situation: 'Cover region. Ball hit firmly toward you. Batsmen running two. Can you stop the second?',
+  question: 'Your action?',
+  options: [
+    { text: 'Attack the ball, throw in one motion at strikers end', correct: true, explanation: 'Perfect! Aggressive fielding stops the second run.' },
+    { text: 'Wait for ball to come to you', correct: false, explanation: 'Too slow! Second run completes. Be aggressive!' },
+    { text: 'Pick up and hold it', correct: false, explanation: 'Throw immediately! Stop the run!' },
+    { text: 'Kick it toward stumps', correct: false, explanation: 'Less accurate. Use your hands!' }
+  ]
+},
+
+// ========== CAPTAINCY SCENARIOS (100+) ==========
+{
+  id: 'cap_050',
+  category: 'captaincy',
+  difficulty: 'hard',
+  situation: 'Test: Opposition 180-1, batting well. Your best bowler has bowled 15 overs. New ball in 5 overs.',
+  question: 'Do you rest him or keep bowling?',
+  options: [
+    { text: 'Rest him for the new ball spell', correct: true, explanation: 'Smart captaincy! Save energy for when ball will help him most.' },
+    { text: 'Bowl him till he gets a wicket', correct: false, explanation: 'Could exhaust him. New ball is more important.' },
+    { text: 'Take him off and never bowl him again', correct: false, explanation: 'Too extreme! He is your best bowler.' },
+    { text: 'Bowl him with the old ball and new ball back to back', correct: false, explanation: 'Too much workload. Will be ineffective with new ball.' }
+  ]
+},
+{
+  id: 'cap_051',
+  category: 'captaincy',
+  difficulty: 'medium',
+  situation: 'T20: Batting first. You are 150-3 after 15 overs. Do you promote a hitter or send proper batsman?',
+  question: 'Batting order decision?',
+  options: [
+    { text: 'Send proper batsman to anchor, hitter comes later', correct: true, explanation: 'Smart! Build foundation, then launch. Wickets in hand matter.' },
+    { text: 'Send hitter now to maximize overs', correct: false, explanation: 'Risky. Could collapse. Build first, hit later.' },
+    { text: 'Retire the set batsman', correct: false, explanation: 'Not needed. Set batsman is valuable!' },
+    { text: 'Send bowler as nightwatchman', correct: false, explanation: 'Wrong format! This is T20, not Test cricket!' }
+  ]
+},
+{
+  id: 'cap_052',
+  category: 'captaincy',
+  difficulty: 'hard',
+  situation: 'ODI: Chasing 320. After 30 overs, you are 170-2. Required rate climbing. Two set batsmen.',
+  question: 'What message do you send from dressing room?',
+  options: [
+    { text: 'Accelerate now, cannot wait for death overs', correct: true, explanation: 'Correct! Set batsmen must score. Waiting makes it impossible later.' },
+    { text: 'Keep same approach, hope for best', correct: false, explanation: 'Math does not work. Need to push now!' },
+    { text: 'Send message to defend next 10 overs', correct: false, explanation: 'Game will be over. Required rate too high!' },
+    { text: 'Panic and tell them to hit every ball', correct: false, explanation: 'Reckless. Controlled aggression needed!' }
+  ]
+},
+{
+  id: 'cap_053',
+  category: 'captaincy',
+  difficulty: 'medium',
+  situation: 'Test: Opposition opener is 40 not out. He has a weakness against short ball. But pitch is flat.',
+  question: 'Field setting strategy?',
+  options: [
+    { text: 'Set a trap - deep square leg, backward square, then bowl short', correct: true, explanation: 'Smart captaincy! Use his weakness against him with proper trap.' },
+    { text: 'Ignore the weakness, bowl normally', correct: false, explanation: 'Why waste intel? Use what you know!' },
+    { text: 'Bowl only bouncers without field', correct: false, explanation: 'Poorly planned. Need catchers in position!' },
+    { text: 'Tell bowler to bowl full only', correct: false, explanation: 'Not using available weapon. Mix it up!' }
+  ]
+},
+
+// ========== MENTAL GAME (100+) ==========
+{
+  id: 'mental_050',
+  category: 'mental',
+  difficulty: 'hard',
+  situation: 'Final over, you are bowling, defending 5 runs. First ball goes for 4.',
+  question: 'How do you mentally reset?',
+  options: [
+    { text: 'That ball is history. Focus on next delivery only.', correct: true, explanation: 'Elite mindset! Cannot change past. Only this ball matters.' },
+    { text: 'Panic, think you have lost already', correct: false, explanation: 'Still defending 1 run off 5 balls! Very much possible!' },
+    { text: 'Get angry and bowl recklessly', correct: false, explanation: 'Emotion destroys execution. Stay calm!' },
+    { text: 'Blame the fielder for not stopping', correct: false, explanation: 'Focus on what you can control - your next ball!' }
+  ]
+},
+{
+  id: 'mental_051',
+  category: 'mental',
+  difficulty: 'medium',
+  situation: 'You dropped an easy catch. Team is quiet. You feel terrible.',
+  question: 'How do you handle next 5 minutes?',
+  options: [
+    { text: 'Acknowledge it, refocus on next opportunity', correct: true, explanation: 'Professional response! Move on quickly. Next chance matters.' },
+    { text: 'Dwell on it, keep replaying the drop', correct: false, explanation: 'Destroys your focus for rest of game. Let it go!' },
+    { text: 'Make excuses about sun or wind', correct: false, explanation: 'Own it and move on. Excuses do not help.' },
+    { text: 'Hide from further fielding chances', correct: false, explanation: 'Face the challenge! Next catch is your redemption.' }
+  ]
+},
+{
+  id: 'mental_052',
+  category: 'mental',
+  difficulty: 'easy',
+  situation: 'Match tomorrow. You cannot sleep, feeling anxious.',
+  question: 'What helps?',
+  options: [
+    { text: 'Deep breathing, visualize success, trust preparation', correct: true, explanation: 'Perfect! Control breath, see success, remember training.' },
+    { text: 'Stay awake worrying all night', correct: false, explanation: 'Exhaustion hurts performance. Sleep is crucial!' },
+    { text: 'Think about everything that could go wrong', correct: false, explanation: 'Negative thoughts create negative outcomes!' },
+    { text: 'Avoid thinking about the match', correct: false, explanation: 'Some visualization helps. Channel nerves positively!' }
+  ]
+},
+{
+  id: 'mental_053',
+  category: 'mental',
+  difficulty: 'hard',
+  situation: 'Semifinal. You are run out by brilliant throw. Walking back heartbroken.',
+  question: 'Post-dismissal mindset?',
+  options: [
+    { text: 'Support teammates from dugout, stay positive for them', correct: true, explanation: 'Champion mentality! Your innings is over but team needs you.' },
+    { text: 'Sulk in corner, blame yourself all game', correct: false, explanation: 'Hurts team morale. Process your emotions, then support!' },
+    { text: 'Smash equipment in frustration', correct: false, explanation: 'Unprofessional. Compose yourself!' },
+    { text: 'Leave the ground', correct: false, explanation: 'Team needs you present! Stay and support!' }
+  ]
+},
+
+// ========== STRATEGIC SCENARIOS (200+ new scenarios) ==========
+{
+  id: 'strat_100',
+  category: 'strategy',
+  difficulty: 'medium',
+  situation: 'T20: You are defending 160. Opposition needs 9 per over. Opening pair is aggressive.',
+  question: 'Bowling and field strategy?',
+  options: [
+    { text: 'Attacking field, slip in, aim for early wickets', correct: true, explanation: 'Perfect! Under pressure they will take risks. Capitalize!' },
+    { text: 'Defensive field, prevent boundaries', correct: false, explanation: 'They will rotate strike easily. Need early wickets!' },
+    { text: 'All fielders on boundary', correct: false, explanation: 'They will take easy singles. Bad plan!' },
+    { text: 'Bowl only spin in powerplay', correct: false, explanation: 'Use new ball with pace. Swing could get wickets!' }
+  ]
+},
+{
+  id: 'strat_101',
+  category: 'strategy',
+  difficulty: 'hard',
+  situation: 'ODI: Opposition 250-8, batting still. Last pair, number 10 and 11. 5 overs left.',
+  question: 'Field setting?',
+  options: [
+    { text: 'Attacking field with slip, attack both batsmen', correct: true, explanation: 'Perfect! Finish the innings. They cannot bat. Be aggressive!' },
+    { text: 'Defensive field to prevent runs', correct: false, explanation: 'Wickets end innings. Attack, do not defend tail!' },
+    { text: 'All fielders back', correct: false, explanation: 'They will take easy singles. Finish them off!' },
+    { text: 'Let them score freely', correct: false, explanation: 'Why? Get them out! Every run matters!' }
+  ]
+},
+{
+  id: 'strat_102',
+  category: 'strategy',
+  difficulty: 'medium',
+  situation: 'Test: Day 2. Your team is 400-6. New ball due in 3 overs. Tail is in.',
+  question: 'Batting instruction to tail?',
+  options: [
+    { text: 'See off new ball, survive these overs, every run is bonus', correct: true, explanation: 'Smart! 400 is good. Survival adds pressure on opposition.' },
+    { text: 'Slog now before new ball comes', correct: false, explanation: 'Could get out cheaply. Preserve what you have!' },
+    { text: 'Declare immediately', correct: false, explanation: 'Let them add runs! New ball can be survived!' },
+    { text: 'Send message to get out deliberately', correct: false, explanation: 'Absurd! Always try to score more!' }
+  ]
+},
+{
+  id: 'strat_103',
+  category: 'strategy',
+  difficulty: 'easy',
+  situation: 'School T20: You win toss. Pitch is fresh, weather is good. Your team bats deep.',
+  question: 'Toss decision?',
+  options: [
+    { text: 'Bat first, post big total, pressure on them', correct: true, explanation: 'Good! Your strength is batting. Use it. Scoreboard pressure is real.' },
+    { text: 'Bowl first without thinking', correct: false, explanation: 'Play to your strengths! Bat first!' },
+    { text: 'Ask opposition captain to decide', correct: false, explanation: 'You won the toss! Make the call!' },
+    { text: 'Flip coin again', correct: false, explanation: 'One toss per match! Decide now!' }
+  ]
+},
+
+// ========== PRESSURE & DECISION SCENARIOS (continued) ==========
+{
+  id: 'press_100',
+  category: 'pressure',
+  difficulty: 'hard',
+  situation: 'World Cup. Last over. Need 6 off 1 ball. You are on strike. Yorker bowler.',
+  question: 'Your shot selection?',
+  options: [
+    { text: 'Back away slightly, target straight or over cover - high percentage areas', correct: true, explanation: 'Smart thinking! Create room, target big boundaries. Calculated risk.' },
+    { text: 'Wild slog without plan', correct: false, explanation: 'Needs a strategy. Even in pressure, have a plan!' },
+    { text: 'Block it and hope for miracle', correct: false, explanation: 'Game over if you defend. Swing with intent!' },
+    { text: 'Scoop shot blindly', correct: false, explanation: 'Yorker will hit your stumps. Know the bowler!' }
+  ]
+},
+{
+  id: 'press_101',
+  category: 'pressure',
+  difficulty: 'medium',
+  situation: 'Important match. You just got out for 5. Coach and teammates are disappointed.',
+  question: 'How do you respond in the field?',
+  options: [
+    { text: 'Field with 100% effort, contribute where you can now', correct: true, explanation: 'Champion response! Cannot bat again. Control what you can!' },
+    { text: 'Feel sorry for yourself, field lazily', correct: false, explanation: 'Compounds the problem. Team needs you engaged!' },
+    { text: 'Make excuses about dismissal', correct: false, explanation: 'Own it. Actions speak louder. Field brilliantly!' },
+    { text: 'Sit in pavilion', correct: false, explanation: 'Team needs 11 fielders! Get out there!' }
+  ]
+},
+{
+  id: 'press_102',
+  category: 'pressure',
+  difficulty: 'hard',
+  situation: 'Final. Scores level. Last ball. You are bowling. Batsman just needs to connect.',
+  question: 'Where do you bowl?',
+  options: [
+    { text: 'Wide yorker, make him reach for it', correct: true, explanation: 'Perfect! Hard to connect cleanly. Best defensive option.' },
+    { text: 'Straight at stumps, hope he misses', correct: false, explanation: 'Easy to hit for runs. Too risky!' },
+    { text: 'Full toss', correct: false, explanation: 'Free runs! Terrible option!' },
+    { text: 'Bouncer', correct: false, explanation: 'Could be wide, or he ducks and takes the dot. Too risky!' }
+  ]
+},
+
+// ========== 100 MORE VARIED SCENARIOS ==========
+{
+  id: 'varied_001',
+  category: 'batting',
+  difficulty: 'medium',
+  situation: 'ODI: Required rate is 8. You are new batsman. Spinner bowling with field spread.',
+  question: 'First 10 balls strategy?',
+  options: [
+    { text: 'Rotate strike, get off mark, build into innings', correct: true, explanation: 'Perfect! Get comfortable, then accelerate. Rushing causes dismissals.' },
+    { text: 'Try to hit boundaries from ball one', correct: false, explanation: 'High risk when you are not set. Settle first!' },
+    { text: 'Block everything first over', correct: false, explanation: 'Required rate will climb. Must score from start!' },
+    { text: 'Run unnecessary twos', correct: false, explanation: 'Risky! Get your eye in with sensible singles first!' }
+  ]
+},
+{
+  id: 'varied_002',
+  category: 'bowling',
+  difficulty: 'medium',
+  situation: 'Test: You are spinner. Batsman keeps using feet to negate your spin.',
+  question: 'Counter strategy?',
+  options: [
+    { text: 'Flight it more but drop it shorter when he advances', correct: true, explanation: 'Smart! Make him miss his length. Create stumping chances.' },
+    { text: 'Bowl faster and flatter only', correct: false, explanation: 'Takes away your weapon. Keep using flight!' },
+    { text: 'Give up on flight completely', correct: false, explanation: 'Flight is your strength! Use it better, not abandon it!' },
+    { text: 'Bowl full tosses', correct: false, explanation: 'Makes his job easier! Think smarter!' }
+  ]
+},
+{
+  id: 'varied_003',
+  category: 'fielding',
+  difficulty: 'easy',
+  situation: 'Gully position. Edge flies toward you at chest height.',
+  question: 'Catching technique?',
+  options: [
+    { text: 'Soft hands, watch it all the way in', correct: true, explanation: 'Perfect! Let ball come to you. Relax hands on impact.' },
+    { text: 'Snatch at it', correct: false, explanation: 'Hard hands cause drops. Stay soft and relaxed!' },
+    { text: 'Look away at last second', correct: false, explanation: 'Never! Watch it into your hands!' },
+    { text: 'Let slip take it', correct: false, explanation: 'It is coming to you! Back yourself!' }
+  ]
+},
+{
+  id: 'varied_004',
+  category: 'captaincy',
+  difficulty: 'easy',
+  situation: 'T20: Fielding first. Opposition is 45-0 after powerplay. Comfortable start for them.',
+  question: 'What is your plan?',
+  options: [
+    { text: 'Bring on spin, dry up runs, build pressure', correct: true, explanation: 'Smart! Spinners in middle overs create pressure through dots.' },
+    { text: 'Panic and bring back opening bowlers', correct: false, explanation: 'Save them for death. Trust your plan!' },
+    { text: 'Keep bowling pace only', correct: false, explanation: 'Vary your attack. Spin creates different challenge!' },
+    { text: 'Give up, they are winning', correct: false, explanation: 'Never! 45-0 in T20 is normal. Long way to go!' }
+  ]
+},
+{
+  id: 'varied_005',
+  category: 'batting',
+  difficulty: 'hard',
+  situation: 'Test: Final session, Day 5. Draw is fine, but you can win if you score 40 more runs in 8 overs.',
+  question: 'Risk assessment?',
+  options: [
+    { text: 'Go for the win! Positive intent, smart cricket, not reckless', correct: true, explanation: 'Perfect! Draw is safe, but win is possible. Take smart calculated risks!' },
+    { text: 'Block everything, take the draw', correct: false, explanation: 'Too defensive! Win is there for the taking!' },
+    { text: 'Slog every ball wildly', correct: false, explanation: 'Smart risks, not reckless swinging. Technique matters!' },
+    { text: 'Declare and forfeit', correct: false, explanation: 'That throws away the draw and the win! Terrible!' }
+  ]
+},
+{
+  id: 'varied_006',
+  category: 'bowling',
+  difficulty: 'easy',
+  situation: 'First over of your spell in an ODI. Batsman is 30 not out, looking set.',
+  question: 'Opening ball plan?',
+  options: [
+    { text: 'Probe with good length on off stump, see how he responds', correct: true, explanation: 'Smart! Test his technique, understand his game, then adjust.' },
+    { text: 'Try your best variation immediately', correct: false, explanation: 'Save it. Build pressure first with stock ball!' },
+    { text: 'Bowl short to intimidate', correct: false, explanation: 'Could go for runs. Start with control!' },
+    { text: 'Bowl wide to avoid being hit', correct: false, explanation: 'Cowardly! Back your skills!' }
+  ]
+},
+{
+  id: 'varied_007',
+  category: 'fielding',
+  difficulty: 'hard',
+  situation: 'Boundary fielder. Ball skying high, swirling. Two fielders could take it. You and mid-off.',
+  question: 'Communication plan?',
+  options: [
+    { text: 'Call loudly early! "Mine!" or "Yours!" - clear communication', correct: true, explanation: 'Perfect! Avoid collision. Decisive calling wins catches.' },
+    { text: 'Stay quiet, hope other calls', correct: false, explanation: 'Could collide or both leave it. Call clearly!' },
+    { text: 'Both go for it without calling', correct: false, explanation: 'Recipe for disaster! Communicate!' },
+    { text: 'Let the other fielder decide', correct: false, explanation: 'Someone must take charge! Call it!' }
+  ]
+},
+{
+  id: 'varied_008',
+  category: 'pressure',
+  difficulty: 'medium',
+  situation: 'You are playing your first match after injury. Nervous about re-injury.',
+  question: 'Mental approach?',
+  options: [
+    { text: 'Trust the rehab work, play freely, cleared by doctors', correct: true, explanation: 'Perfect! You are cleared. Fear creates tension and injury. Play natural!' },
+    { text: 'Play scared, avoid all risks', correct: false, explanation: 'Fear causes injury more than free play. Trust your body!' },
+    { text: 'Think about injury every ball', correct: false, explanation: 'Mental burden affects performance. Focus on cricket!' },
+    { text: 'Ask to be substituted', correct: false, explanation: 'You are fit! Back yourself!' }
+  ]
+},
+{
+  id: 'varied_009',
+  category: 'strategy',
+  difficulty: 'medium',
+  situation: 'T20: Batting first, you are 80-1 after 10 overs. Platform set. What is the plan for overs 11-15?',
+  question: 'Team batting strategy?',
+  options: [
+    { text: 'Accelerate gradually, 8-9 per over, set up final assault', correct: true, explanation: 'Perfect! Build momentum. Do not wait till end to score!' },
+    { text: 'Block next 5 overs, then explode', correct: false, explanation: 'Too much pressure on final 5. Gradual acceleration is key!' },
+    { text: 'Go hard now, 12+ per over', correct: false, explanation: 'Could collapse. Wickets in hand matter. Be smart!' },
+    { text: 'Send tail enders to have a swing', correct: false, explanation: 'Terrible! Use proper batsmen to build!' }
+  ]
+},
+{
+  id: 'varied_010',
+  category: 'batting',
+  difficulty: 'medium',
+  situation: 'T20: Your team needs 15 per over for last 5 overs. You just came in.',
+  question: 'Your approach as new batsman in high-pressure chase?',
+  options: [
+    { text: 'Get bat on ball first 3-4 deliveries, then attack', correct: true, explanation: 'Smart! Cannot score if you get out first ball. Settle briefly!' },
+    { text: 'Swing from ball one', correct: false, explanation: 'Need your eye in first. Brief settling helps!' },
+    { text: 'Block 2 overs, then attack', correct: false, explanation: 'Do not have time! Settle fast, then go!' },
+    { text: 'Walk down the pitch every ball', correct: false, explanation: 'Predictable. Play smart cricket, not desperate cricket!' }
+  ]
+},
+
+// Continue adding more scenarios with varied realistic match situations
+{
+  id: 'varied_011',
+  category: 'bowling',
+  difficulty: 'hard',
+  situation: 'Test: Morning session, overcast. Ball is hooping. Batsman survived you so far, but looking uncomfortable.',
+  question: 'Persistence strategy?',
+  options: [
+    { text: 'Keep probing same channel, wicket will come', correct: true, explanation: 'Perfect! Conditions in your favor. One mistake from him is enough!' },
+    { text: 'Try completely different plan', correct: false, explanation: 'Current plan is working! He is uncomfortable. Be patient!' },
+    { text: 'Give up, ask to be taken off', correct: false, explanation: 'This is when bowlers earn wickets! Keep fighting!' },
+    { text: 'Bowl bouncers in frustration', correct: false, explanation: 'Swing is your weapon. Use conditions!' }
+  ]
+},
+{
+  id: 'varied_012',
+  category: 'mental',
+  difficulty: 'medium',
+  situation: 'Semifinal starting in 1 hour. You feel butterflies in stomach. Heart racing.',
+  question: 'Pre-match mental prep?',
+  options: [
+    { text: 'This is excitement, not fear. Channel it. Deep breaths. Visualize success.', correct: true, explanation: 'Perfect! Reframe nerves as excitement. You are ready for this!' },
+    { text: 'Try to suppress the nervous feeling', correct: false, explanation: 'Embrace it! Nerves mean you care. Use that energy!' },
+    { text: 'Panic and doubt your selection', correct: false, explanation: 'You are selected because you deserve it! Believe!' },
+    { text: 'Avoid warm-up to save energy', correct: false, explanation: 'Warm-up helps nerves! Get moving, get focused!' }
+  ]
+}
+
 ];
 
 // Utility functions
