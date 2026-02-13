@@ -81,10 +81,14 @@ export default function ThirtyDayNotifications({ user }) {
   });
 
   useEffect(() => {
-    if (!challengeActivity || !user?.email) return;
+    if (!challengeActivity || !user?.email || existingNotifications.length === 0) return;
 
     const startDate = new Date(challengeActivity.date);
+    startDate.setHours(0, 0, 0, 0);
+    
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
     const currentDay = daysDiff + 1;
 
@@ -102,7 +106,7 @@ export default function ThirtyDayNotifications({ user }) {
 
       createNotificationMutation.mutate({ day: currentDay, title, message });
     }
-  }, [challengeActivity, user, existingNotifications]);
+  }, [challengeActivity, user?.email, currentDay]);
 
   return null;
 }
