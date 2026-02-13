@@ -1758,8 +1758,7 @@ export const scenarioDatabase = [
     { text: 'Panic and doubt your selection', correct: false, explanation: 'You are selected because you deserve it! Believe!' },
     { text: 'Avoid warm-up to save energy', correct: false, explanation: 'Warm-up helps nerves! Get moving, get focused!' }
   ]
-}
-
+},
 
 // ========== 100 MORE BATTING SCENARIOS ==========
 {
