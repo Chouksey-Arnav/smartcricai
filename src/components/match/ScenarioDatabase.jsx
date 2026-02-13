@@ -1012,7 +1012,7 @@ export const scenarioDatabase = [
     id: 'mental_005',
     category: 'mental',
     difficulty: 'medium',
-    situation: 'Umpire gives terrible decision against you. You know you didn't hit it. Walking off.',
+    situation: 'Umpire gives terrible decision against you. You know you did not hit it. Walking off.',
     question: 'How do you handle this?',
     options: [
       { text: 'Accept with grace, walk off, learn from it', correct: true, explanation: 'Shows class and respect for the game. Umpires are human. Your character matters.' },
