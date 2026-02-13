@@ -1022,7 +1022,35 @@ export const scenarioDatabase = [
     ]
   },
 
-  // ========== PRESSURE SITUATIONS (150+) ==========
+  // Middle-overs Accumulation (Bat 051-100) - CONTINUED
+  {
+    id: 'bat_052',
+    category: 'batting',
+    difficulty: 'medium',
+    situation: 'Test match: You are 85 not out. Close to your century. Bowler is bowling defensively.',
+    question: 'How do you approach getting to 100?',
+    options: [
+      { text: 'Play normally, let it come naturally', correct: true, explanation: 'Correct mindset. Do not force it, stay in your process.' },
+      { text: 'Try to smash boundaries to get there quickly', correct: false, explanation: 'Unnecessary risk. Patience got you to 85.' },
+      { text: 'Get nervous and block everything', correct: false, explanation: 'Overthinking. Trust your game.' },
+      { text: 'Ask partner to give you strike every ball', correct: false, explanation: 'Puts too much pressure on yourself. Play naturally.' }
+    ]
+  },
+  {
+    id: 'bat_053',
+    category: 'batting',
+    difficulty: 'hard',
+    situation: 'T20: Death overs, you need 15 runs from last over. Best death bowler in opposition.',
+    question: 'Your strategy?',
+    options: [
+      { text: 'Target the bad balls, take calculated risks on good balls', correct: true, explanation: 'Smart! Even best bowlers bowl 1-2 loose balls per over.' },
+      { text: 'Swing wildly at everything', correct: false, explanation: 'Low success rate. Be smart about shot selection.' },
+      { text: 'Block first 3 balls, then go big', correct: false, explanation: 'Puts too much pressure. Need to score throughout.' },
+      { text: 'Try reverse scoop every ball', correct: false, explanation: 'Predictable. Mix up your game.' }
+    ]
+  },
+
+  // ========== PRESSURE SITUATIONS (350+) ==========
   
   {
     id: 'press_001',
