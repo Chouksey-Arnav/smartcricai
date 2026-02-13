@@ -28,11 +28,21 @@ export default function WorkoutBuilder() {
     initialData: [],
   });
 
+  const { data: savedWorkouts = [] } = useQuery({
+    queryKey: ['savedWorkouts', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      return await base44.entities.SavedWorkout.filter({ user_email: user.email });
+    },
+    enabled: !!user?.email,
+  });
+
   const [workoutName, setWorkoutName] = useState('');
   const [selectedDrills, setSelectedDrills] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [exerciseDialogOpen, setExerciseDialogOpen] = useState(false);
   const [filteredDrills, setFilteredDrills] = useState(null);
+  const [showSaved, setShowSaved] = useState(false);
 
   const addDrill = (drill) => {
     setSelectedDrills([
@@ -85,6 +95,14 @@ export default function WorkoutBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
+      await base44.entities.SavedWorkout.create({
+        user_email: user.email,
+        name: workoutName,
+        exercises: selectedDrills,
+        total_exercises: selectedDrills.length,
+        estimated_duration: selectedDrills.length * 3
+      });
+      
       return await base44.entities.Workout.create({
         user_email: user.email,
         name: workoutName,
@@ -94,8 +112,36 @@ export default function WorkoutBuilder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
-      toast.success('Workout created! 💪');
+      queryClient.invalidateQueries({ queryKey: ['savedWorkouts'] });
+      toast.success('Workout saved! 💪');
+      setWorkoutName('');
+      setSelectedDrills([]);
+    },
+  });
+
+  const loadSavedWorkoutMutation = useMutation({
+    mutationFn: async (savedWorkout) => {
+      return await base44.entities.Workout.create({
+        user_email: user.email,
+        name: savedWorkout.name,
+        drills: savedWorkout.exercises,
+        status: 'not_started'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      toast.success('Workout loaded! Ready to start! 💪');
       navigate(createPageUrl('Schedule'));
+    },
+  });
+
+  const deleteSavedWorkoutMutation = useMutation({
+    mutationFn: async (id) => {
+      await base44.entities.SavedWorkout.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedWorkouts'] });
+      toast.success('Workout deleted');
     },
   });
 
@@ -112,33 +158,59 @@ export default function WorkoutBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
       <Header title="Workout Builder" showSettings={false} />
 
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl p-6 text-white"
-        >
-          <h2 className="font-bold text-xl mb-2">Create Your Workout</h2>
-          <p className="text-purple-100 text-sm">Add drills or exercises, set reps, and build your training plan</p>
-        </motion.div>
-
-        {/* Workout Name */}
-        <div className="bg-white rounded-2xl shadow-lg p-4">
-          <label className="text-sm font-semibold text-slate-700 mb-2 block">Workout Name</label>
-          <Input
-            placeholder="e.g., Morning Power Session"
-            value={workoutName}
-            onChange={(e) => setWorkoutName(e.target.value)}
-            className="h-12"
-          />
+        {/* Toggle Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => setShowSaved(false)}
+            className={`py-3 rounded-xl font-semibold transition-all ${
+              !showSaved 
+                ? 'bg-purple-500 text-white shadow-lg' 
+                : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600'
+            }`}
+          >
+            Create New
+          </button>
+          <button
+            onClick={() => setShowSaved(true)}
+            className={`py-3 rounded-xl font-semibold transition-all ${
+              showSaved 
+                ? 'bg-purple-500 text-white shadow-lg' 
+                : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600'
+            }`}
+          >
+            Saved ({savedWorkouts.length})
+          </button>
         </div>
 
-        {/* Add Buttons */}
-        <div className="grid grid-cols-2 gap-3">
+        {!showSaved ? (
+          <>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl p-6 text-white"
+            >
+              <h2 className="font-bold text-xl mb-2">Create Your Workout</h2>
+              <p className="text-purple-100 text-sm">Add drills or exercises, set reps, and build your training plan</p>
+            </motion.div>
+
+            {/* Workout Name */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Workout Name</label>
+              <Input
+                placeholder="e.g., Morning Power Session"
+                value={workoutName}
+                onChange={(e) => setWorkoutName(e.target.value)}
+                className="h-12"
+              />
+            </div>
+
+            {/* Add Buttons */}
+            <div className="grid grid-cols-2 gap-3">
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="h-12 bg-emerald-500 hover:bg-emerald-600">
@@ -196,12 +268,12 @@ export default function WorkoutBuilder() {
               />
             </DialogContent>
           </Dialog>
-        </div>
+            </div>
 
-        {/* Drill List */}
-        {selectedDrills.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-xl p-6">
-            <h3 className="font-bold text-slate-800 mb-4">Your Drills ({selectedDrills.length})</h3>
+            {/* Drill List */}
+            {selectedDrills.length > 0 && (
+              <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6">
+                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-4">Your Drills ({selectedDrills.length})</h3>
             
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="drills">
@@ -213,7 +285,7 @@ export default function WorkoutBuilder() {
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className="bg-slate-50 rounded-xl p-4"
+                            className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4"
                           >
                             <div className="flex items-start gap-3">
                               <div {...provided.dragHandleProps} className="mt-2">
@@ -222,7 +294,7 @@ export default function WorkoutBuilder() {
                               
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <h4 className="font-semibold text-slate-800">{drill.drill_title}</h4>
+                                  <h4 className="font-semibold text-slate-800 dark:text-slate-100">{drill.drill_title}</h4>
                                   {drill.type === 'exercise' && (
                                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                                       drill.category === 'bodyweight' 
@@ -236,7 +308,7 @@ export default function WorkoutBuilder() {
                                 
                                 <div className="grid grid-cols-2 gap-2">
                                   <div>
-                                    <label className="text-xs text-slate-600 block mb-1">Sets</label>
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Sets</label>
                                     <Input
                                       type="number"
                                       min="1"
@@ -246,7 +318,7 @@ export default function WorkoutBuilder() {
                                     />
                                   </div>
                                   <div>
-                                    <label className="text-xs text-slate-600 block mb-1">Reps</label>
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Reps</label>
                                     <Input
                                       type="number"
                                       min="1"
@@ -274,19 +346,80 @@ export default function WorkoutBuilder() {
                 )}
               </Droppable>
             </DragDropContext>
-          </div>
-        )}
+              </div>
+            )}
 
-        {/* Save Button */}
-        {selectedDrills.length > 0 && (
-          <Button
-            onClick={handleSave}
-            disabled={saveWorkoutMutation.isPending}
-            className="w-full h-14 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-lg font-bold"
-          >
-            <Save className="w-5 h-5 mr-2" />
-            {saveWorkoutMutation.isPending ? 'Saving...' : 'Save Workout'}
-          </Button>
+            {/* Save Button */}
+            {selectedDrills.length > 0 && (
+              <Button
+                onClick={handleSave}
+                disabled={saveWorkoutMutation.isPending}
+                className="w-full h-14 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-lg font-bold"
+              >
+                <Save className="w-5 h-5 mr-2" />
+                {saveWorkoutMutation.isPending ? 'Saving...' : 'Save Workout'}
+              </Button>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Saved Workouts List */}
+            <div className="space-y-4">
+              {savedWorkouts.length === 0 ? (
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-12 text-center">
+                  <Dumbbell className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                  <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-2">No Saved Workouts</h3>
+                  <p className="text-slate-600 dark:text-slate-400">Create and save your first workout to see it here</p>
+                </div>
+              ) : (
+                savedWorkouts.map((workout) => (
+                  <motion.div
+                    key={workout.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-5"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">{workout.name}</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                          {workout.total_exercises} exercises • ~{workout.estimated_duration} min
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => deleteSavedWorkoutMutation.mutate(workout.id)}
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      >
+                        <X className="w-5 h-5 text-red-500" />
+                      </button>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => loadSavedWorkoutMutation.mutate(workout)}
+                        disabled={loadSavedWorkoutMutation.isPending}
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+                      >
+                        Start Workout
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setSelectedDrills(workout.exercises);
+                          setWorkoutName(workout.name);
+                          setShowSaved(false);
+                          toast.success('Workout loaded for editing');
+                        }}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
