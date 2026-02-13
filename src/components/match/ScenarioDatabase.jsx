@@ -1206,11 +1206,10 @@ export const scenarioDatabase = [
       { text: 'Argue and refuse to leave', correct: false, explanation: 'Results in penalty. Decision is final. Show respect.' },
       { text: 'Smash your bat in frustration', correct: false, explanation: 'Unprofessional. Control your emotions.' },
       { text: 'Abuse the umpire', correct: false, explanation: 'Never! That\'s match ban territory. Compose yourself.' }
-    ]
-  },
-,
+      ]
+      },
 
-// ========== ADDITIONAL BATTING SCENARIOS (100+) ==========
+      // ========== ADDITIONAL BATTING SCENARIOS (100+) ==========
 {
   id: 'bat_100',
   category: 'batting',
