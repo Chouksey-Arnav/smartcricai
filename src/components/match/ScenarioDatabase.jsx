@@ -1761,9 +1761,6 @@ export const scenarioDatabase = [
   ]
 }
 
-];
-
-,
 
 // ========== 100 MORE BATTING SCENARIOS ==========
 {
