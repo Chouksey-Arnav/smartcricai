@@ -146,13 +146,14 @@ export default function WorkoutBuilder() {
         user_email: user.email,
         name: savedWorkout.name,
         drills: savedWorkout.exercises,
-        status: 'not_started'
+        status: 'not_started',
+        xp_value: 120
       });
     },
-    onSuccess: () => {
+    onSuccess: (newWorkout) => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
-      toast.success('Workout loaded! Ready to start! 💪');
-      navigate(createPageUrl('Schedule'));
+      toast.success('Starting workout now!');
+      navigate(createPageUrl(`WorkoutPlayer?id=${newWorkout.id}`));
     },
   });
 

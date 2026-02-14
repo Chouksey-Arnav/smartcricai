@@ -89,6 +89,7 @@ import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
 import ViewLogMatches from './pages/ViewLogMatches';
 import MatchDetail from './pages/MatchDetail';
+import WorkoutPlayer from './pages/WorkoutPlayer';
 import __Layout from './Layout.jsx';
 
 
@@ -135,6 +136,7 @@ export const PAGES = {
     "WorkoutHistory": WorkoutHistory,
     "ViewLogMatches": ViewLogMatches,
     "MatchDetail": MatchDetail,
+    "WorkoutPlayer": WorkoutPlayer,
 }
 
 export const pagesConfig = {
