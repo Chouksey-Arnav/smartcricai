@@ -2,59 +2,71 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { Target, Sparkles } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-
-// Pre-saved drill recommendations
-const preSavedDrills = [
-  { id: 'straight-drive', name: 'Straight Drive Practice', category: 'batting', emoji: '🏏' },
-  { id: 'front-foot-defense', name: 'Front Foot Defense', category: 'batting', emoji: '🛡️' },
-  { id: 'catching-basics', name: 'Catching Basics', category: 'fielding', emoji: '🧤' },
-  { id: 'shadow-batting', name: 'Shadow Batting', category: 'batting', emoji: '⚡' },
-  { id: 'throwing-accuracy', name: 'Throwing Accuracy', category: 'fielding', emoji: '🎯' },
-  { id: 'balance-drill', name: 'Balance & Coordination', category: 'fitness', emoji: '💪' },
-  { id: 'breathing-control', name: 'Breathing Control', category: 'mental', emoji: '🧠' },
-  { id: 'confidence-routine', name: 'Confidence Builder', category: 'mental', emoji: '✨' },
-  { id: 'running-drills', name: 'Running Between Wickets', category: 'tactics', emoji: '🏃' },
-];
-
-function getRandomDrills(count = 3) {
-  const shuffled = [...preSavedDrills].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
 
 export default function SmartStart({ isDarkMode }) {
   const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState([]);
 
-  const { data: user } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+  const { data: drills = [] } = useQuery({
+    queryKey: ['drills'],
+    queryFn: () => base44.entities.Drill.list(),
+  });
+
+  const { data: mentalRoutines = [] } = useQuery({
+    queryKey: ['mentalRoutines'],
+    queryFn: () => base44.entities.MentalRoutine.list(),
   });
 
   useEffect(() => {
-    // Get random drills when component mounts
-    setRecommendations(getRandomDrills());
-  }, []);
+    if (drills.length > 0 && mentalRoutines.length > 0) {
+      const randomDrills = [...drills].sort(() => 0.5 - Math.random()).slice(0, 2);
+      const randomMental = [...mentalRoutines].sort(() => 0.5 - Math.random()).slice(0, 1);
+      
+      setRecommendations([
+        ...randomDrills.map(d => ({ 
+          type: 'drill', 
+          id: d.id, 
+          title: d.title, 
+          category: d.category 
+        })),
+        ...randomMental.map(m => ({ 
+          type: 'mental', 
+          id: m.id, 
+          title: m.title, 
+          category: 'Mental Training' 
+        }))
+      ]);
+    }
+  }, [drills, mentalRoutines]);
+
+  const handleClick = (item) => {
+    if (item.type === 'drill') {
+      navigate(createPageUrl(`DrillDetail?id=${item.id}`));
+    } else {
+      navigate(createPageUrl(`MentalRoutinePlayer?id=${item.id}`));
+    }
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.25 }}
-      className={`rounded-3xl shadow-2xl p-6 border ${
+      className={`rounded-3xl shadow-2xl p-6 border mt-6 ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' 
-          : 'bg-gradient-to-br from-white to-indigo-50/30 border-white/50'
+          ? 'bg-gradient-to-br from-orange-600 to-red-600 border-orange-500' 
+          : 'bg-gradient-to-br from-orange-500 to-red-500 border-orange-400'
       }`}
     >
-      <h2 className={`font-bold mb-3 text-lg flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-        <Sparkles className="w-6 h-6 text-indigo-500" />
-        <span className={isDarkMode ? 'text-white' : 'text-slate-800'}>Smart Start - Quick Picks</span>
+      <h2 className="font-bold mb-3 text-lg flex items-center gap-2 text-white">
+        <Zap className="w-6 h-6 text-yellow-300" />
+        <span>Smart Start</span>
       </h2>
-      <p className={`text-sm mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-        Handpicked drills just for you
+      <p className="text-sm mb-4 text-orange-100">
+        Your personalized training picks
       </p>
       <div className="space-y-2">
         {recommendations.map((rec, index) => (
@@ -63,20 +75,15 @@ export default function SmartStart({ isDarkMode }) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 * index }}
-            onClick={() => navigate(createPageUrl('Drills'))}
-            className={`w-full text-left p-3 rounded-xl transition-all ${
-              isDarkMode 
-                ? 'bg-slate-700 hover:bg-slate-600' 
-                : 'bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100'
-            }`}
+            onClick={() => handleClick(rec)}
+            className="w-full text-left p-4 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all border border-white/30"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{rec.emoji}</span>
               <div className="flex-1">
-                <p className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-                  {rec.name}
+                <p className="font-semibold text-sm text-white">
+                  {rec.title}
                 </p>
-                <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                <p className="text-xs text-orange-100 capitalize">
                   {rec.category}
                 </p>
               </div>

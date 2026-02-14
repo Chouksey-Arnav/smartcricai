@@ -28,10 +28,10 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   // Top 3 - Always Fixed
-  { name: '🔥 30-Day Challenge', icon: Flame, page: 'ThirtyDayChallenge', color: 'text-orange-500', highlight: true },
-  { name: '✨ Get to Know You', icon: Sparkles, page: 'GetToKnowYou', color: 'text-pink-500', highlight: true },
+  { name: '30-Day Challenge', icon: Flame, page: 'ThirtyDayChallenge', color: 'text-orange-500', highlight: true },
+  { name: 'Get Started', icon: Sparkles, page: 'GetToKnowYou', color: 'text-pink-500', highlight: true },
   { name: 'Home', icon: Home, page: 'Home', color: 'text-emerald-500' },
-  { name: '🎯 Goals', icon: Target, page: 'Goals', color: 'text-purple-600', highlight: true },
+  { name: 'Goals', icon: Target, page: 'Goals', color: 'text-purple-600', highlight: true },
   
   // Community & Social
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
@@ -102,16 +102,25 @@ export default function Sidebar() {
           >
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-emerald-500 to-teal-500 p-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-white">Smart Crick AI</h2>
-                <p className="text-emerald-100 text-sm">Smart Trick Coach</p>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white">Smart Cricket</h2>
+                <p className="text-emerald-100 text-sm">Train Like a Pro</p>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-              >
-                <X className="w-6 h-6 text-white" />
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  to={createPageUrl('Home')}
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <Home className="w-5 h-5 text-white" />
+                </Link>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-6 h-6 text-white" />
+                </button>
+              </div>
             </div>
 
             {/* Menu Items - Scrollable */}
