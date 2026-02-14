@@ -157,18 +157,18 @@ export default function SkillPaths() {
   // Path selection screen
   if (!skillPath) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-24 pt-6">
-        <Header title="Development Paths" showSettings={false} />
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 pb-24 pt-6">
+        <Header title="Skill Paths" showSettings={false} />
         <div className="max-w-lg mx-auto px-6 pt-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-              Choose Your Development Path
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+              Choose Your Path
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-slate-600">
               Structured training to transform your cricket skills
             </p>
           </motion.div>
@@ -185,8 +185,8 @@ export default function SkillPaths() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className={`bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border-2 ${
-                    canStart ? 'border-emerald-300 dark:border-emerald-700' : 'border-slate-200 dark:border-slate-700'
+                  className={`bg-white rounded-2xl shadow-lg p-6 border-2 ${
+                    canStart ? `border-${path.color}-200` : 'border-slate-200'
                   } relative`}
                 >
                   {isLocked && (
@@ -198,32 +198,32 @@ export default function SkillPaths() {
                   <div className="flex items-start gap-3 mb-4">
                     <div className="text-4xl">{path.icon}</div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-slate-800 dark:text-white">{path.name}</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{path.subtitle}</p>
+                      <h3 className="text-xl font-bold text-slate-800">{path.name}</h3>
+                      <p className="text-sm text-slate-500 mb-1">{path.subtitle}</p>
                       {!meetsXPRequirement && !isLocked && (
-                        <p className="text-xs text-amber-600 dark:text-amber-500 font-semibold">
+                        <p className="text-xs text-amber-600 font-semibold">
                           Requires {path.unlockXP} XP (You have {userProgress?.total_xp || 0})
                         </p>
                       )}
-                      {isLocked && <p className="text-xs text-amber-600 dark:text-amber-500 font-semibold">🔒 Premium Required</p>}
+                      {isLocked && <p className="text-xs text-amber-600 font-semibold">🔒 Premium Required</p>}
                     </div>
                   </div>
                   
-                  <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
+                  <div className="bg-slate-50 rounded-xl p-4 mb-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Star className="w-4 h-4 text-emerald-500" />
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Path Details</span>
+                      <Star className={`w-4 h-4 text-${path.color}-500`} />
+                      <span className="text-sm font-semibold text-slate-700">Path Details</span>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">• {path.weeks.length} weeks of training</p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">• Total {path.totalXP} XP to earn</p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">• Unlock: {path.badge.emoji} {path.badge.name}</p>
+                    <p className="text-xs text-slate-600 mb-2">• {path.weeks.length} weeks of training</p>
+                    <p className="text-xs text-slate-600 mb-2">• Total {path.totalXP} XP to earn</p>
+                    <p className="text-xs text-slate-600">• Unlock: {path.badge.emoji} {path.badge.name}</p>
                   </div>
 
                   <div className="space-y-2">
                     <Button
                       onClick={() => canStart && createPath.mutate(key)}
                       disabled={!canStart || createPath.isPending}
-                      className={`w-full ${canStart ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-300 cursor-not-allowed'}`}
+                      className={`w-full ${canStart ? `bg-${path.color}-600 hover:bg-${path.color}-700` : 'bg-slate-300 cursor-not-allowed'}`}
                     >
                       {isLocked ? '🔒 Premium Only' : !meetsXPRequirement ? '🔒 Need More XP' : 'Start This Path'}
                     </Button>
@@ -231,7 +231,7 @@ export default function SkillPaths() {
                       <Button
                         onClick={() => handleEarlyAccess(key)}
                         variant="outline"
-                        className="w-full border-amber-500 text-amber-600 dark:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        className="w-full border-amber-500 text-amber-600 hover:bg-amber-50"
                       >
                         Access Early (Already Elite)
                       </Button>
@@ -289,8 +289,8 @@ export default function SkillPaths() {
 
   // Active path screen
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-24 pt-6">
-      <Header title="Development Paths" showSettings={false} />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 pb-24 pt-6">
+      <Header title="Skill Paths" showSettings={false} />
       <div className="max-w-lg mx-auto px-6 pt-4">
         {/* Exit Button */}
         <button
@@ -309,7 +309,7 @@ export default function SkillPaths() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 mb-6 text-white"
+          className={`bg-gradient-to-r from-${currentPathData.color}-400 to-${currentPathData.color}-500 rounded-2xl p-6 mb-6 text-white`}
         >
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -339,8 +339,8 @@ export default function SkillPaths() {
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
                 selectedWeek === idx + 1
-                  ? "bg-emerald-500 text-white"
-                  : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+                  ? `bg-${currentPathData.color}-500 text-white`
+                  : "bg-white border border-slate-200 text-slate-600"
               )}
             >
               Week {idx + 1}
@@ -357,8 +357,8 @@ export default function SkillPaths() {
               animate={{ opacity: 1, x: 0 }}
               className="space-y-3"
             >
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-md mb-4">
-                <h3 className="font-bold text-slate-800 dark:text-white">{week.title}</h3>
+              <div className="bg-white rounded-2xl p-4 shadow-md mb-4">
+                <h3 className="font-bold text-slate-800">{week.title}</h3>
               </div>
 
               {week.items.map((item, itemIdx) => {
@@ -381,8 +381,8 @@ export default function SkillPaths() {
                     transition={{ delay: itemIdx * 0.05 }}
                     className={`p-5 rounded-2xl border-2 transition-all ${
                       isCompleted
-                        ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                        ? 'border-emerald-200 bg-emerald-50'
+                        : 'border-slate-200 bg-white'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -395,7 +395,7 @@ export default function SkillPaths() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className={`font-semibold ${
-                            isCompleted ? 'text-emerald-800 dark:text-emerald-300' : 'text-slate-800 dark:text-white'
+                            isCompleted ? 'text-emerald-800' : 'text-slate-800'
                           }`}>
                             {item.name}
                           </h3>
@@ -403,7 +403,7 @@ export default function SkillPaths() {
                             {item.type}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">{item.description}</p>
+                        <p className="text-sm text-slate-600 mb-2">{item.description}</p>
                         <div className="flex items-center gap-2">
                           <Zap className="w-4 h-4 text-amber-500" />
                           <span className="text-sm font-semibold text-amber-600">+{item.xp} XP</span>
@@ -414,9 +414,9 @@ export default function SkillPaths() {
                         <Button
                           onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp })}
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 shrink-0"
+                          className={`bg-${currentPathData.color}-600 hover:bg-${currentPathData.color}-700 shrink-0`}
                         >
-                          Mark Done
+                          Complete
                         </Button>
                       )}
                     </div>

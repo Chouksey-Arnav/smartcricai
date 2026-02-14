@@ -112,21 +112,6 @@ export default function DrillDetail() {
     retry: 3,
   });
 
-  const { data: allDrills = [] } = useQuery({
-    queryKey: ['allDrills'],
-    queryFn: () => base44.entities.Drill.list(),
-    staleTime: 300000,
-  });
-
-  const getNextDrill = () => {
-    if (!drill || allDrills.length === 0) return null;
-    const currentIndex = allDrills.findIndex(d => d.id === drill.id);
-    if (currentIndex === -1 || currentIndex === allDrills.length - 1) return allDrills[0];
-    return allDrills[currentIndex + 1];
-  };
-
-  const nextDrill = getNextDrill();
-
   const completeDrillMutation = useMutation({
     mutationFn: async () => {
       if (!user?.email || !drill) return;
@@ -250,7 +235,7 @@ export default function DrillDetail() {
   const equipment = drill.equipment || [];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 pb-24">
+    <div className="min-h-screen bg-white pb-24">
       {/* Header */}
       <div className={cn(
         "bg-gradient-to-r px-6 pt-8 pb-20",
@@ -295,14 +280,14 @@ export default function DrillDetail() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6"
+          className="bg-white rounded-2xl shadow-xl p-6"
         >
           {!isStarted ? (
             <>
               {/* Video Tutorial */}
               {drill.video_url && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                  <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
                     <Video className="w-5 h-5 text-red-500" />
                     Video Tutorial
                   </h3>
@@ -330,15 +315,15 @@ export default function DrillDetail() {
               {/* Equipment */}
               {equipment.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
-                    <Dumbbell className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                  <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                    <Dumbbell className="w-5 h-5 text-slate-400" />
                     Equipment Needed
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {equipment.map((item, index) => (
                       <span 
                         key={index}
-                        className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-full text-sm text-slate-600 dark:text-slate-300"
+                        className="px-3 py-1.5 bg-slate-100 rounded-full text-sm text-slate-600"
                       >
                         {item}
                       </span>
@@ -350,11 +335,11 @@ export default function DrillDetail() {
               {/* Target */}
               {drill.target_metric && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                  <h3 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-slate-400" />
                     Target
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300">{drill.target_metric}</p>
+                  <p className="text-slate-600">{drill.target_metric}</p>
                 </div>
               )}
 
@@ -372,51 +357,35 @@ export default function DrillDetail() {
               animate={{ scale: 1, opacity: 1 }}
               className="text-center py-8"
             >
-              <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-20 h-20 bg-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-emerald-600" />
               </div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+              <h2 className="text-xl font-bold text-slate-800 mb-2">
                 Awesome Job! 🎉
               </h2>
-              <p className="text-slate-500 dark:text-slate-400 mb-6">
+              <p className="text-slate-500 mb-6">
                 You've completed this drill. Keep up the great work!
               </p>
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => navigate(-1)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Back to Drills
-                </Button>
-                {nextDrill && (
-                  <Button
-                    onClick={() => {
-                      setIsCompleted(false);
-                      setIsStarted(false);
-                      setCurrentStep(0);
-                      navigate(createPageUrl(`DrillDetail?id=${nextDrill.id}`));
-                    }}
-                    className="flex-1 bg-emerald-500 hover:bg-emerald-600"
-                  >
-                    Next Drill →
-                  </Button>
-                )}
-              </div>
+              <Button
+                onClick={() => navigate(-1)}
+                className="bg-emerald-500 hover:bg-emerald-600"
+              >
+                Back to Drills
+              </Button>
             </motion.div>
           ) : (
             <>
               {/* Steps Progress */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-slate-500 dark:text-slate-400">
+                  <span className="text-sm text-slate-500">
                     Step {currentStep + 1} of {steps.length}
                   </span>
-                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="text-sm font-medium text-emerald-600">
                     {Math.round(((currentStep + 1) / steps.length) * 100)}%
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
@@ -430,9 +399,9 @@ export default function DrillDetail() {
                 key={currentStep}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-6"
+                className="bg-slate-50 rounded-xl p-4 mb-6"
               >
-                <p className="text-lg text-slate-800 dark:text-white">{steps[currentStep]}</p>
+                <p className="text-lg text-slate-800">{steps[currentStep]}</p>
               </motion.div>
 
               {/* Navigation */}
