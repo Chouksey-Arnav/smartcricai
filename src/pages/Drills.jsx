@@ -108,7 +108,7 @@ export default function Drills() {
       <div className="space-y-3">
         <div className={`flex items-center gap-2 px-2`}>
           <div className={`h-1 w-8 rounded-full ${color}`} />
-          <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">{title}</h3>
+          <h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide">{title}</h3>
         </div>
         {drills.map((drill, index) => {
           const isLocked = drill.is_premium && !isPremium;
@@ -142,7 +142,7 @@ export default function Drills() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
       <Header title="Practice Drills" showSettings={false} />
 
       <div className="px-4 py-4 max-w-lg mx-auto space-y-6">
