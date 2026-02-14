@@ -28,6 +28,18 @@ export default function WorkoutBuilder() {
     initialData: [],
   });
 
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      return subs[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const isPremium = premiumStatus?.is_premium || false;
+
   const { data: savedWorkouts = [] } = useQuery({
     queryKey: ['savedWorkouts', user?.email],
     queryFn: async () => {
@@ -45,6 +57,15 @@ export default function WorkoutBuilder() {
   const [showSaved, setShowSaved] = useState(false);
 
   const addDrill = (drill) => {
+    // Check if drill is pro and user doesn't have premium
+    if (drill.skill_level === 'pro' && !isPremium) {
+      toast('This is a Pro drill! Requires Premium subscription. 🔓', {
+        icon: '💎',
+        duration: 3000,
+      });
+      return;
+    }
+
     setSelectedDrills([
       ...selectedDrills,
       {
@@ -237,16 +258,24 @@ export default function WorkoutBuilder() {
                 />
               </div>
               <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-visible">
-                {(filteredDrills || drills).map(drill => (
-                  <button
-                    key={drill.id}
-                    onClick={() => addDrill(drill)}
-                    className="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors"
-                  >
-                    <h4 className="font-semibold text-slate-800">{drill.title}</h4>
-                    <p className="text-sm text-slate-600">{drill.category} • {drill.skill_level}</p>
-                  </button>
-                ))}
+                {(filteredDrills || drills).map(drill => {
+                  const isProLocked = drill.skill_level === 'pro' && !isPremium;
+                  return (
+                    <button
+                      key={drill.id}
+                      onClick={() => addDrill(drill)}
+                      className={`w-full text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors relative ${isProLocked ? 'opacity-60' : ''}`}
+                    >
+                      {isProLocked && (
+                        <div className="absolute top-2 right-2">
+                          <span className="text-xs bg-gradient-to-r from-amber-400 to-orange-500 text-white px-2 py-1 rounded-full">🔒 Pro</span>
+                        </div>
+                      )}
+                      <h4 className="font-semibold text-slate-800">{drill.title}</h4>
+                      <p className="text-sm text-slate-600">{drill.category} • {drill.skill_level}</p>
+                    </button>
+                  );
+                })}
               </div>
             </DialogContent>
           </Dialog>
