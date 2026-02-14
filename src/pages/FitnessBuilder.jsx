@@ -58,9 +58,26 @@ export default function FitnessBuilder() {
     queryFn: () => base44.auth.me(),
   });
 
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      return subs[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const isPremium = premiumStatus?.is_premium || false;
+
   const handleGenerateWorkout = async () => {
     if (!selectedBodyPart || !selectedLevel || !selectedGoal || !selectedDuration) {
       toast.error('Please complete all selections');
+      return;
+    }
+
+    if (selectedLevel === 'pro' && !isPremium) {
+      toast.error('Pro level requires Premium subscription! 💎');
       return;
     }
 
@@ -89,6 +106,18 @@ export default function FitnessBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
+      // Save to PreGeneratedWorkout with created_by to identify user-generated ones
+      const preGenData = {
+        body_part: selectedBodyPart,
+        level: selectedLevel,
+        goal: selectedGoal,
+        duration: 30,
+        exercises: generatedWorkout.exercises,
+        created_by: user.email
+      };
+      
+      await base44.entities.PreGeneratedWorkout.create(preGenData);
+
       const workoutData = {
         user_email: user.email,
         name: `${selectedGoal?.replace(' ', ' ').toUpperCase()} - ${selectedBodyPart?.toUpperCase()} Workout`,
@@ -111,10 +140,28 @@ export default function FitnessBuilder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
       toast.success('Workout saved! 💪');
       navigate(createPageUrl('AIWorkout'));
     },
   });
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white pb-24">
+      <Header title="Fitness Builder" showSettings={false} />
+      
+      <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      return subs[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const isPremium = premiumStatus?.is_premium || false;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white pb-24">
@@ -128,7 +175,7 @@ export default function FitnessBuilder() {
           className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-6 text-white"
         >
           <h2 className="font-bold text-xl mb-2">Build Your Fitness Plan</h2>
-          <p className="text-orange-100 text-sm">420 pre-made combinations for perfect training</p>
+          <p className="text-orange-100 text-sm">Curated training programs for you</p>
         </motion.div>
 
         {/* Step 1: Body Part */}
@@ -179,22 +226,37 @@ export default function FitnessBuilder() {
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <h3 className="font-bold text-slate-800 mb-3">Fitness Level</h3>
               <div className="grid grid-cols-2 gap-3">
-                {levels.map(lv => (
-                  <button
-                    key={lv.id}
-                    onClick={() => setSelectedLevel(lv.id)}
-                    className={cn(
-                      "p-3 rounded-xl border-2 transition-all",
-                      selectedLevel === lv.id
-                        ? "border-orange-500 bg-orange-50"
-                        : "border-slate-200 hover:border-slate-300"
-                    )}
-                  >
-                    <div className={cn("text-sm font-semibold", lv.color, "inline-block px-2 py-1 rounded-full")}>
-                      {lv.name}
-                    </div>
-                  </button>
-                ))}
+                {levels.map(lv => {
+                  const isLocked = lv.id === 'pro' && !isPremium;
+                  return (
+                    <button
+                      key={lv.id}
+                      onClick={() => {
+                        if (isLocked) {
+                          toast('Pro level requires Premium! 🔓', { icon: '💎', duration: 3000 });
+                        } else {
+                          setSelectedLevel(lv.id);
+                        }
+                      }}
+                      className={cn(
+                        "p-3 rounded-xl border-2 transition-all relative",
+                        selectedLevel === lv.id
+                          ? "border-orange-500 bg-orange-50"
+                          : "border-slate-200 hover:border-slate-300",
+                        isLocked && "opacity-60"
+                      )}
+                    >
+                      {isLocked && (
+                        <div className="absolute top-1 right-1">
+                          <span className="text-xs">🔒</span>
+                        </div>
+                      )}
+                      <div className={cn("text-sm font-semibold", lv.color, "inline-block px-2 py-1 rounded-full")}>
+                        {lv.name}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
