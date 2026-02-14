@@ -59,13 +59,13 @@ export default function DrillCard({ drill, onClick, isCompleted, isPremium, isLo
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-slate-800">{drill.title}</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-white">{drill.title}</h3>
             {drill.video_url && (
               <Video className="w-4 h-4 text-red-500 shrink-0" />
             )}
           </div>
           
-          <div className="flex items-center gap-3 text-sm text-slate-500 flex-wrap">
+          <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 flex-wrap">
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               {drill.duration_minutes} min
