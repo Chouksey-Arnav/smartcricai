@@ -29,7 +29,7 @@ export default function RelevanceChatBubble() {
     <style>{`
       [data-relevanceai-share-id] {
         position: fixed !important;
-        bottom: 90px !important;
+        bottom: 100px !important;
         right: 20px !important;
         z-index: 9999 !important;
       }
