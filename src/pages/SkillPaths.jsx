@@ -429,21 +429,36 @@ export default function SkillPaths() {
                           <Zap className="w-4 h-4 text-amber-500" />
                           <span className="text-sm font-semibold text-amber-600">+{item.xp} XP</span>
                         </div>
-                        {item.drillLink && (
-                          <button
-                            onClick={() => navigate(createPageUrl(`DrillDetail?id=${item.drillLink}`))}
+                        {item.type === 'youtube' && item.url && (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
                           >
-                            <Target className="w-3 h-3" />
-                            Access Drill
+                            <ExternalLink className="w-3 h-3" />
+                            View on YouTube
                             <ChevronRight className="w-3 h-3" />
-                          </button>
+                          </a>
                         )}
                       </div>
                       
                       {!isCompleted && (
                         <Button
-                          onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp })}
+                          onClick={() => {
+                            // Navigate based on item type
+                            if (item.type === 'drill' && item.drillId) {
+                              navigate(createPageUrl(`DrillDetail?id=${item.drillId}`));
+                            } else if (item.type === 'mental' && item.mentalId) {
+                              navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}`));
+                            } else if (item.type === 'youtube' && item.url) {
+                              window.open(item.url, '_blank');
+                              completeItem.mutate({ itemId: item.id, xp: item.xp });
+                            } else {
+                              // For fitness or other types, mark as complete
+                              completeItem.mutate({ itemId: item.id, xp: item.xp });
+                            }
+                          }}
                           size="sm"
                           className={`shrink-0 ${
                             skillPath.level === 'beginner' ? 'bg-emerald-600 hover:bg-emerald-700' :
@@ -452,7 +467,7 @@ export default function SkillPaths() {
                             'bg-amber-600 hover:bg-amber-700'
                           }`}
                         >
-                          Complete
+                          {item.type === 'drill' || item.type === 'mental' ? 'Start' : item.type === 'youtube' ? 'Watch' : 'Complete'}
                         </Button>
                       )}
                     </div>

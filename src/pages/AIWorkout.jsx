@@ -86,6 +86,16 @@ export default function AIWorkout() {
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
+      const xpEarned = activeWorkout?.xp_value || 100;
+
+      // Update UserProgress XP
+      const userProgressData = await base44.entities.UserProgress.filter({ user_email: user.email });
+      if (userProgressData[0]) {
+        await base44.entities.UserProgress.update(userProgressData[0].id, {
+          total_xp: (userProgressData[0].total_xp || 0) + xpEarned
+        });
+      }
+
       // Update Leaderboard
       const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
       if (leaderboards.length > 0) {
@@ -100,7 +110,7 @@ export default function AIWorkout() {
           user_email: user.email,
           type: 'workout',
           title: 'Workout Completed! 💪',
-          message: `Crushed the ${activeWorkout.body_part} ${activeWorkout.level} workout!`,
+          message: `Crushed the ${activeWorkout.body_part} ${activeWorkout.level} workout! +${xpEarned} XP`,
           related_id: activeWorkout.id
         });
       }
@@ -110,6 +120,8 @@ export default function AIWorkout() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       confetti({
         particleCount: 100,
