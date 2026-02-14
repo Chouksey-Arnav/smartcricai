@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tantml:react-query';
 import { motion } from 'framer-motion';
 import { 
   MessageCircle, 
@@ -164,6 +164,8 @@ export default function Home() {
     return true;
   });
   
+  const queryClient = useQueryClient();
+
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
