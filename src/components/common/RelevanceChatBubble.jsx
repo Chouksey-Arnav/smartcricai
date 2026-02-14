@@ -26,13 +26,21 @@ export default function RelevanceChatBubble() {
   }, []);
 
   return (
-    <style>{`
-      [data-relevanceai-share-id] {
-        position: fixed !important;
-        bottom: 100px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
-      }
-    `}</style>
+    <>
+      <div className="fixed bottom-[110px] right-24 z-[9998] bg-purple-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
+        <div className="relative">
+          YouTube URL Giver →
+          <div className="absolute top-1/2 -right-2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-purple-600 -translate-y-1/2" />
+        </div>
+      </div>
+      <style>{`
+        [data-relevanceai-share-id] {
+          position: fixed !important;
+          bottom: 100px !important;
+          right: 20px !important;
+          z-index: 9999 !important;
+        }
+      `}</style>
+    </>
   );
-}
+  }

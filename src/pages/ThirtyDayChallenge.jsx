@@ -138,7 +138,7 @@ export default function ThirtyDayChallenge() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-pink-50 flex items-center justify-center p-6 overflow-y-auto">
+    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-6 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -150,17 +150,17 @@ export default function ThirtyDayChallenge() {
               <Flame className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">30-Day Challenge</h1>
-              <p className="text-orange-100 text-sm">Transform Your Game</p>
+              <h1 className="text-3xl font-bold text-white">30-Day Challenge Architect</h1>
+              <p className="text-white text-sm">Step into the future of high-performance cricket</p>
             </div>
           </div>
-          <p className="text-orange-100 leading-relaxed">
-            Join an elite program designed by world-class coaches. Build unshakeable mental toughness, master technical skills, and become the player you've always dreamed of being.
+          <p className="text-white leading-relaxed">
+            Join an elite program designed by world-class coaches. Build unshakeable mental toughness, master technical skills, and become the player you've always dreamed of being with the Smart Cricket 30-Day Architect.
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 space-y-4 max-h-96 overflow-y-auto">
-          <h3 className="font-bold text-slate-800 text-lg mb-4 sticky top-0 bg-white z-10">What You'll Get:</h3>
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 mb-6 space-y-4 max-h-96 overflow-y-auto">
+          <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4 sticky top-0 bg-white dark:bg-slate-800 z-10">What You'll Get:</h3>
           
           {[
             { icon: '🎯', title: 'Personalized Training Plan', desc: 'Custom workouts tailored to your level' },
@@ -174,12 +174,12 @@ export default function ThirtyDayChallenge() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl"
+              className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-xl"
             >
               <span className="text-2xl">{item.icon}</span>
               <div>
-                <h4 className="font-semibold text-slate-800 text-sm">{item.title}</h4>
-                <p className="text-xs text-slate-600">{item.desc}</p>
+                <h4 className="font-semibold text-slate-800 dark:text-white text-sm">{item.title}</h4>
+                <p className="text-xs text-slate-600 dark:text-slate-300">{item.desc}</p>
               </div>
             </motion.div>
           ))}

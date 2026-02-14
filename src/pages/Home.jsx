@@ -21,7 +21,9 @@ import {
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
-import { Input } from '@/components/ui/input';
+import SmartStart from '@/components/home/SmartStart';
+import PlayerCheckIn from '@/components/home/PlayerCheckIn';
+import QuickPageSearch from '@/components/home/QuickPageSearch';
 
 const quickActions = [
   { 
@@ -153,7 +155,7 @@ function getCricketFact() {
 export default function Home() {
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved === 'dark';
@@ -351,27 +353,12 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="relative"
-        >
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 z-10" />
-          <Input
-            type="search"
-            placeholder="Search drills, players, features..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && searchQuery.trim()) {
-                navigate(createPageUrl('Drills'));
-              }
-            }}
-            className="pl-12 h-14 text-base bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white/50"
-          />
-        </motion.div>
+        {/* Smart Start */}
+        <SmartStart isDarkMode={isDarkMode} />
+
+        {/* Player Check-In */}
+        <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
+
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -545,6 +532,9 @@ export default function Home() {
             </motion.div>
           </Link>
         </motion.div>
+
+        {/* Quick Page Search - Bottom */}
+        <QuickPageSearch isDarkMode={isDarkMode} />
       </div>
     </div>
   );

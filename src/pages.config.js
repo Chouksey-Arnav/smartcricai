@@ -55,12 +55,10 @@ import Coach from './pages/Coach';
 import CoachVoiceMode from './pages/CoachVoiceMode';
 import ConfidenceCheckIn from './pages/ConfidenceCheckIn';
 import CustomDrillWorkoutCreator from './pages/CustomDrillWorkoutCreator';
-import DrillDetail from './pages/DrillDetail';
 import DrillWorkoutCreator from './pages/DrillWorkoutCreator';
 import DrillYouTubeFinder from './pages/DrillYouTubeFinder';
 import Drills from './pages/Drills';
 import ExtendedMilestones from './pages/ExtendedMilestones';
-import FitnessBuilder from './pages/FitnessBuilder';
 import GetToKnowYou from './pages/GetToKnowYou';
 import Goals from './pages/Goals';
 import Home from './pages/Home';
@@ -80,14 +78,15 @@ import Quizzes from './pages/Quizzes';
 import SavedDrillWorkout from './pages/SavedDrillWorkout';
 import Schedule from './pages/Schedule';
 import ScheduleExtendedView from './pages/ScheduleExtendedView';
-import Settings from './pages/Settings';
-import SkillPaths from './pages/SkillPaths';
-import Social from './pages/Social';
 import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
 import Timer from './pages/Timer';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
+import SkillPaths from './pages/SkillPaths';
+import FitnessBuilder from './pages/FitnessBuilder';
+import DrillDetail from './pages/DrillDetail';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -100,12 +99,10 @@ export const PAGES = {
     "CoachVoiceMode": CoachVoiceMode,
     "ConfidenceCheckIn": ConfidenceCheckIn,
     "CustomDrillWorkoutCreator": CustomDrillWorkoutCreator,
-    "DrillDetail": DrillDetail,
     "DrillWorkoutCreator": DrillWorkoutCreator,
     "DrillYouTubeFinder": DrillYouTubeFinder,
     "Drills": Drills,
     "ExtendedMilestones": ExtendedMilestones,
-    "FitnessBuilder": FitnessBuilder,
     "GetToKnowYou": GetToKnowYou,
     "Goals": Goals,
     "Home": Home,
@@ -125,14 +122,15 @@ export const PAGES = {
     "SavedDrillWorkout": SavedDrillWorkout,
     "Schedule": Schedule,
     "ScheduleExtendedView": ScheduleExtendedView,
-    "Settings": Settings,
-    "SkillPaths": SkillPaths,
-    "Social": Social,
     "ThirtyDayChallenge": ThirtyDayChallenge,
     "Timer": Timer,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
+    "SkillPaths": SkillPaths,
+    "FitnessBuilder": FitnessBuilder,
+    "DrillDetail": DrillDetail,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {

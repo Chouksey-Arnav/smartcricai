@@ -63,10 +63,12 @@ export default function MentalCoaching() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: routines = [], isLoading } = useQuery({
+  const { data: allRoutines = [], isLoading } = useQuery({
     queryKey: ['mentalRoutines'],
     queryFn: () => base44.entities.MentalRoutine.list(),
   });
+
+  const routines = allRoutines;
 
   const { data: premiumStatus } = useQuery({
     queryKey: ['premiumStatus', user?.email],

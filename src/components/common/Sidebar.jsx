@@ -34,7 +34,6 @@ const menuItems = [
   { name: '🎯 Goals', icon: Target, page: 'Goals', color: 'text-purple-600', highlight: true },
   
   // Community & Social
-  { name: 'Community', icon: Users, page: 'Social', color: 'text-blue-600' },
   { name: 'AI Coach', icon: MessageCircle, page: 'Coach', color: 'text-blue-500' },
   
   // Training & Skills

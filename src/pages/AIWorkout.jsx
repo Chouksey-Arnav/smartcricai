@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Play, CheckCircle, Clock, Zap, RotateCcw } from 'lucide-react';
+import { Sparkles, Play, CheckCircle, Clock, Zap, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
@@ -28,11 +28,11 @@ export default function AIWorkout() {
   });
 
   const { data: workouts } = useQuery({
-    queryKey: ['preGeneratedWorkouts', user?.email],
+    queryKey: ['userGeneratedWorkouts', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      const preGen = await base44.entities.PreGeneratedWorkout.filter({ created_by: user.email });
-      return preGen.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      const userWorkouts = await base44.entities.PreGeneratedWorkout.filter({ created_by: user.email });
+      return userWorkouts.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
     enabled: !!user?.email,
   });
@@ -109,7 +109,7 @@ export default function AIWorkout() {
       return await base44.entities.PreGeneratedWorkout.delete(activeWorkout.id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['preGeneratedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       confetti({
         particleCount: 100,
@@ -152,6 +152,19 @@ export default function AIWorkout() {
     setRestTime(0);
   };
 
+  const deleteAllWorkoutsMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(
+        workouts.map(w => base44.entities.PreGeneratedWorkout.delete(w.id))
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      toast.success('All workouts deleted');
+      setSelectedWorkoutId(null);
+    },
+  });
+
   if (!selectedWorkoutId && workouts && workouts.length > 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
@@ -162,9 +175,34 @@ export default function AIWorkout() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white mb-6"
           >
-            <h2 className="font-bold text-2xl mb-2">Your Workouts</h2>
+            <h2 className="font-bold text-2xl mb-2">Your Saved Workouts</h2>
             <p className="text-purple-100">Choose a workout to begin</p>
           </motion.div>
+
+          <div className="space-y-4 mb-4">
+            <Button
+              onClick={() => navigate(createPageUrl('FitnessBuilder'))}
+              variant="outline"
+              className="w-full border-2 border-purple-500 text-purple-600 hover:bg-purple-50"
+            >
+              Back to Fitness Builder
+            </Button>
+            {workouts.length > 0 && (
+              <Button
+                onClick={() => {
+                  if (confirm('Delete ALL saved workouts? This cannot be undone.')) {
+                    deleteAllWorkoutsMutation.mutate();
+                  }
+                }}
+                disabled={deleteAllWorkoutsMutation.isPending}
+                variant="destructive"
+                className="w-full bg-red-500 hover:bg-red-600"
+              >
+                <Trash2 className="w-5 h-5 mr-2" />
+                {deleteAllWorkoutsMutation.isPending ? 'Deleting...' : 'Delete All Saved Workouts'}
+              </Button>
+            )}
+          </div>
 
           <div className="space-y-4">
             {workouts.map((workout, index) => (

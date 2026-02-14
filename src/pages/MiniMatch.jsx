@@ -10,6 +10,7 @@ import { scenarioDatabase, getRandomScenarios } from '@/components/match/Scenari
 export default function MiniMatch() {
   const [gameStarted, setGameStarted] = useState(false);
   const [timerEnabled, setTimerEnabled] = useState(false);
+  const [timerMode, setTimerMode] = useState(5);
   const [timeLeft, setTimeLeft] = useState(5);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -61,7 +62,7 @@ export default function MiniMatch() {
     setCurrentScenario(random);
     setSelectedOption(null);
     setShowResult(false);
-    setTimeLeft(5); // Reset timer
+    setTimeLeft(timerMode); // Reset timer to selected mode
   };
 
   const startGame = () => {
@@ -147,14 +148,42 @@ export default function MiniMatch() {
                     />
                   </div>
                   <p className="text-sm text-slate-600 mb-3">
-                    Get only 5 seconds per decision. No pausing, no undo. Simulates real match pressure.
+                    Choose your challenge level. No pausing, no undo. Simulates real match pressure.
                   </p>
                   {timerEnabled && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                      <p className="text-xs text-red-700 font-medium">
-                        ⚠️ Warning: Timer starts immediately. If time runs out, answer is marked wrong!
-                      </p>
-                    </div>
+                    <>
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          onClick={() => setTimerMode(5)}
+                          className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
+                            timerMode === 5 ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          5s
+                        </button>
+                        <button
+                          onClick={() => setTimerMode(4)}
+                          className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
+                            timerMode === 4 ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          4s
+                        </button>
+                        <button
+                          onClick={() => setTimerMode(3)}
+                          className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
+                            timerMode === 3 ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          3s
+                        </button>
+                      </div>
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <p className="text-xs text-red-700 font-medium">
+                          ⚠️ Warning: Timer starts immediately. If time runs out, answer is marked wrong!
+                        </p>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

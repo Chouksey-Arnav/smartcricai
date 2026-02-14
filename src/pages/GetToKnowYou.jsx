@@ -375,7 +375,7 @@ export default function GetToKnowYou() {
 
         {/* Progress */}
         <div className="mb-8">
-          <div className="flex justify-between text-sm text-slate-600 mb-2">
+          <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300 mb-2">
             <span>Question {currentStep + 1} of {quizSteps.length}</span>
             <span>{Math.round(((currentStep + 1) / quizSteps.length) * 100)}%</span>
           </div>

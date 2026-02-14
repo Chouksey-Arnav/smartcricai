@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun } from 'lucide-react';
+import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { createPageUrl } from '@/utils';
+import toast from 'react-hot-toast';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -41,18 +44,21 @@ export default function Settings() {
     base44.auth.logout();
   };
 
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
   const settingsSections = [
     {
       title: 'Account',
       items: [
-        { icon: User, label: 'Profile Settings', action: () => navigate('/Profile') },
-        { icon: Bell, label: 'Notifications', action: () => {} },
+        { icon: User, label: 'Profile Settings', action: () => setShowProfile(true) },
+        { icon: Bell, label: 'Notifications', action: () => toast('Notifications coming soon!') },
       ]
     },
     {
       title: 'App',
       items: [
-        { icon: Shield, label: 'Privacy', action: () => {} },
+        { icon: Shield, label: 'Privacy', action: () => setShowPrivacy(true) },
         { icon: darkMode ? Sun : Moon, label: 'Dark Mode', action: 'toggle', isToggle: true },
       ]
     }
@@ -134,6 +140,54 @@ export default function Settings() {
           App Version 1.0.0
         </p>
       </div>
+
+      {/* Privacy Dialog */}
+      <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Privacy Policy</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-slate-700 leading-relaxed">
+              Everything you say and do in Smart Cricket AI is always saved to personalize your experience, 
+              but your data is private and is <strong>never used by anyone else</strong>. We respect your privacy 
+              and keep all your training data secure and confidential.
+            </p>
+          </div>
+          <Button onClick={() => setShowPrivacy(false)}>
+            Got it
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Profile Settings Dialog */}
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Profile Settings</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Name</label>
+              <p className="text-slate-800 font-semibold">{user?.full_name}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Email</label>
+              <p className="text-slate-600">{user?.email}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Account Type</label>
+              <p className="text-slate-600 capitalize">{user?.role || 'User'}</p>
+            </div>
+            <Button onClick={() => {
+              setShowProfile(false);
+              navigate(createPageUrl('Profile'));
+            }} className="w-full">
+              View Full Profile
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
