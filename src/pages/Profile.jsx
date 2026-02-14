@@ -240,17 +240,7 @@ export default function Profile() {
           </div>
         </motion.div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <Button className="h-12 bg-blue-500 hover:bg-blue-600">
-            <UserPlus className="w-5 h-5 mr-2" />
-            Find Friends
-          </Button>
-          <Button className="h-12 bg-purple-500 hover:bg-purple-600">
-            <MessageCircle className="w-5 h-5 mr-2" />
-            Messages
-          </Button>
-        </div>
+
       </div>
     </div>
   );

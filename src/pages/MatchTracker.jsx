@@ -77,7 +77,7 @@ export default function MatchTracker() {
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Match saved! 🏏');
-      navigate(createPageUrl('Home'));
+      navigate(createPageUrl('ViewLogMatches'));
     },
   });
 

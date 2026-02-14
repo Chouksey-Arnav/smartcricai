@@ -26,9 +26,14 @@ export default function Quizzes() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const difficultyOrder = { easy: 1, medium: 2, hard: 3, pro: 4 };
+
   const { data: quizzes = [], isLoading } = useQuery({
     queryKey: ['quizzes'],
-    queryFn: () => base44.entities.Quiz.list(),
+    queryFn: async () => {
+      const all = await base44.entities.Quiz.list();
+      return all.sort((a, b) => (difficultyOrder[a.difficulty] || 0) - (difficultyOrder[b.difficulty] || 0));
+    },
   });
 
   const filteredQuizzes = quizzes.filter(q => {
