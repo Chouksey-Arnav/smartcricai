@@ -334,11 +334,11 @@ export default function Home() {
             <p className="text-emerald-100 text-sm mb-1">{greeting}!</p>
             <h1 className="text-2xl font-bold text-white mb-4">Hey, {displayName} 👋</h1>
             
-            {(progress?.current_streak || 0) > 0 && (
-              <div className="flex justify-start">
-                <StreakDisplay streak={progress.current_streak} />
-              </div>
-            )}
+            {(progress?.current_streak || 0) >= 0 && (
+                <div className="flex justify-start">
+                  <StreakDisplay streak={progress?.current_streak || 0} />
+                </div>
+              )}
           </motion.div>
 
           {/* Quick Stats */}
@@ -374,9 +374,9 @@ export default function Home() {
             >
               <div className="text-3xl mb-1">🏆</div>
               <p className="text-2xl font-bold text-white">
-                {progress?.badges?.length || 0}
+                {progress?.total_xp || 0}
               </p>
-              <p className="text-xs text-emerald-50 font-medium">Badges</p>
+              <p className="text-xs text-emerald-50 font-medium">XP</p>
             </motion.div>
           </motion.div>
         </div>
