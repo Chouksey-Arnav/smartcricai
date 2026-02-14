@@ -106,7 +106,7 @@ export default function ThirtyDayNotifications({ user }) {
 
       createNotificationMutation.mutate({ day: currentDay, title, message });
     }
-  }, [challengeActivity, user?.email, currentDay]);
+  }, [challengeActivity, user?.email, existingNotifications]);
 
   return null;
 }
