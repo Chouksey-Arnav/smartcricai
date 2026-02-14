@@ -151,23 +151,6 @@ export default function FitnessBuilder() {
       <Header title="Fitness Builder" showSettings={false} />
       
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
-  const { data: premiumStatus } = useQuery({
-    queryKey: ['premiumStatus', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
-      return subs[0] || null;
-    },
-    enabled: !!user?.email,
-  });
-
-  const isPremium = premiumStatus?.is_premium || false;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white pb-24">
-      <Header title="Fitness Builder" showSettings={false} />
-      
-      <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
