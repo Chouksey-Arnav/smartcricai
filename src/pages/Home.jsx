@@ -184,6 +184,35 @@ export default function Home() {
     retry: 3,
   });
 
+  // Auto-increment streak daily
+  useEffect(() => {
+    if (!user?.email || !progress) return;
+    
+    const checkAndUpdateStreak = async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const lastPractice = progress.last_practice_date;
+      
+      if (lastPractice !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        const newStreak = lastPractice === yesterdayStr ? (progress.current_streak || 0) + 1 : 1;
+        const longestStreak = Math.max(newStreak, progress.longest_streak || 0);
+        
+        await base44.entities.UserProgress.update(progress.id, {
+          current_streak: newStreak,
+          longest_streak: longestStreak,
+          last_practice_date: today
+        });
+        
+        queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      }
+    };
+    
+    checkAndUpdateStreak();
+  }, [user, progress]);
+
   const { data: userProfile } = useQuery({
     queryKey: ['userProfile', user?.email],
     queryFn: async () => {

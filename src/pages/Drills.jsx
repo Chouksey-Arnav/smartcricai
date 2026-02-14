@@ -108,7 +108,7 @@ export default function Drills() {
       <div className="space-y-3">
         <div className={`flex items-center gap-2 px-2`}>
           <div className={`h-1 w-8 rounded-full ${color}`} />
-          <h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide">{title}</h3>
+          <h3 className="font-bold text-slate-700 dark:text-slate-100 text-sm uppercase tracking-wide">{title}</h3>
         </div>
         {drills.map((drill, index) => {
           const isLocked = drill.is_premium && !isPremium;
@@ -202,9 +202,11 @@ export default function Drills() {
             </div>
 
             {/* Categories - Horizontal Scroll */}
-            <div className="overflow-x-auto pb-2 scrollbar-hide">
-              <div className="flex gap-2 min-w-max">
-                <CategoryFilter selected={category} onChange={setCategory} />
+            <div className="relative">
+              <div className="overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#10b981 #f1f5f9' }}>
+                <div className="flex gap-2 min-w-max">
+                  <CategoryFilter selected={category} onChange={setCategory} />
+                </div>
               </div>
             </div>
 
