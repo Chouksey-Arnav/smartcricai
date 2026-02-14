@@ -105,6 +105,14 @@ export default function Layout({ children, currentPageName }) {
           color: #94a3b8 !important;
         }
 
+        html.dark .text-slate-200 {
+          color: #f1f5f9 !important;
+        }
+
+        html.dark .text-slate-100 {
+          color: #f8fafc !important;
+        }
+
         html.dark .border-slate-200 {
           border-color: #475569 !important;
         }

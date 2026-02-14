@@ -151,10 +151,10 @@ export default function ThirtyDayChallenge() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">30-Day Challenge Architect</h1>
-              <p className="text-white text-sm">Step into the future of high-performance cricket</p>
+              <p className="text-white/90 text-sm">Step into the future of high-performance cricket</p>
             </div>
           </div>
-          <p className="text-white leading-relaxed">
+          <p className="text-white/90 leading-relaxed">
             Join an elite program designed by world-class coaches. Build unshakeable mental toughness, master technical skills, and become the player you've always dreamed of being with the Smart Cricket 30-Day Architect.
           </p>
         </div>
