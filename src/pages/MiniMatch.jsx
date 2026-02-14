@@ -213,10 +213,10 @@ export default function MiniMatch() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-6"
             >
-              <h1 className="text-3xl font-bold text-slate-800 mb-2">
+              <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
                 ⚡ Mini-Match Situations
               </h1>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 Face realistic cricket moments and make smart decisions!
               </p>
             </motion.div>
@@ -279,11 +279,11 @@ export default function MiniMatch() {
 
                   {/* Situation */}
                   <div className="bg-white rounded-2xl shadow-xl p-6">
-                    <h2 className="text-lg font-semibold text-slate-800 mb-4">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
                       {currentScenario.situation}
                     </h2>
                     {currentScenario.question && (
-                      <p className="text-slate-600 mb-4 font-medium">
+                      <p className="text-slate-600 dark:text-slate-300 mb-4 font-medium">
                         {currentScenario.question}
                       </p>
                     )}
@@ -310,7 +310,7 @@ export default function MiniMatch() {
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-slate-800 font-medium">{option.text}</span>
+                            <span className="text-slate-800 dark:text-white font-medium">{option.text}</span>
                             {showResult && (
                               <>
                                 {option.correct && (

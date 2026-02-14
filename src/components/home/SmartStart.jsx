@@ -51,7 +51,7 @@ export default function SmartStart({ isDarkMode }) {
     >
       <h2 className={`font-bold mb-3 text-lg flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
         <Sparkles className="w-6 h-6 text-indigo-500" />
-        Smart Start - Quick Picks
+        <span className={isDarkMode ? 'text-white' : 'text-slate-800'}>Smart Start - Quick Picks</span>
       </h2>
       <p className={`text-sm mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
         Handpicked drills just for you
