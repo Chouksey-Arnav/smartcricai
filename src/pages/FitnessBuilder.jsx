@@ -106,14 +106,20 @@ export default function FitnessBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
+      // Calculate XP based on workout difficulty and duration
+      const baseXP = 100;
+      const levelMultiplier = { beginner: 1, intermediate: 1.5, advanced: 2, pro: 3 };
+      const xpValue = Math.round(baseXP * (levelMultiplier[selectedLevel] || 1));
+
       // Save to PreGeneratedWorkout with created_by to identify user-generated ones
       const preGenData = {
+        user_email: user.email,
         body_part: selectedBodyPart,
         level: selectedLevel,
         goal: selectedGoal,
         duration: 30,
         exercises: generatedWorkout.exercises,
-        created_by: user.email
+        xp_value: xpValue
       };
       
       await base44.entities.PreGeneratedWorkout.create(preGenData);
@@ -133,7 +139,7 @@ export default function FitnessBuilder() {
           rest_seconds: ex.rest_seconds || 60
         })),
         status: 'not_started',
-        xp_value: 120
+        xp_value: preGenData.xp_value
       };
 
       return await base44.entities.Workout.create(workoutData);
