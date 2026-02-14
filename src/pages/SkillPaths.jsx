@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, CheckCircle, Lock, Star, Zap, Target, X, ChevronRight } from 'lucide-react';
+import { Trophy, CheckCircle, Lock, Star, Zap, Target, X, ChevronRight, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { skillPathsData, getPathProgress } from '@/components/skillPaths/SkillPathsDatabase';
 import Header from '@/components/common/Header';
 
 export default function SkillPaths() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [showEarlyAccessDialog, setShowEarlyAccessDialog] = useState(false);
@@ -223,7 +227,14 @@ export default function SkillPaths() {
                     <Button
                       onClick={() => canStart && createPath.mutate(key)}
                       disabled={!canStart || createPath.isPending}
-                      className={`w-full ${canStart ? `bg-${path.color}-600 hover:bg-${path.color}-700` : 'bg-slate-300 cursor-not-allowed'}`}
+                      className={`w-full ${
+                        canStart 
+                          ? key === 'beginner' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                            key === 'intermediate' ? 'bg-blue-600 hover:bg-blue-700' :
+                            key === 'advanced' ? 'bg-purple-600 hover:bg-purple-700' :
+                            'bg-amber-600 hover:bg-amber-700'
+                          : 'bg-slate-300 cursor-not-allowed'
+                      }`}
                     >
                       {isLocked ? '🔒 Premium Only' : !meetsXPRequirement ? '🔒 Need More XP' : 'Start This Path'}
                     </Button>
@@ -309,7 +320,12 @@ export default function SkillPaths() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`bg-gradient-to-r from-${currentPathData.color}-400 to-${currentPathData.color}-500 rounded-2xl p-6 mb-6 text-white`}
+          className={`bg-gradient-to-r ${
+            skillPath.level === 'beginner' ? 'from-emerald-400 to-emerald-500' :
+            skillPath.level === 'intermediate' ? 'from-blue-400 to-blue-500' :
+            skillPath.level === 'advanced' ? 'from-purple-400 to-purple-500' :
+            'from-amber-400 to-amber-500'
+          } rounded-2xl p-6 mb-6 text-white`}
         >
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -332,20 +348,25 @@ export default function SkillPaths() {
 
         {/* Week Selection */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-          {currentPathData.weeks.map((week, idx) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedWeek(idx + 1)}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
-                selectedWeek === idx + 1
-                  ? `bg-${currentPathData.color}-500 text-white`
-                  : "bg-white border border-slate-200 text-slate-600"
-              )}
-            >
-              Week {idx + 1}
-            </button>
-          ))}
+        {currentPathData.weeks.map((week, idx) => {
+        const weekColor = skillPath.level === 'beginner' ? 'emerald' :
+                         skillPath.level === 'intermediate' ? 'blue' :
+                         skillPath.level === 'advanced' ? 'purple' : 'amber';
+        return (
+          <button
+            key={idx}
+            onClick={() => setSelectedWeek(idx + 1)}
+            className={cn(
+              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+              selectedWeek === idx + 1
+                ? `bg-${weekColor}-500 text-white`
+                : "bg-white border border-slate-200 text-slate-600"
+            )}
+          >
+            Week {idx + 1}
+          </button>
+        );
+        })}
         </div>
 
         {/* Week Content */}
@@ -404,17 +425,32 @@ export default function SkillPaths() {
                           </span>
                         </div>
                         <p className="text-sm text-slate-600 mb-2">{item.description}</p>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <Zap className="w-4 h-4 text-amber-500" />
                           <span className="text-sm font-semibold text-amber-600">+{item.xp} XP</span>
                         </div>
+                        {item.drillLink && (
+                          <button
+                            onClick={() => navigate(createPageUrl(`DrillDetail?id=${item.drillLink}`))}
+                            className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                          >
+                            <Target className="w-3 h-3" />
+                            Access Drill
+                            <ChevronRight className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                       
                       {!isCompleted && (
                         <Button
                           onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp })}
                           size="sm"
-                          className={`bg-${currentPathData.color}-600 hover:bg-${currentPathData.color}-700 shrink-0`}
+                          className={`shrink-0 ${
+                            skillPath.level === 'beginner' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                            skillPath.level === 'intermediate' ? 'bg-blue-600 hover:bg-blue-700' :
+                            skillPath.level === 'advanced' ? 'bg-purple-600 hover:bg-purple-700' :
+                            'bg-amber-600 hover:bg-amber-700'
+                          }`}
                         >
                           Complete
                         </Button>
