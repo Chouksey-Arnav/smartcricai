@@ -49,14 +49,15 @@ export default function ThirtyDayChallenge() {
         title: '🔥 30-Day Challenge Started!',
         notes: 'Your transformative journey begins today',
         date: today,
-        activity_type: 'custom'
+        activity_type: 'custom',
+        type: 'challenge'
       });
 
       await base44.entities.Notification.create({
         user_email: user.email,
         type: 'achievement',
         title: '🎉 30-Day Challenge Started - Day 1!',
-        message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
+        message: "Congratulations! You've started Day 1 of your 30-day challenge! Keep going!",
         related_id: 'challenge_day_1'
       });
 
