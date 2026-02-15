@@ -49,8 +49,7 @@ export default function ThirtyDayChallenge() {
         title: '🔥 30-Day Challenge Started!',
         notes: 'Your transformative journey begins today',
         date: today,
-        activity_type: 'custom',
-        type: 'challenge'
+        activity_type: 'custom'
       });
 
       await base44.entities.Notification.create({
