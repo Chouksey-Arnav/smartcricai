@@ -384,11 +384,11 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
-        {/* Smart Start */}
-        <SmartStart isDarkMode={isDarkMode} />
-
         {/* Player Check-In */}
         <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
+
+        {/* Smart Start */}
+        <SmartStart isDarkMode={isDarkMode} />
 
         {/* Quick Actions */}
         <motion.div
