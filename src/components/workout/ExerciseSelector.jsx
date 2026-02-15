@@ -10,6 +10,10 @@ export default function ExerciseSelector({ onSelect, onClose }) {
   const allExercises = useMemo(() => {
     const exercises = [];
     
+    // Add Push-ups and Squats first
+    exercises.push({ name: 'Push-ups', category: 'bodyweight', subCategory: 'upper-body', id: 'bw-pushups' });
+    exercises.push({ name: 'Squats', category: 'bodyweight', subCategory: 'lower-body', id: 'bw-squats' });
+    
     // Bodyweight exercises
     Object.entries(BODYWEIGHT_EXERCISES).forEach(([category, items]) => {
       if (Array.isArray(items)) {

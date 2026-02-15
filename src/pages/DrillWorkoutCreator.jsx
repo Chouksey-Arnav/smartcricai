@@ -21,7 +21,6 @@ const skillLevels = [
   { value: 'beginner', label: 'Beginner' },
   { value: 'intermediate', label: 'Intermediate' },
   { value: 'advanced', label: 'Advanced' },
-  { value: 'pro', label: 'Pro' },
 ];
 
 const durations = [
