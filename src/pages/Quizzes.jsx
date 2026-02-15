@@ -79,21 +79,23 @@ export default function Quizzes() {
         </motion.div>
 
         {/* Category Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium capitalize whitespace-nowrap transition-all",
-                selectedCategory === cat
-                  ? "bg-amber-500 text-white"
-                  : "bg-white border border-slate-200 text-slate-600"
-              )}
-            >
-              {cat === 'all' ? 'All Quizzes' : cat}
-            </button>
-          ))}
+        <div className="overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#10b981 #f1f5f9' }}>
+          <div className="flex gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium capitalize whitespace-nowrap transition-all",
+                  selectedCategory === cat
+                    ? "bg-amber-500 text-white"
+                    : "bg-white border border-slate-200 text-slate-600"
+                )}
+              >
+                {cat === 'all' ? 'All Quizzes' : cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Quiz List */}

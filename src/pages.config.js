@@ -65,6 +65,7 @@ import GetToKnowYou from './pages/GetToKnowYou';
 import Goals from './pages/Goals';
 import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
+import MatchDetail from './pages/MatchDetail';
 import MatchHistory from './pages/MatchHistory';
 import MatchTracker from './pages/MatchTracker';
 import MentalCoaching from './pages/MentalCoaching';
@@ -84,11 +85,10 @@ import Settings from './pages/Settings';
 import SkillPaths from './pages/SkillPaths';
 import ThirtyDayChallenge from './pages/ThirtyDayChallenge';
 import Timer from './pages/Timer';
+import ViewLogMatches from './pages/ViewLogMatches';
 import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
-import ViewLogMatches from './pages/ViewLogMatches';
-import MatchDetail from './pages/MatchDetail';
 import WorkoutPlayer from './pages/WorkoutPlayer';
 import __Layout from './Layout.jsx';
 
@@ -112,6 +112,7 @@ export const PAGES = {
     "Goals": Goals,
     "Home": Home,
     "Leaderboard": Leaderboard,
+    "MatchDetail": MatchDetail,
     "MatchHistory": MatchHistory,
     "MatchTracker": MatchTracker,
     "MentalCoaching": MentalCoaching,
@@ -131,11 +132,10 @@ export const PAGES = {
     "SkillPaths": SkillPaths,
     "ThirtyDayChallenge": ThirtyDayChallenge,
     "Timer": Timer,
+    "ViewLogMatches": ViewLogMatches,
     "WhyDidIGetOut": WhyDidIGetOut,
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
-    "ViewLogMatches": ViewLogMatches,
-    "MatchDetail": MatchDetail,
     "WorkoutPlayer": WorkoutPlayer,
 }
 

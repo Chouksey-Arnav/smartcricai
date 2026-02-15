@@ -207,16 +207,16 @@ export default function MentalTrainingCreator() {
               </div>
 
               <div className="space-y-4 mb-6">
-                <h4 className="font-bold text-slate-700">Steps:</h4>
+                <h4 className="font-bold text-slate-800 dark:text-slate-100">Steps:</h4>
                 {generatedPlan.steps.map((step, index) => (
-                  <div key={index} className="bg-purple-50 rounded-2xl p-4">
+                  <div key={index} className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4">
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
                         {index + 1}
                       </div>
                       <div className="flex-1">
-                        <p className="text-slate-800 leading-relaxed">{step.instruction}</p>
-                        <p className="text-xs text-purple-600 font-medium mt-1">
+                        <p className="text-slate-800 dark:text-slate-100 leading-relaxed">{step.instruction}</p>
+                        <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1">
                           {step.duration_seconds} seconds
                         </p>
                       </div>

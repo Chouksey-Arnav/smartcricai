@@ -26,8 +26,8 @@ export default function BottomNav() {
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={cn(
-          "absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 rounded-t-xl px-4 py-2 shadow-lg border border-b-0 border-emerald-100 dark:border-slate-700 transition-all",
-          isCollapsed && "top-0"
+          "absolute left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 rounded-t-xl px-4 py-2 shadow-lg border border-b-0 border-emerald-100 dark:border-slate-700 transition-all",
+          isCollapsed ? "-top-10" : "-top-10"
         )}
       >
         {isCollapsed ? (

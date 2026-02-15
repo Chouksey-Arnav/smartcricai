@@ -108,7 +108,7 @@ export default function Drills() {
       <div className="space-y-3">
         <div className={`flex items-center gap-2 px-2`}>
           <div className={`h-1 w-8 rounded-full ${color}`} />
-          <h3 className="font-bold text-slate-700 dark:text-slate-100 text-sm uppercase tracking-wide">{title}</h3>
+          <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm uppercase tracking-wide">{title}</h3>
         </div>
         {drills.map((drill, index) => {
           const isLocked = drill.is_premium && !isPremium;
