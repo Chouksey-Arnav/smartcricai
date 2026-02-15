@@ -116,7 +116,7 @@ export default function WorkoutBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
-      await base44.entities.SavedWorkout.create({
+      const savedWorkout = await base44.entities.SavedWorkout.create({
         user_email: user.email,
         name: workoutName,
         exercises: selectedDrills,
@@ -124,12 +124,15 @@ export default function WorkoutBuilder() {
         estimated_duration: selectedDrills.length * 3
       });
       
-      return await base44.entities.Workout.create({
+      const workout = await base44.entities.Workout.create({
         user_email: user.email,
         name: workoutName,
         drills: selectedDrills,
-        status: 'not_started'
+        status: 'not_started',
+        xp_value: 120
       });
+      
+      return { savedWorkout, workout };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });

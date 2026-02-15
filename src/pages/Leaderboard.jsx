@@ -29,7 +29,7 @@ export default function Leaderboard() {
       const sortField = {
         xp: 'total_xp',
         drills: 'drills_completed',
-        streak: 'current_streak',
+        streak: 'longest_streak',
         match_iq: 'match_iq',
         weekly_minutes: 'weekly_minutes',
       }[selectedTab];
@@ -108,7 +108,7 @@ export default function Leaderboard() {
               const value = {
                 xp: entry.total_xp,
                 drills: entry.drills_completed,
-                streak: entry.current_streak,
+                streak: entry.longest_streak,
                 match_iq: entry.match_iq,
                 weekly_minutes: entry.weekly_minutes,
               }[selectedTab];

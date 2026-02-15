@@ -460,12 +460,12 @@ export default function FitnessBuilder() {
                 🔄 Generate Different Workout
               </Button>
               <Button
-                onClick={() => navigate(createPageUrl('Home'))}
+                onClick={() => { setStep(1); setGeneratedWorkout(null); setSelectedBodyPart(null); setSelectedGoal(null); setSelectedDuration(null); }}
                 variant="outline"
                 className="w-full h-12 border-red-200 text-red-600 hover:bg-red-50"
               >
                 <X className="w-5 h-5 mr-2" />
-                Discard & Go Home
+                Discard & Back to Fitness Builder
               </Button>
             </div>
           </motion.div>
