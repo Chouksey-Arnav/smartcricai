@@ -24,8 +24,6 @@ import DailyFact from '@/components/daily/DailyFact';
 import SmartStart from '@/components/home/SmartStart';
 import PlayerCheckIn from '@/components/home/PlayerCheckIn';
 import QuickPageSearch from '@/components/home/QuickPageSearch';
-import { Button } from '@/components/ui/button';
-import toast from 'react-hot-toast';
 
 const quickActions = [
   { 
@@ -253,38 +251,6 @@ export default function Home() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, []);
-
-  const { data: challengeActivity } = useQuery({
-    queryKey: ['challengeActivity', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const activities = await base44.entities.ScheduledActivity.filter({ 
-        user_email: user.email,
-        title: '🔥 30-Day Challenge Started!'
-      });
-      return activities[0] || null;
-    },
-    enabled: !!user?.email,
-  });
-
-  const startThirtyDayChallenge = async () => {
-    if (!user?.email) return;
-
-    try {
-      await base44.entities.ScheduledActivity.create({
-        user_email: user.email,
-        type: 'challenge',
-        title: '🔥 30-Day Challenge Started!',
-        description: "You've committed to 30 days of consistent training!",
-        date: new Date().toISOString().split('T')[0],
-      });
-      queryClient.invalidateQueries({ queryKey: ['challengeActivity'] });
-      toast.success('30-Day Challenge Started! Go get it! 🔥');
-    } catch (error) {
-      toast.error('Failed to start challenge. Please try again.');
-      console.error('Failed to start 30-Day Challenge:', error);
-    }
-  };
 
   // Redirect to Get to Know You if not completed - only once per session
   useEffect(() => {
@@ -600,30 +566,6 @@ export default function Home() {
 
         {/* Quick Page Search - Bottom */}
         <QuickPageSearch isDarkMode={isDarkMode} />
-
-        {/* 30-Day Challenge */}
-        {user && !challengeActivity && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className={`rounded-3xl shadow-2xl p-6 text-white text-center ${
-              isDarkMode 
-                ? 'bg-gradient-to-r from-pink-600 to-rose-600' 
-                : 'bg-gradient-to-r from-pink-500 to-rose-500'
-            }`}
-          >
-            <h3 className="font-bold text-xl mb-3">Ready for a Challenge?</h3>
-            <p className="text-pink-100 mb-4">Join our 30-Day Training Challenge and level up your game!</p>
-            <Button
-              onClick={startThirtyDayChallenge}
-              className="bg-white text-pink-600 hover:bg-pink-50"
-            >
-              <Flame className="w-5 h-5 mr-2" />
-              Start 30-Day Challenge
-            </Button>
-          </motion.div>
-        )}
       </div>
     </div>
   );

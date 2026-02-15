@@ -56,7 +56,7 @@ export default function ThirtyDayChallenge() {
         user_email: user.email,
         type: 'achievement',
         title: '🎉 30-Day Challenge Started - Day 1!',
-        message: "Congratulations! You've started Day 1 of your 30-day challenge! Keep going!",
+        message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
         related_id: 'challenge_day_1'
       });
 
