@@ -275,7 +275,7 @@ export default function Home() {
         user_email: user.email,
         type: 'challenge',
         title: '🔥 30-Day Challenge Started!',
-        description: 'You've committed to 30 days of consistent training!',
+        description: "You've committed to 30 days of consistent training!",
         date: new Date().toISOString().split('T')[0],
       });
       queryClient.invalidateQueries({ queryKey: ['challengeActivity'] });
