@@ -30,7 +30,13 @@ export default function QuizPlayer() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: quiz, isLoading } = useQuery({
@@ -54,14 +60,15 @@ export default function QuizPlayer() {
 
   const saveProgressMutation = useMutation({
     mutationFn: async (finalScore) => {
-      if (!user?.email || !quiz) return;
+      if (!quiz) return;
+      const guestEmail = user?.email || 'guest@smartcrick.app';
 
       const percentage = Math.round((finalScore / questions.length) * 100);
       const xpEarned = percentage >= 80 ? 100 : percentage >= 50 ? 50 : 25;
 
       // Create notification
       await base44.entities.Notification.create({
-        user_email: user.email,
+        user_email: guestEmail,
         type: 'quiz',
         title: `Quiz Completed! 📚 +${xpEarned} XP`,
         message: `You scored ${percentage}% on "${quiz.title}"!`,
@@ -98,13 +105,13 @@ export default function QuizPlayer() {
         await base44.entities.UserProgress.update(progress.id, updateData);
       } else {
         await base44.entities.UserProgress.create({
-          user_email: user.email,
+          user_email: guestEmail,
           ...updateData,
         });
       }
 
       // Update Leaderboard
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned,

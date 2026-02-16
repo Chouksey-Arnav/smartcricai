@@ -19,7 +19,13 @@ export default function WorkoutBuilder() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: drills } = useQuery({
@@ -116,8 +122,10 @@ export default function WorkoutBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      
       const savedWorkout = await base44.entities.SavedWorkout.create({
-        user_email: user.email,
+        user_email: guestEmail,
         name: workoutName,
         exercises: selectedDrills,
         total_exercises: selectedDrills.length,
@@ -125,7 +133,7 @@ export default function WorkoutBuilder() {
       });
       
       const workout = await base44.entities.Workout.create({
-        user_email: user.email,
+        user_email: guestEmail,
         name: workoutName,
         drills: selectedDrills,
         status: 'not_started',
@@ -145,8 +153,9 @@ export default function WorkoutBuilder() {
 
   const loadSavedWorkoutMutation = useMutation({
     mutationFn: async (savedWorkout) => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       return await base44.entities.Workout.create({
-        user_email: user.email,
+        user_email: guestEmail,
         name: savedWorkout.name,
         drills: savedWorkout.exercises,
         status: 'not_started',

@@ -13,7 +13,13 @@ export default function ThirtyDayChallenge() {
   
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -43,9 +49,10 @@ export default function ThirtyDayChallenge() {
   const startChallengeMutation = useMutation({
     mutationFn: async () => {
       const today = new Date().toISOString().split('T')[0];
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       
       await base44.entities.ScheduledActivity.create({
-        user_email: user.email,
+        user_email: guestEmail,
         title: '🔥 30-Day Challenge Started!',
         notes: 'Your transformative journey begins today',
         date: today,
@@ -53,7 +60,7 @@ export default function ThirtyDayChallenge() {
       });
 
       await base44.entities.Notification.create({
-        user_email: user.email,
+        user_email: guestEmail,
         type: 'achievement',
         title: '🎉 30-Day Challenge Started - Day 1!',
         message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
