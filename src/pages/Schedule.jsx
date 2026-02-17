@@ -27,55 +27,49 @@ export default function Schedule() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: async () => {
-      try {
-        return await base44.auth.me();
-      } catch {
-        return null;
-      }
-    },
+    queryFn: () => base44.auth.me(),
   });
 
   const { data: activities = [] } = useQuery({
-    queryKey: ['scheduledActivities', user?.email || 'guest'],
+    queryKey: ['scheduledActivities', user?.email],
     queryFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      if (!user?.email) return [];
       const activities = await base44.entities.ScheduledActivity.filter({ 
-        user_email: guestEmail
+        user_email: user.email
       });
       return activities;
     },
+    enabled: !!user?.email,
   });
 
   const { data: checklistItems = [] } = useQuery({
-    queryKey: ['checklistItems', user?.email || 'guest'],
+    queryKey: ['checklistItems', user?.email],
     queryFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      return await base44.entities.ChecklistItem.filter({ user_email: guestEmail });
+      if (!user?.email) return [];
+      return await base44.entities.ChecklistItem.filter({ user_email: user.email });
     },
+    enabled: !!user?.email,
   });
 
   const addActivityMutation = useMutation({
     mutationFn: async (data) => {
-      if (!data.title?.trim() || !data.date) {
+      if (!user?.email || !data.title?.trim() || !data.date) {
         throw new Error('Missing required fields');
       }
       
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      
       await base44.entities.ScheduledActivity.create({
-        user_email: guestEmail,
+        user_email: user.email,
         title: data.title.trim(),
         notes: data.notes?.trim() || '',
         date: data.date,
         activity_type: data.activity_type || 'custom'
       });
 
-      // Create notification (works for both guests and logged-in users)
+      // Create notification
       const dateObj = new Date(data.date);
       const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
       await base44.entities.Notification.create({
-        user_email: guestEmail,
+        user_email: user.email,
         type: 'schedule',
         title: 'Activity Scheduled! 📅',
         message: `"${data.title}" added to ${formattedDate}`,
@@ -108,12 +102,11 @@ export default function Schedule() {
 
   const addChecklistItemMutation = useMutation({
     mutationFn: async (title) => {
-      if (!title?.trim()) {
+      if (!user?.email || !title?.trim()) {
         throw new Error('Missing required fields');
       }
-      const guestEmail = user?.email || 'guest@smartcrick.app';
       await base44.entities.ChecklistItem.create({
-        user_email: guestEmail,
+        user_email: user.email,
         title: title.trim(),
         is_completed: false
       });
