@@ -60,22 +60,27 @@ export default function MentalCoaching() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: allRoutines = [], isLoading } = useQuery({
     queryKey: ['mentalRoutines'],
     queryFn: async () => {
-      // Fetch all pre-made routines (not created by any user)
       const all = await base44.entities.MentalRoutine.list();
-      return all.filter(r => !r.created_by);
+      return all;
     },
   });
 
   const routines = allRoutines;
 
   const { data: premiumStatus } = useQuery({
-    queryKey: ['premiumStatus', user?.email],
+    queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
@@ -87,7 +92,7 @@ export default function MentalCoaching() {
   const isPremium = premiumStatus?.is_premium || false;
 
   const { data: savedRoutines = [] } = useQuery({
-    queryKey: ['savedMentalRoutines', user?.email],
+    queryKey: ['savedMentalRoutines', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return [];
       return await base44.entities.MentalRoutine.filter({ created_by: user.email });
@@ -97,16 +102,21 @@ export default function MentalCoaching() {
 
   const deleteRoutineMutation = useMutation({
     mutationFn: async (routineId) => {
+      if (!user?.email) throw new Error("User not authenticated");
       await base44.entities.MentalRoutine.delete(routineId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('Routine deleted');
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   const deleteAllRoutinesMutation = useMutation({
     mutationFn: async () => {
+      if (!user?.email) throw new Error("User not authenticated");
       await Promise.all(
         savedRoutines.map(routine => base44.entities.MentalRoutine.delete(routine.id))
       );
@@ -115,6 +125,9 @@ export default function MentalCoaching() {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('All routines deleted');
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   // Sort and filter by search

@@ -26,7 +26,13 @@ export default function Drills() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
     staleTime: 300000,
     retry: 3,
   });
@@ -39,7 +45,7 @@ export default function Drills() {
   });
 
   const { data: premiumStatus } = useQuery({
-    queryKey: ['premiumStatus', user?.email],
+    queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
@@ -51,7 +57,7 @@ export default function Drills() {
   const isPremium = premiumStatus?.is_premium || false;
 
   const { data: progress } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const results = await base44.entities.UserProgress.filter({ user_email: user.email });
@@ -64,7 +70,7 @@ export default function Drills() {
   });
 
   const { data: savedWorkouts = [] } = useQuery({
-    queryKey: ['savedDrillWorkouts', user?.email],
+    queryKey: ['savedDrillWorkouts', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return [];
       const results = await base44.entities.CustomDrillWorkout.filter({ 
@@ -93,12 +99,16 @@ export default function Drills() {
 
   const deleteWorkoutMutation = useMutation({
     mutationFn: async (workoutId) => {
+      if (!user?.email) throw new Error("User not authenticated");
       await base44.entities.CustomDrillWorkout.delete(workoutId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
       toast.success('Workout deleted');
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   const renderDrillGroup = (title, drills, color) => {

@@ -34,6 +34,7 @@ export default function Quizzes() {
       const all = await base44.entities.Quiz.list();
       return all.sort((a, b) => (difficultyOrder[a.difficulty] || 0) - (difficultyOrder[b.difficulty] || 0));
     },
+    staleTime: Infinity,
   });
 
   const filteredQuizzes = quizzes.filter(q => {

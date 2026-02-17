@@ -135,11 +135,17 @@ export default function Goals() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: existingGoals } = useQuery({
-    queryKey: ['userGoals', user?.email],
+    queryKey: ['userGoals', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const goals = await base44.entities.UserProfile.filter({ user_email: user.email });

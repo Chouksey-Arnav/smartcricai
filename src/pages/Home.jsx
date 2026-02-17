@@ -168,13 +168,19 @@ export default function Home() {
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
     staleTime: 300000,
     retry: 3,
   });
 
   const { data: progress, isLoading: progressLoading } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const results = await base44.entities.UserProgress.filter({ user_email: user.email });
@@ -216,7 +222,7 @@ export default function Home() {
   }, [user, progress]);
 
   const { data: userProfile } = useQuery({
-    queryKey: ['userProfile', user?.email],
+    queryKey: ['userProfile', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
@@ -255,7 +261,7 @@ export default function Home() {
   // Redirect to Get to Know You if not completed - only once per session
   useEffect(() => {
     const hasRedirected = sessionStorage.getItem('onboarding_redirect_done');
-    if (user && userProfile !== undefined && !userProfile?.quiz_completed && !hasRedirected) {
+    if (user?.email && userProfile !== undefined && !userProfile?.quiz_completed && !hasRedirected) {
       sessionStorage.setItem('onboarding_redirect_done', 'true');
       navigate(createPageUrl('GetToKnowYou'));
     }
@@ -332,7 +338,7 @@ export default function Home() {
             className="mb-6"
           >
             <p className="text-emerald-100 text-sm mb-1">{greeting}!</p>
-            <h1 className="text-2xl font-bold text-white mb-4">Hey, {displayName} 👋</h1>
+            <h1 className="text-2xl font-bold text-white mb-4">Hey, {user?.full_name?.split(' ')[0] || 'Champ'} 👋</h1>
             
             {(progress?.current_streak || 0) >= 0 && (
                 <div className="flex justify-start">
@@ -386,6 +392,11 @@ export default function Home() {
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
         {/* Player Check-In */}
         <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
+
+        {/* Smart Start */}
+        <SmartStart isDarkMode={isDarkMode} />
+
+        {/* Quick Actions */}
 
         {/* Smart Start */}
         <SmartStart isDarkMode={isDarkMode} />

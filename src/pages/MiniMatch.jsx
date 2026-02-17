@@ -19,11 +19,17 @@ export default function MiniMatch() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: completions } = useQuery({
-    queryKey: ['scenarioCompletions', user?.email],
+    queryKey: ['scenarioCompletions', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return [];
       return await base44.entities.ScenarioCompletion.filter({ user_email: user.email });
@@ -33,6 +39,7 @@ export default function MiniMatch() {
 
   const saveCompletion = useMutation({
     mutationFn: async (data) => {
+      if (!user?.email) return;
       return await base44.entities.ScenarioCompletion.create(data);
     },
     onSuccess: () => {

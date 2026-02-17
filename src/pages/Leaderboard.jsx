@@ -19,7 +19,13 @@ export default function Leaderboard() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: leaderboard = [], isLoading } = useQuery({
@@ -36,6 +42,7 @@ export default function Leaderboard() {
       
       return all.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0)).slice(0, 50);
     },
+    staleTime: 60000,
   });
 
   const userRank = leaderboard.findIndex(entry => entry.user_email === user?.email) + 1;

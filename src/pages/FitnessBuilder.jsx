@@ -55,11 +55,17 @@ export default function FitnessBuilder() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: premiumStatus } = useQuery({
-    queryKey: ['premiumStatus', user?.email],
+    queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
@@ -115,14 +121,13 @@ export default function FitnessBuilder() {
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
-      // Calculate XP based on workout difficulty and duration
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       const baseXP = 100;
       const levelMultiplier = { beginner: 1, intermediate: 1.5, advanced: 2, pro: 3 };
       const xpValue = Math.round(baseXP * (levelMultiplier[selectedLevel] || 1));
 
-      // Save to PreGeneratedWorkout with created_by to identify user-generated ones
       const preGenData = {
-        user_email: user.email,
+        user_email: guestEmail,
         body_part: selectedBodyPart,
         level: selectedLevel,
         goal: selectedGoal,
@@ -134,7 +139,7 @@ export default function FitnessBuilder() {
       await base44.entities.PreGeneratedWorkout.create(preGenData);
 
       const workoutData = {
-        user_email: user.email,
+        user_email: guestEmail,
         name: `${selectedGoal?.replace(' ', ' ').toUpperCase()} - ${selectedBodyPart?.toUpperCase()} Workout`,
         drills: generatedWorkout.exercises.map(ex => ({
           drill_id: ex.id || `fitness_${Math.random().toString(36).substr(2, 9)}`,
@@ -159,6 +164,9 @@ export default function FitnessBuilder() {
       toast.success('Workout saved! 💪');
       navigate(createPageUrl('AIWorkout'));
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   return (
@@ -189,8 +197,9 @@ export default function FitnessBuilder() {
                 <button
                   key={workout.id}
                   onClick={async () => {
+                    const guestEmail = user?.email || 'guest@smartcrick.app';
                     const workoutData = {
-                      user_email: user.email,
+                      user_email: guestEmail,
                       name: `${workout.body_part.toUpperCase()} - ${workout.level}`,
                       drills: workout.exercises.map(ex => ({
                         drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}`,

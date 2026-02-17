@@ -24,11 +24,17 @@ export default function AIWorkout() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: workouts } = useQuery({
-    queryKey: ['userGeneratedWorkouts', user?.email],
+    queryKey: ['userGeneratedWorkouts', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return [];
       const userWorkouts = await base44.entities.PreGeneratedWorkout.filter({ created_by: user.email });
@@ -86,18 +92,24 @@ export default function AIWorkout() {
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       const xpEarned = activeWorkout?.xp_value || 100;
 
       // Update UserProgress XP
-      const userProgressData = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const userProgressData = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       if (userProgressData[0]) {
         await base44.entities.UserProgress.update(userProgressData[0].id, {
           total_xp: (userProgressData[0].total_xp || 0) + xpEarned
         });
+      } else {
+        await base44.entities.UserProgress.create({
+          user_email: guestEmail,
+          total_xp: xpEarned,
+        });
       }
 
       // Update Leaderboard
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned
@@ -105,16 +117,15 @@ export default function AIWorkout() {
       }
 
       // Create notification
-      if (user?.email && activeWorkout) {
+      if (activeWorkout) {
         await base44.entities.Notification.create({
-          user_email: user.email,
+          user_email: guestEmail,
           type: 'workout',
           title: 'Workout Completed! 💪',
           message: `Crushed the ${activeWorkout.body_part} ${activeWorkout.level} workout! +${xpEarned} XP`,
           related_id: activeWorkout.id
         });
       }
-      // Clear saved progress
       localStorage.removeItem('workoutProgress');
       return await base44.entities.PreGeneratedWorkout.delete(activeWorkout.id);
     },
@@ -130,7 +141,9 @@ export default function AIWorkout() {
       });
       toast.success('Workout completed! Amazing job! 🎉');
     },
-  });
+    onError: (error) => {
+      toast.error(error.message);
+    }
 
   const handleCompleteSet = () => {
     const exerciseId = currentExercise.name || index;
@@ -166,6 +179,7 @@ export default function AIWorkout() {
 
   const deleteAllWorkoutsMutation = useMutation({
     mutationFn: async () => {
+      if (!user?.email) throw new Error("User not authenticated");
       await Promise.all(
         workouts.map(w => base44.entities.PreGeneratedWorkout.delete(w.id))
       );
@@ -175,6 +189,9 @@ export default function AIWorkout() {
       toast.success('All workouts deleted');
       setSelectedWorkoutId(null);
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   if (!selectedWorkoutId && workouts && workouts.length > 0) {

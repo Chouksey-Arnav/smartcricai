@@ -20,11 +20,17 @@ export default function SkillPaths() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: skillPath } = useQuery({
-    queryKey: ['skillPath', user?.email],
+    queryKey: ['skillPath', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const results = await base44.entities.SkillPath.filter({ user_email: user.email });
@@ -34,7 +40,7 @@ export default function SkillPaths() {
   });
 
   const { data: userProgress } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const results = await base44.entities.UserProgress.filter({ user_email: user.email });
@@ -44,7 +50,7 @@ export default function SkillPaths() {
   });
 
   const { data: premiumStatus } = useQuery({
-    queryKey: ['premiumStatus', user?.email],
+    queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const subscriptions = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
@@ -55,6 +61,7 @@ export default function SkillPaths() {
 
   const createPath = useMutation({
     mutationFn: async (level) => {
+      if (!user?.email) throw new Error("User not authenticated");
       return await base44.entities.SkillPath.create({
         user_email: user.email,
         level: level,
@@ -69,6 +76,9 @@ export default function SkillPaths() {
       setShowEarlyAccessDialog(false);
       setEarlyAccessTarget(null);
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   const handleEarlyAccess = (level) => {
@@ -84,6 +94,7 @@ export default function SkillPaths() {
 
   const completeItem = useMutation({
     mutationFn: async ({ itemId, xp }) => {
+      if (!user?.email || !skillPath || !userProgress) throw new Error("User not authenticated or skill path/progress not found");
       const newCompleted = [...(skillPath.completed_items || []), itemId];
       const newXP = (skillPath.xp || 0) + xp;
       
@@ -97,7 +108,7 @@ export default function SkillPaths() {
       const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
-          total_xp: currentTotalXP + xp
+          total_xp: (leaderboards[0].total_xp || 0) + xp
         });
       }
       
@@ -112,6 +123,9 @@ export default function SkillPaths() {
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       toast.success('Progress saved! 🎯');
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   const unlockNextLevel = useMutation({
@@ -133,12 +147,16 @@ export default function SkillPaths() {
 
   const resetPath = useMutation({
     mutationFn: async () => {
-      return await base44.entities.SkillPath.delete(skillPath.id);
+      if (!skillPath?.id) throw new Error("No active skill path to reset");
+      await base44.entities.SkillPath.delete(skillPath.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       toast.success('Skill path reset!');
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   const currentPathData = skillPath ? skillPathsData[skillPath.level] : null;
