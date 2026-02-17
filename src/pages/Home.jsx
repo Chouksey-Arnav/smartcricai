@@ -397,11 +397,6 @@ export default function Home() {
         <SmartStart isDarkMode={isDarkMode} />
 
         {/* Quick Actions */}
-
-        {/* Smart Start */}
-        <SmartStart isDarkMode={isDarkMode} />
-
-        {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
