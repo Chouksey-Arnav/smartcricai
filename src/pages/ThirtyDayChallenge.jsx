@@ -26,18 +26,20 @@ export default function ThirtyDayChallenge() {
   const [challengeStarted, setChallengeStarted] = useState(false);
   const [iframeLoading, setIframeLoading] = useState(true);
 
-  // Check if challenge was started before
+  // Check if challenge was started before (local storage for guest users, DB for logged in users)
   const { data: savedChallenge } = useQuery({
     queryKey: ['savedChallenge', user?.email],
     queryFn: async () => {
-      if (!user?.email) return null;
+      if (!user?.email) {
+        // Check localStorage for guest users
+        return localStorage.getItem('challenge_started') === 'true' ? { local: true } : null;
+      }
       const activities = await base44.entities.ScheduledActivity.filter({ 
         user_email: user.email,
         title: '🔥 30-Day Challenge Started!'
       });
       return activities.length > 0 ? activities[0] : null;
     },
-    enabled: !!user?.email,
   });
 
   useEffect(() => {
@@ -51,24 +53,28 @@ export default function ThirtyDayChallenge() {
       const today = new Date().toISOString().split('T')[0];
       const guestEmail = user?.email || 'guest@smartcrick.app';
       
-      await base44.entities.ScheduledActivity.create({
-        user_email: guestEmail,
-        title: '🔥 30-Day Challenge Started!',
-        notes: 'Your transformative journey begins today',
-        date: today,
-        activity_type: 'custom'
-      });
-
-      await base44.entities.Notification.create({
-        user_email: guestEmail,
-        type: 'achievement',
-        title: '🎉 30-Day Challenge Started - Day 1!',
-        message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
-        related_id: 'challenge_day_1'
-      });
-
-      // Store challenge start date for daily notifications
+      // Store challenge start date locally (works for both logged in and guest users)
       localStorage.setItem('challenge_start_date', today);
+      localStorage.setItem('challenge_started', 'true');
+      
+      // Only create database records if user is logged in
+      if (user?.email) {
+        await base44.entities.ScheduledActivity.create({
+          user_email: guestEmail,
+          title: '🔥 30-Day Challenge Started!',
+          notes: 'Your transformative journey begins today',
+          date: today,
+          activity_type: 'custom'
+        });
+
+        await base44.entities.Notification.create({
+          user_email: guestEmail,
+          type: 'achievement',
+          title: '🎉 30-Day Challenge Started - Day 1!',
+          message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
+          related_id: 'challenge_day_1'
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });

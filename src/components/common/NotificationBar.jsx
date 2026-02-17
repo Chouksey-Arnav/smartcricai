@@ -13,58 +13,61 @@ export default function NotificationBar({ onChallengeComplete }) {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: notifications = [] } = useQuery({
-    queryKey: ['notifications', user?.email],
+    queryKey: ['notifications', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return [];
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       const results = await base44.entities.Notification.filter({ 
-        user_email: user.email 
+        user_email: guestEmail 
       });
       return results.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 10);
     },
-    enabled: !!user?.email,
   });
 
   // Generate dynamic challenges based on user progress
   const { data: userProgress } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   // Get today's completed drills count
   const today = new Date().toISOString().split('T')[0];
   const { data: todayDrills } = useQuery({
-    queryKey: ['todayDrills', user?.email, today],
+    queryKey: ['todayDrills', user?.email || 'guest', today],
     queryFn: async () => {
-      if (!user?.email) return [];
-      const allWorkouts = await base44.entities.Workout.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const allWorkouts = await base44.entities.Workout.filter({ user_email: guestEmail });
       const todayWorkouts = allWorkouts.filter(w => 
         w.completed_date && w.completed_date.startsWith(today)
       );
       return todayWorkouts;
     },
-    enabled: !!user?.email,
   });
 
   // Get today's quiz attempts
   const { data: todayQuizzes } = useQuery({
-    queryKey: ['todayQuizzes', user?.email, today],
+    queryKey: ['todayQuizzes', user?.email || 'guest', today],
     queryFn: async () => {
-      if (!user?.email || !userProgress?.quiz_scores) return 0;
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      if (!userProgress?.quiz_scores) return 0;
       const todayQuizzes = userProgress.quiz_scores.filter(q => 
         q.date && q.date.startsWith(today) && q.score >= 80
       );
       return todayQuizzes.length;
     },
-    enabled: !!user?.email && !!userProgress,
   });
 
   // Dynamic challenges based on actual progress

@@ -63,6 +63,7 @@ import ExtendedMilestones from './pages/ExtendedMilestones';
 import FitnessBuilder from './pages/FitnessBuilder';
 import GetToKnowYou from './pages/GetToKnowYou';
 import Goals from './pages/Goals';
+import HeadCoach from './pages/HeadCoach';
 import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import MatchDetail from './pages/MatchDetail';
@@ -72,6 +73,7 @@ import MentalCoaching from './pages/MentalCoaching';
 import MentalRoutinePlayer from './pages/MentalRoutinePlayer';
 import MentalTrainingCreator from './pages/MentalTrainingCreator';
 import MiniMatch from './pages/MiniMatch';
+import NinetyDayChallenge from './pages/NinetyDayChallenge';
 import Onboarding from './pages/Onboarding';
 import Premium from './pages/Premium';
 import Profile from './pages/Profile';
@@ -90,8 +92,6 @@ import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
 import WorkoutPlayer from './pages/WorkoutPlayer';
-import NinetyDayChallenge from './pages/NinetyDayChallenge';
-import HeadCoach from './pages/HeadCoach';
 import __Layout from './Layout.jsx';
 
 
@@ -112,6 +112,7 @@ export const PAGES = {
     "FitnessBuilder": FitnessBuilder,
     "GetToKnowYou": GetToKnowYou,
     "Goals": Goals,
+    "HeadCoach": HeadCoach,
     "Home": Home,
     "Leaderboard": Leaderboard,
     "MatchDetail": MatchDetail,
@@ -121,6 +122,7 @@ export const PAGES = {
     "MentalRoutinePlayer": MentalRoutinePlayer,
     "MentalTrainingCreator": MentalTrainingCreator,
     "MiniMatch": MiniMatch,
+    "NinetyDayChallenge": NinetyDayChallenge,
     "Onboarding": Onboarding,
     "Premium": Premium,
     "Profile": Profile,
@@ -139,8 +141,6 @@ export const PAGES = {
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
     "WorkoutPlayer": WorkoutPlayer,
-    "NinetyDayChallenge": NinetyDayChallenge,
-    "HeadCoach": HeadCoach,
 }
 
 export const pagesConfig = {

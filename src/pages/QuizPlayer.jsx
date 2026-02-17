@@ -66,7 +66,22 @@ export default function QuizPlayer() {
       const percentage = Math.round((finalScore / questions.length) * 100);
       const xpEarned = percentage >= 80 ? 100 : percentage >= 50 ? 50 : 25;
 
-      // Create notification
+      // Save to localStorage for guest users
+      if (!user?.email) {
+        const guestQuizzes = JSON.parse(localStorage.getItem('guest_quiz_scores') || '[]');
+        guestQuizzes.push({
+          quiz_id: quiz.id,
+          quiz_title: quiz.title,
+          score: finalScore,
+          percentage,
+          xpEarned,
+          date: new Date().toISOString(),
+        });
+        localStorage.setItem('guest_quiz_scores', JSON.stringify(guestQuizzes));
+        return;
+      }
+
+      // Only save to database if user is logged in
       await base44.entities.Notification.create({
         user_email: guestEmail,
         type: 'quiz',
