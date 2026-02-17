@@ -59,7 +59,21 @@ export default function WhyDidIGetOut() {
           },
           match_awareness_tip: dismissal.match_situation_advice,
           positive_note: 'Every dismissal is a learning opportunity!',
-          danger_rating: 7
+          danger_rating: (() => {
+            const shot = shotPlayed.toLowerCase();
+            const ball = ballType.toLowerCase();
+            const field = fieldSetup.toLowerCase();
+
+            if (shot.includes('drive') && ball.includes('yorker')) return 9;
+            if (shot.includes('sweep') && ball.includes('bouncer')) return 10;
+            if (shot.includes('cut') && field.includes('off side packed')) return 8;
+            if (shot.includes('pull') && field.includes('leg side heavy')) return 8;
+            if (shot.includes('block') || shot.includes('leave')) return 3;
+            if (ball.includes('slower ball') && shot.includes('drive')) return 6;
+            if (ball.includes('bouncer') && shot.includes('hook')) return 5;
+
+            return 7;
+          })()
         };
       } else {
         // Fallback generic analysis
@@ -78,7 +92,21 @@ export default function WhyDidIGetOut() {
           },
           match_awareness_tip: 'Always assess the field before playing your shot',
           positive_note: 'Learning from dismissals makes you a smarter player!',
-          danger_rating: 7
+          danger_rating: (() => {
+            const shot = shotPlayed.toLowerCase();
+            const ball = ballType.toLowerCase();
+            const field = fieldSetup.toLowerCase();
+
+            if (shot.includes('drive') && ball.includes('yorker')) return 9;
+            if (shot.includes('sweep') && ball.includes('bouncer')) return 10;
+            if (shot.includes('cut') && field.includes('off side packed')) return 8;
+            if (shot.includes('pull') && field.includes('leg side heavy')) return 8;
+            if (shot.includes('block') || shot.includes('leave')) return 3;
+            if (ball.includes('slower ball') && shot.includes('drive')) return 6;
+            if (ball.includes('bouncer') && shot.includes('hook')) return 5;
+
+            return 7;
+          })()
         };
       }
 

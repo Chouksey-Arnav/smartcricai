@@ -17,6 +17,8 @@ import Header from '@/components/common/Header';
 import BadgeDisplay from '@/components/common/BadgeDisplay';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import ProgressTracker from '@/components/progress/ProgressTracker';
+import LevelProgressBar from '@/components/xp/LevelProgressBar';
+import LevelUpNotification from '@/components/xp/LevelUpNotification';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -25,11 +27,17 @@ import { createPageUrl } from '@/utils';
 export default function Progress() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: progress, isLoading } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
       if (!user?.email) return null;
       const results = await base44.entities.UserProgress.filter({ user_email: user.email });
@@ -81,6 +89,10 @@ export default function Progress() {
       <Header title="Your Progress" showSettings={false} />
       
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
+        {/* Level Progress Bar */}
+        <LevelProgressBar totalXP={progress?.total_xp || 0} />
+        <LevelUpNotification totalXP={progress?.total_xp || 0} />
+
         {/* Streak Header */}
         {(progress?.current_streak || 0) > 0 && (
           <motion.div
