@@ -112,40 +112,6 @@ export default function HeadCoach() {
           </p>
         </motion.div>
 
-        {/* AI Agent Embed */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
-          <iframe 
-            src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/c19336b8-997f-4471-a7ab-2bde4da12001/embed-chat?starting_message_prompts=Build+me+a+workout+for+explosive+batting+power&starting_message_prompts=Give+me+a+fast+bowler+strength+session+for+today&starting_message_prompts=Create+a+30-minute+bodyweight+workout+for+cricket&starting_message_prompts=I+want+to+improve+my+stamina+for+long+innings&starting_message_prompts=Make+me+a+leg+workout+that+helps+my+bowling+speed&starting_message_prompts=Design+a+full+weekly+training+plan+for+a+cricketer&starting_message_prompts=I%E2%80%99m+a+spin+bowler+%E2%80%94+what+should+I+train&starting_message_prompts=I%E2%80%99m+a+wicketkeeper+%E2%80%94+build+my+agility+workout&starting_message_prompts=I%E2%80%99m+an+opener+%E2%80%94+help+me+train+endurance+and+focus&starting_message_prompts=I%E2%80%99m+an+all-rounder+%E2%80%94+give+me+a+balanced+session&starting_message_prompts=I+feel+sore+after+a+match.+Give+me+recovery+training&starting_message_prompts=Help+me+prevent+injuries+as+a+fast+bowler&starting_message_prompts=Give+me+a+mobility+routine+for+shoulders+and+hips&starting_message_prompts=I+need+a+light+session+for+an+off-day&starting_message_prompts=Give+me+a+match-day+warm-up+routine&starting_message_prompts=What+should+I+do+the+day+before+a+game&starting_message_prompts=Build+a+quick+pre-batting+power+activation&starting_message_prompts=Help+me+recover+mentally+after+getting+out&starting_message_prompts=That+workout+felt+too+easy-adjust+it&starting_message_prompts=That+session+was+too+hard-scale+it+down&starting_message_prompts=No+equipment+today.+Give+me+a+home+sessi&starting_message_prompts=Build+me+an+academy-level+training+program&hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Ask+HeadCoach+for+a+workout%2C+match+prep%2C+or+recovery+plan%E2%80%A6&hide_logo=false&hide_description=false" 
-            width="100%" 
-            height="100%" 
-            frameBorder="0" 
-            allow="microphone"
-            title="SmartCrick AI Head Coach"
-          />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white pb-24">
-      <Header title="SmartCrick AI Head Coach" showSettings={false} />
-      
-      <div className="px-6 py-4 max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-6 text-white mb-6"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <Crown className="w-8 h-8" />
-            <h2 className="font-bold text-xl">Your Elite Training Companion</h2>
-          </div>
-          <p className="text-amber-100 text-sm">
-            Advanced AI coaching for workouts, match prep, recovery, and tactical training
-          </p>
-        </motion.div>
-
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
           <iframe 
             src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/c19336b8-997f-4471-a7ab-2bde4da12001/embed-chat?starting_message_prompts=Build+me+a+workout+for+explosive+batting+power&starting_message_prompts=Give+me+a+fast+bowler+strength+session+for+today&starting_message_prompts=Create+a+30-minute+bodyweight+workout+for+cricket&starting_message_prompts=I+want+to+improve+my+stamina+for+long+innings&starting_message_prompts=Make+me+a+leg+workout+that+helps+my+bowling+speed&starting_message_prompts=Design+a+full+weekly+training+plan+for+a+cricketer&starting_message_prompts=I%E2%80%99m+a+spin+bowler+%E2%80%94+what+should+I+train&starting_message_prompts=I%E2%80%99m+a+wicketkeeper+%E2%80%94+build+my+agility+workout&starting_message_prompts=I%E2%80%99m+an+opener+%E2%80%94+help+me+train+endurance+and+focus&starting_message_prompts=I%E2%80%99m+an+all-rounder+%E2%80%94+give+me+a+balanced+session&starting_message_prompts=I+feel+sore+after+a+match.+Give+me+recovery+training&starting_message_prompts=Help+me+prevent+injuries+as+a+fast+bowler&starting_message_prompts=Give+me+a+mobility+routine+for+shoulders+and+hips&starting_message_prompts=I+need+a+light+session+for+an+off-day&starting_message_prompts=Give+me+a+match-day+warm-up+routine&starting_message_prompts=What+should+I+do+the+day+before+a+game&starting_message_prompts=Build+a+quick+pre-batting+power+activation&starting_message_prompts=Help+me+recover+mentally+after+getting+out&starting_message_prompts=That+workout+felt+too+easy-adjust+it&starting_message_prompts=That+session+was+too+hard-scale+it+down&starting_message_prompts=No+equipment+today.+Give+me+a+home+sessi&starting_message_prompts=Build+me+an+academy-level+training+program&hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Ask+HeadCoach+for+a+workout%2C+match+prep%2C+or+recovery+plan%E2%80%A6&hide_logo=false&hide_description=false" 
