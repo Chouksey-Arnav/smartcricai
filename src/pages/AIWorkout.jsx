@@ -144,6 +144,7 @@ export default function AIWorkout() {
     onError: (error) => {
       toast.error(error.message);
     }
+  });
 
   const handleCompleteSet = () => {
     const exerciseId = currentExercise.name || index;
