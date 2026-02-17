@@ -156,6 +156,7 @@ export default function Goals() {
 
   const saveGoalsMutation = useMutation({
     mutationFn: async () => {
+      if (!user?.email) throw new Error("User not authenticated. Cannot save goals.");
       const goalsData = {
         user_email: user.email,
         ...answers,
@@ -269,11 +270,13 @@ export default function Goals() {
       queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
       toast.success('Goals saved! Your training is now ultra-personalized! 🎯');
       
-      // Redirect to home page
       setTimeout(() => {
         navigate(createPageUrl('Home'));
       }, 500);
     },
+    onError: (error) => {
+      toast.error(error.message);
+    }
   });
 
   const currentQuestion = goalQuestions[currentStep];
