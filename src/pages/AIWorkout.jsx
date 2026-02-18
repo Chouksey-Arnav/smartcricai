@@ -93,7 +93,7 @@ export default function AIWorkout() {
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
-      const xpEarned = activeWorkout?.xp_value || 100;
+      const xpEarned = activeWorkout?.xp_value || 90;
 
       // Update UserProgress XP
       const userProgressData = await base44.entities.UserProgress.filter({ user_email: guestEmail });
@@ -300,7 +300,7 @@ export default function AIWorkout() {
             className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl shadow-2xl p-8 text-white"
           >
             <CheckCircle className="w-20 h-20 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-3">Workout Complete! 🎉</h2>
+            <h2 className="text-3xl font-bold mb-3">Workout Complete!</h2>
             <p className="text-emerald-100 mb-6">Amazing job crushing that workout! You're getting stronger every day!</p>
             <Button 
               onClick={() => navigate(createPageUrl('Home'))} 
@@ -430,7 +430,9 @@ export default function AIWorkout() {
             className="bg-white rounded-3xl shadow-2xl p-8"
           >
             <div className="text-center mb-6">
-              <div className="text-6xl mb-4">💪</div>
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-10 h-10 text-white" />
+              </div>
               <h2 className="text-3xl font-bold text-slate-800 mb-2">
                 {currentExercise.name}
               </h2>

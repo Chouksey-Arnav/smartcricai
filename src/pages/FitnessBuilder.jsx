@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Dumbbell, Clock, Play, CheckCircle, Loader2, X } from 'lucide-react';
+import { Dumbbell, Clock, Play, CheckCircle, Loader2, X, Zap, Target, TrendingUp, Sparkles, Award, Trophy, Flame, Heart, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
@@ -12,27 +12,27 @@ import { createPageUrl } from '@/utils';
 import { findWorkout, parseWorkoutIntoExercises } from '@/components/fitness/FitnessBuilderDatabase';
 
 const bodyParts = [
-  { id: 'arms', name: 'Arms', emoji: '💪' },
-  { id: 'chest', name: 'Chest', emoji: '🦸' },
-  { id: 'back', name: 'Back', emoji: '🏋️' },
-  { id: 'legs', name: 'Legs', emoji: '🦵' },
-  { id: 'shoulders', name: 'Shoulders', emoji: '💥' },
-  { id: 'core', name: 'Core', emoji: '🔥' },
-  { id: 'full body', name: 'Full Body', emoji: '⚡' }
+  { id: 'arms', name: 'Arms', icon: Dumbbell },
+  { id: 'chest', name: 'Chest', icon: Zap },
+  { id: 'back', name: 'Back', icon: Target },
+  { id: 'legs', name: 'Legs', icon: TrendingUp },
+  { id: 'shoulders', name: 'Shoulders', icon: Sparkles },
+  { id: 'core', name: 'Core', icon: Award },
+  { id: 'full body', name: 'Full Body', icon: Trophy }
 ];
 
 const fitnessGoals = [
-  { id: 'lose weight', name: 'Lose Weight', icon: '🔥' },
-  { id: 'build muscle', name: 'Build Muscle', icon: '💪' },
-  { id: 'keep fit', name: 'Keep Fit', icon: '✨' }
+  { id: 'lose weight', name: 'Lose Weight', icon: Flame },
+  { id: 'build muscle', name: 'Build Muscle', icon: Dumbbell },
+  { id: 'keep fit', name: 'Keep Fit', icon: Heart }
 ];
 
 const durations = [
-  { id: '<10', name: 'Under 10 min', emoji: '⚡' },
-  { id: '10-15', name: '10-15 min', emoji: '⏱️' },
-  { id: '15-20', name: '15-20 min', emoji: '⏰' },
-  { id: '20-25', name: '20-25 min', emoji: '⌚' },
-  { id: '25+', name: '25+ min', emoji: '🕐' }
+  { id: '<10', name: 'Under 10 min', icon: Zap },
+  { id: '10-15', name: '10-15 min', icon: Clock },
+  { id: '15-20', name: '15-20 min', icon: Clock },
+  { id: '20-25', name: '20-25 min', icon: Clock },
+  { id: '25+', name: '25+ min', icon: Clock }
 ];
 
 const levels = [
@@ -258,7 +258,7 @@ export default function FitnessBuilder() {
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
-                    <div className="text-3xl mb-2">{part.emoji}</div>
+                    <part.icon className="w-10 h-10 text-orange-500 mx-auto mb-2" />
                     <div className="font-semibold text-slate-800 text-sm">{part.name}</div>
                   </button>
                 ))}
@@ -333,7 +333,7 @@ export default function FitnessBuilder() {
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
-                    <div className="text-2xl mb-1">{g.icon}</div>
+                    <g.icon className="w-8 h-8 text-orange-500 mx-auto mb-1" />
                     <div className="text-xs font-medium text-slate-700">{g.name}</div>
                   </button>
                 ))}
@@ -357,7 +357,7 @@ export default function FitnessBuilder() {
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
-                    <span className="text-xl">{dur.emoji}</span>
+                    <dur.icon className="w-5 h-5 text-orange-500 shrink-0" />
                     <span className="font-semibold text-slate-800">{dur.name}</span>
                   </button>
                 ))}
@@ -405,9 +405,12 @@ export default function FitnessBuilder() {
               <p className="text-emerald-100 text-sm mb-3">
                 {generatedWorkout.exercises.length} exercises • {selectedLevel} level
               </p>
-              <p className="text-white text-sm italic">
-                💡 {generatedWorkout.coachNote}
-              </p>
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-5 h-5 text-white shrink-0 mt-0.5" />
+                <p className="text-white text-sm italic">
+                  {generatedWorkout.coachNote}
+                </p>
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -466,7 +469,8 @@ export default function FitnessBuilder() {
                 variant="outline"
                 className="w-full h-12"
               >
-                🔄 Generate Different Workout
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Generate Different Workout
               </Button>
               <Button
                 onClick={() => { setStep(1); setGeneratedWorkout(null); setSelectedBodyPart(null); setSelectedGoal(null); setSelectedDuration(null); }}
