@@ -17,7 +17,13 @@ import {
   TrendingDown,
   Search,
   Moon,
-  Sun
+  Sun,
+  Clock,
+  Dumbbell,
+  Zap,
+  Award,
+  TrendingUp,
+  Video
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
@@ -294,7 +300,7 @@ export default function Home() {
             className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-4"
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">😄</span>
+              <Sparkles className="w-5 h-5 text-amber-300" />
               <h3 className="font-bold text-white text-sm">Cricket Joke of the Day</h3>
             </div>
             <p className="text-white/90 text-sm leading-relaxed">{getCricketJoke()}</p>
@@ -308,7 +314,7 @@ export default function Home() {
             className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-4"
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">🏏</span>
+              <Target className="w-5 h-5 text-emerald-300" />
               <h3 className="font-bold text-white text-sm">Cricket Fact of the Day</h3>
             </div>
             <p className="text-white/90 text-sm leading-relaxed">{getCricketFact()}</p>
@@ -338,7 +344,9 @@ export default function Home() {
             className="mb-6"
           >
             <p className="text-emerald-100 text-sm mb-1">{greeting}!</p>
-            <h1 className="text-2xl font-bold text-white mb-4">Hey, {user?.full_name?.split(' ')[0] || 'Champ'} 👋</h1>
+            <h1 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <span>Hey, {user?.full_name?.split(' ')[0] || 'Champ'}</span>
+            </h1>
             
             {(progress?.current_streak || 0) >= 0 && (
                 <div className="flex justify-start">
@@ -358,7 +366,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
             >
-              <div className="text-3xl mb-1">🎯</div>
+              <Target className="w-8 h-8 text-white mx-auto mb-1" />
               <p className="text-2xl font-bold text-white">
                 {progress?.completed_drills?.length || 0}
               </p>
@@ -368,7 +376,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
             >
-              <div className="text-3xl mb-1">⏱️</div>
+              <Clock className="w-8 h-8 text-white mx-auto mb-1" />
               <p className="text-2xl font-bold text-white">
                 {progress?.total_practice_minutes || 0}
               </p>
@@ -378,7 +386,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
             >
-              <div className="text-3xl mb-1">🏆</div>
+              <Trophy className="w-8 h-8 text-white mx-auto mb-1" />
               <p className="text-2xl font-bold text-white">
                 {progress?.total_xp || 0}
               </p>
@@ -468,7 +476,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">💪</div>
+                <Dumbbell className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Fitness Builder</h3>
                 <p className="text-xs text-orange-50">AI workout plans</p>
               </motion.div>
@@ -479,7 +487,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">⚡</div>
+                <Zap className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Mini-Match</h3>
                 <p className="text-xs text-purple-50">Test your IQ</p>
               </motion.div>
@@ -490,7 +498,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">🎯</div>
+                <TrendingUp className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Skill Paths</h3>
                 <p className="text-xs text-emerald-50">Level up now</p>
               </motion.div>
@@ -501,7 +509,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">🏆</div>
+                <Award className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Leaderboard</h3>
                 <p className="text-xs text-amber-50">Compete globally</p>
               </motion.div>
@@ -512,7 +520,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">💪</div>
+                <Target className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Drill Workout</h3>
                 <p className="text-xs text-indigo-50">Build your workout</p>
               </motion.div>
@@ -523,7 +531,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">🔍</div>
+                <Search className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Why Got Out?</h3>
                 <p className="text-xs text-red-50">Analyze dismissals</p>
               </motion.div>
@@ -534,7 +542,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-gradient-to-br from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
               >
-                <div className="text-4xl mb-2">🎥</div>
+                <Video className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Video Analysis</h3>
                 <p className="text-xs text-rose-50">Upload & analyze</p>
               </motion.div>

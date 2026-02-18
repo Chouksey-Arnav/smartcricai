@@ -33,8 +33,8 @@ export default function HeadCoach() {
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white pb-24">
-        <Header title="SmartCrick AI Head Coach" showSettings={false} />
+      <div className="min-h-screen bg-white dark:bg-white pb-24">
+        <Header title="SmartCrick Head Coach" showSettings={false} />
         
         <div className="px-6 py-4 max-w-lg mx-auto">
           <motion.div
@@ -94,8 +94,8 @@ export default function HeadCoach() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white pb-24">
-      <Header title="SmartCrick AI Head Coach" showSettings={false} />
+    <div className="min-h-screen bg-white dark:bg-white pb-24">
+      <Header title="SmartCrick Head Coach" showSettings={false} />
       
       <div className="px-6 py-4 max-w-4xl mx-auto">
         <motion.div
