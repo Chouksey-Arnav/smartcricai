@@ -33,25 +33,25 @@ export default function NinetyDayChallenge() {
 
   if (!hasLifetimePlan) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
         <Header title="90-Day Challenge Architect" showSettings={false} />
         
         <div className="px-6 py-4 max-w-lg mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl p-8 text-white text-center"
+            className="bg-white dark:bg-white rounded-3xl p-8 text-slate-800 text-center shadow-2xl border-2 border-purple-200"
           >
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-10 h-10" />
+            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-10 h-10 text-purple-600" />
             </div>
-            <h2 className="text-2xl font-bold mb-3">Lifetime Members Only</h2>
-            <p className="text-purple-100 mb-6 leading-relaxed">
+            <h2 className="text-2xl font-bold mb-3 text-slate-800">Lifetime Members Only</h2>
+            <p className="text-slate-700 mb-6 leading-relaxed">
               The SmartCrick AI 90-Day Challenge Architect is an exclusive feature for Lifetime plan members. 
               Get personalized 90-day training plans designed by AI!
             </p>
             <Link to={createPageUrl('Premium')}>
-              <Button className="bg-white text-purple-600 hover:bg-purple-50 font-bold h-12 px-8">
+              <Button className="bg-purple-600 text-white hover:bg-purple-700 font-bold h-12 px-8">
                 <Sparkles className="w-5 h-5 mr-2" />
                 Upgrade to Lifetime
               </Button>
@@ -89,7 +89,7 @@ export default function NinetyDayChallenge() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
       <Header title="90-Day Challenge Architect" showSettings={false} />
       
       <div className="px-6 py-4 max-w-4xl mx-auto">
@@ -107,8 +107,8 @@ export default function NinetyDayChallenge() {
           </p>
         </motion.div>
 
-        {/* AI Agent Embed */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
+        {/* AI Agent Embed with white background for dark mode */}
+        <div className="bg-white dark:bg-white rounded-3xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
           <iframe 
             src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/366636d2-101a-46ed-ac68-c6ec3b4b1daa/embed-chat?hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false" 
             width="100%" 

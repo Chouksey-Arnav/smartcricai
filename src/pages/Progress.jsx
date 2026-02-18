@@ -125,8 +125,8 @@ export default function Progress() {
               )}>
                 <stat.icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-              <p className="text-sm text-slate-500">{stat.label}</p>
+              <p className="text-2xl font-bold text-slate-800 dark:text-slate-800">{stat.value}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-800">{stat.label}</p>
             </div>
           ))}
         </motion.div>

@@ -168,6 +168,7 @@ export default function Layout({ children, currentPageName }) {
 
       {showNav && <BottomNav />}
       <script defer data-relevanceai-share-id="bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064" src="https://app.relevanceai.com/embed/chat-bubble.js" data-share-styles="hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false" ></script>
+      <script defer data-relevanceai-share-id="bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064" src="https://app.relevanceai.com/embed/chat-bubble.js" data-share-styles="hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false" ></script>
       <script>
         {`(function() {
             const premiumData = localStorage.getItem('smartcrick_premium');
@@ -175,18 +176,48 @@ export default function Layout({ children, currentPageName }) {
                 try {
                     const data = JSON.parse(premiumData);
                     if (!data.plan) return;
-                    
+
+                    // Add premium classes
                     document.body.classList.add('premium-user');
                     document.body.classList.add('plan-' + data.plan);
-                    
+
+                    // Check expiration for monthly/yearly
+                    const purchaseDate = new Date(data.purchaseDate);
+                    const now = new Date();
+                    const daysSince = (now - purchaseDate) / (1000 * 60 * 60 * 24);
+
+                    let isExpired = false;
+                    if (data.plan === 'monthly' && daysSince > 30) isExpired = true;
+                    if (data.plan === 'yearly' && daysSince > 365) isExpired = true;
+
+                    if (isExpired) {
+                        localStorage.removeItem('smartcrick_premium');
+                        return;
+                    }
+
+                    // Show premium badge
                     const style = document.createElement('style');
-                    style.innerHTML = '.premium-badge{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;padding:10px 20px;border-radius:25px;font-weight:bold;z-index:99999}';
+                    style.innerHTML = '.premium-badge{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;padding:10px 20px;border-radius:25px;font-weight:bold;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.15)}';
                     document.head.appendChild(style);
-                    
+
                     const badge = document.createElement('div');
                     badge.className = 'premium-badge';
                     badge.innerHTML = '⭐ PREMIUM';
                     document.body.appendChild(badge);
+
+                    // Show welcome message once
+                    const hasShownWelcome = sessionStorage.getItem('premium_welcome_shown');
+                    if (!hasShownWelcome) {
+                        setTimeout(() => {
+                            const welcomeMessages = {
+                                monthly: 'Welcome to Premium Monthly! You now have access to Elite Builder, advanced drills, advanced mental training, and pro scenarios!',
+                                yearly: 'Welcome to Premium Yearly! You have everything in Monthly PLUS SmartCrick Head Coach!',
+                                lifetime: 'Welcome to Lifetime Premium! You have everything PLUS the 90-Day Challenge Architect. You\\'re set for life!'
+                            };
+                            alert(welcomeMessages[data.plan] || 'Welcome to Premium!');
+                            sessionStorage.setItem('premium_welcome_shown', 'true');
+                        }, 1000);
+                    }
                 } catch(e) {}
             }
         })();`}

@@ -5,10 +5,10 @@ export default function Coach() {
   const [isLoading, setIsLoading] = React.useState(true);
 
   return (
-    <div className="min-h-screen bg-white pb-0">
+    <div className="min-h-screen bg-white dark:bg-white pb-0">
       <Header title="SmartCric Coach" showSettings={false} />
 
-      <div className="w-full h-[calc(100vh-64px)] relative">
+      <div className="w-full h-[calc(100vh-64px)] relative bg-white dark:bg-white">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 z-10">
             <div className="text-center">

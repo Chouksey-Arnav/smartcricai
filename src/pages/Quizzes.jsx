@@ -145,7 +145,7 @@ export default function Quizzes() {
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="font-semibold text-slate-800 dark:text-white">{quiz.title}</h3>
+                      <h3 className="font-semibold text-slate-800 dark:text-slate-800">{quiz.title}</h3>
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-sm text-slate-500">
                           {quiz.questions?.length || 0} questions
