@@ -130,7 +130,10 @@ export default function MiniMatch() {
                 Make smart decisions under pressure. Every choice counts!
               </p>
               <div className="bg-white/10 rounded-xl p-4 border border-white/20">
-                <p className="text-sm font-semibold mb-2">📊 Database: {scenarioDatabase.length}+ scenarios</p>
+                <div className="flex items-center gap-2 mb-2">
+                  <Trophy className="w-4 h-4 text-white" />
+                  <p className="text-sm font-semibold">Database: {scenarioDatabase.length}+ scenarios</p>
+                </div>
                 <p className="text-xs text-orange-50">Batting • Bowling • Fielding • Captaincy • Pressure</p>
               </div>
             </motion.div>
@@ -148,7 +151,10 @@ export default function MiniMatch() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-slate-800">⚡ Real-Time Decision Mode</h3>
+                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-orange-500" />
+                      Real-Time Decision Mode
+                    </h3>
                     <Switch
                       checked={timerEnabled}
                       onCheckedChange={setTimerEnabled}
@@ -185,9 +191,10 @@ export default function MiniMatch() {
                           3s
                         </button>
                       </div>
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                        <Target className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                         <p className="text-xs text-red-700 font-medium">
-                          ⚠️ Warning: Timer starts immediately. If time runs out, answer is marked wrong!
+                          Warning: Timer starts immediately. If time runs out, answer is marked wrong!
                         </p>
                       </div>
                     </>
@@ -220,8 +227,9 @@ export default function MiniMatch() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-6"
             >
-              <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                ⚡ Mini-Match Situations
+              <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                <Zap className="w-8 h-8 text-orange-500" />
+                Mini-Match Situations
               </h1>
               <p className="text-slate-600 dark:text-slate-300">
                 Face realistic cricket moments and make smart decisions!
@@ -366,7 +374,7 @@ export default function MiniMatch() {
                           {selectedOption.correct ? (
                             <>
                               <Trophy className="w-6 h-6" />
-                              Great Choice! 🎉
+                              Great Choice!
                             </>
                           ) : (
                             <>
