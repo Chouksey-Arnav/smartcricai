@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Flame, Trophy, Calendar, CheckCircle, ChevronLeft, Loader2 } from 'lucide-react';
+import { Flame, Trophy, Calendar, CheckCircle, ChevronLeft, Loader2, Target, Brain, TrendingUp, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -33,7 +33,7 @@ export default function ThirtyDayChallenge() {
       if (!user?.email) return null;
       const activities = await base44.entities.ScheduledActivity.filter({ 
         user_email: user.email,
-        title: '🔥 30-Day Challenge Started!'
+        title: 'SmartCrick 30-Day Challenge Started!'
       });
       return activities.length > 0 ? activities[0] : null;
     },
@@ -53,7 +53,7 @@ export default function ThirtyDayChallenge() {
       
       await base44.entities.ScheduledActivity.create({
         user_email: guestEmail,
-        title: '🔥 30-Day Challenge Started!',
+        title: 'SmartCrick 30-Day Challenge Started!',
         notes: 'Your transformative journey begins today',
         date: today,
         activity_type: 'custom'
@@ -62,7 +62,7 @@ export default function ThirtyDayChallenge() {
       await base44.entities.Notification.create({
         user_email: guestEmail,
         type: 'achievement',
-        title: '🎉 30-Day Challenge Started - Day 1!',
+        title: '30-Day Challenge Started - Day 1!',
         message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
         related_id: 'challenge_day_1'
       });
@@ -74,7 +74,7 @@ export default function ThirtyDayChallenge() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
       queryClient.invalidateQueries({ queryKey: ['savedChallenge'] });
-      toast.success('Challenge started! 🔥');
+      toast.success('Challenge started!');
       setChallengeStarted(true);
     },
   });
@@ -100,8 +100,9 @@ export default function ThirtyDayChallenge() {
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Trophy className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Challenge Activated! 🔥
+              <h2 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+                <Flame className="w-8 h-8" />
+                Challenge Activated!
               </h2>
               <p className="text-orange-50">
                 Chat with your coach to build your personalized 30-day plan!
@@ -170,11 +171,11 @@ export default function ThirtyDayChallenge() {
           <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4 sticky top-0 bg-white dark:bg-slate-800 z-10">What You'll Get:</h3>
           
           {[
-            { icon: '🎯', title: 'Personalized Training Plan', desc: 'Custom workouts tailored to your level' },
-            { icon: '🧠', title: 'Mental Coaching', desc: 'Build unbreakable confidence' },
-            { icon: '📊', title: 'Daily Progress Tracking', desc: 'See your improvements every day' },
-            { icon: '🏆', title: 'Exclusive Badges', desc: 'Unlock special achievements' },
-            { icon: '💬', title: '24/7 AI Coach Support', desc: 'Get guidance anytime you need it' },
+            { Icon: Target, title: 'Personalized Training Plan', desc: 'Custom workouts tailored to your level' },
+            { Icon: Brain, title: 'Mental Coaching', desc: 'Build unbreakable confidence' },
+            { Icon: TrendingUp, title: 'Daily Progress Tracking', desc: 'See your improvements every day' },
+            { Icon: Trophy, title: 'Exclusive Badges', desc: 'Unlock special achievements' },
+            { Icon: MessageCircle, title: '24/7 AI Coach Support', desc: 'Get guidance anytime you need it' },
           ].map((item, index) => (
             <motion.div
               key={index}
@@ -183,7 +184,9 @@ export default function ThirtyDayChallenge() {
               transition={{ delay: index * 0.1 }}
               className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-xl"
             >
-              <span className="text-2xl">{item.icon}</span>
+              <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
+                <item.Icon className="w-5 h-5 text-orange-600" />
+              </div>
               <div>
                 <h4 className="font-semibold text-slate-800 dark:text-white text-sm">{item.title}</h4>
                 <p className="text-xs text-slate-600 dark:text-slate-300">{item.desc}</p>
@@ -195,9 +198,10 @@ export default function ThirtyDayChallenge() {
         {!showConfirm ? (
           <Button
             onClick={handleStartChallenge}
-            className="w-full h-16 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-lg font-bold rounded-2xl shadow-lg"
+            className="w-full h-16 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-lg font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2"
           >
-            🚀 Start My 30-Day Challenge
+            <Flame className="w-6 h-6" />
+            Start My 30-Day Challenge
           </Button>
         ) : (
           <motion.div
@@ -219,9 +223,16 @@ export default function ThirtyDayChallenge() {
               <Button
                 onClick={handleStartChallenge}
                 disabled={startChallengeMutation.isPending}
-                className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
+                className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 flex items-center justify-center gap-2"
               >
-                {startChallengeMutation.isPending ? 'Starting...' : "Yes, I'm Ready! 🔥"}
+                {startChallengeMutation.isPending ? (
+                  'Starting...'
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    Yes, I'm Ready!
+                  </>
+                )}
               </Button>
             </div>
           </motion.div>
