@@ -3814,6 +3814,20 @@ export const scenarioDatabase = [
 
 ];
 
+// Utility functions
+export function getRandomScenarios(count = 10) {
+  const shuffled = [...scenarioDatabase].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+export function getScenariosByCategory(category) {
+  return scenarioDatabase.filter(s => s.category === category);
+}
+
+export function getScenariosByDifficulty(difficulty) {
+  return scenarioDatabase.filter(s => s.difficulty === difficulty);
+}
+
 export function getCategoryCounts() {
   return {
     batting: scenarioDatabase.filter(s => s.category === 'batting').length,
