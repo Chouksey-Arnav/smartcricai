@@ -54,7 +54,7 @@ export default function SmartStart({ isDarkMode }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25 }}
+      transition={{ delay: 0.2 }}
       className={`rounded-3xl shadow-2xl p-6 border mt-6 ${
         isDarkMode 
           ? 'bg-gradient-to-br from-orange-600 to-red-600 border-orange-500' 

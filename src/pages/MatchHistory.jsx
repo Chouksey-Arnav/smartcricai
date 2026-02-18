@@ -1,12 +1,16 @@
 import React from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, Calendar, TrendingUp, Target } from 'lucide-react';
+import { Trophy, Calendar, TrendingUp, Target, Trash2, TrendingDown } from 'lucide-react';
 import Header from '@/components/common/Header';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import toast from 'react-hot-toast';
 
 export default function MatchHistory() {
+  const queryClient = useQueryClient();
+  
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
@@ -20,6 +24,26 @@ export default function MatchHistory() {
       return results.sort((a, b) => new Date(b.match_date) - new Date(a.match_date));
     },
     enabled: !!user?.email,
+  });
+
+  const deleteMatchMutation = useMutation({
+    mutationFn: async (matchId) => {
+      await base44.entities.Match.delete(matchId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['matches'] });
+      toast.success('Match deleted');
+    },
+  });
+
+  const deleteAllMatchesMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(matches.map(m => base44.entities.Match.delete(m.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['matches'] });
+      toast.success('All matches deleted');
+    },
   });
 
   const stats = {
@@ -36,6 +60,28 @@ export default function MatchHistory() {
       <Header title="Match History" />
 
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
+        {/* Delete All Button */}
+        {matches.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Button
+              onClick={() => {
+                if (confirm('Delete ALL match history? This cannot be undone.')) {
+                  deleteAllMatchesMutation.mutate();
+                }
+              }}
+              disabled={deleteAllMatchesMutation.isPending}
+              variant="destructive"
+              className="w-full bg-red-500 hover:bg-red-600"
+            >
+              <Trash2 className="w-5 h-5 mr-2" />
+              {deleteAllMatchesMutation.isPending ? 'Deleting...' : 'Delete All Matches'}
+            </Button>
+          </motion.div>
+        )}
+
         {/* Stats Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -90,9 +136,13 @@ export default function MatchHistory() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-2xl">
-                        {match.result === 'won' ? '🏆' : match.result === 'lost' ? '😔' : '🤝'}
-                      </span>
+                      {match.result === 'won' ? (
+                        <Trophy className="w-6 h-6 text-green-500" />
+                      ) : match.result === 'lost' ? (
+                        <TrendingDown className="w-6 h-6 text-red-500" />
+                      ) : (
+                        <Target className="w-6 h-6 text-slate-500" />
+                      )}
                       <h3 className="font-bold text-slate-800 capitalize">{match.match_type} Match</h3>
                     </div>
                     <p className="text-sm text-slate-500 flex items-center gap-1">
@@ -100,13 +150,26 @@ export default function MatchHistory() {
                       {format(new Date(match.match_date), 'MMM d, yyyy')}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                    match.result === 'won' ? 'bg-green-100 text-green-700' :
-                    match.result === 'lost' ? 'bg-red-100 text-red-700' :
-                    'bg-slate-100 text-slate-700'
-                  }`}>
-                    {match.result}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                      match.result === 'won' ? 'bg-green-100 text-green-700' :
+                      match.result === 'lost' ? 'bg-red-100 text-red-700' :
+                      'bg-slate-100 text-slate-700'
+                    }`}>
+                      {match.result}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this match? This cannot be undone.')) {
+                          deleteMatchMutation.mutate(match.id);
+                        }
+                      }}
+                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5 text-red-500" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Stats Summary */}

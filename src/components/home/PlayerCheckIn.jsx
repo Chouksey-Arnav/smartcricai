@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 
 const moods = [
-  { value: 'great', label: 'Great!', icon: Smile, color: 'from-emerald-500 to-teal-500', emoji: '😊' },
-  { value: 'good', label: 'Good', icon: Smile, color: 'from-blue-500 to-cyan-500', emoji: '🙂' },
-  { value: 'okay', label: 'Okay', icon: Meh, color: 'from-amber-500 to-orange-500', emoji: '😐' },
-  { value: 'not_great', label: 'Not Great', icon: Frown, color: 'from-orange-500 to-red-500', emoji: '😞' },
+  { value: 'great', label: 'Great!', icon: Smile, color: 'from-emerald-500 to-teal-500' },
+  { value: 'good', label: 'Good', icon: Smile, color: 'from-blue-500 to-cyan-500' },
+  { value: 'okay', label: 'Okay', icon: Meh, color: 'from-amber-500 to-orange-500' },
+  { value: 'not_great', label: 'Not Great', icon: Frown, color: 'from-orange-500 to-red-500' },
 ];
 
 export default function PlayerCheckIn({ user, isDarkMode }) {
@@ -28,7 +28,7 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
       await base44.entities.ScheduledActivity.create({
         user_email: user.email,
         title: `Mood Check-In: ${mood.label}`,
-        notes: `Feeling ${mood.label.toLowerCase()} today ${mood.emoji}`,
+        notes: `Feeling ${mood.label.toLowerCase()} today`,
         date: today,
         activity_type: 'custom'
       });
@@ -37,7 +37,7 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
       const today = new Date().toDateString();
       localStorage.setItem('checkin_date', today);
       setHasCheckedIn(true);
-      toast.success(`Check-in saved! Hope you have a great training session! ${mood.emoji}`);
+      toast.success(`Check-in saved! Hope you have a great training session!`);
       queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
     },
   });
@@ -50,7 +50,7 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
+      transition={{ delay: 0.25 }}
       className={`rounded-3xl shadow-2xl p-6 border ${
         isDarkMode 
           ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' 
@@ -73,13 +73,13 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
               checkInMutation.mutate(mood);
             }}
             disabled={checkInMutation.isPending}
-            className={`p-4 rounded-2xl transition-all ${
+            className={`p-4 rounded-2xl transition-all flex flex-col items-center ${
               isDarkMode
                 ? 'bg-slate-700 hover:bg-slate-600 border border-slate-600'
                 : 'bg-white hover:bg-slate-50 border border-slate-200'
             } ${checkInMutation.isPending && 'opacity-50'}`}
           >
-            <div className="text-3xl mb-2">{mood.emoji}</div>
+            <mood.icon className="w-10 h-10 mb-2 text-slate-600" />
             <p className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               {mood.label}
             </p>

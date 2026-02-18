@@ -398,17 +398,17 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
-        {/* Player Check-In */}
-        <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
-
         {/* Smart Start */}
         <SmartStart isDarkMode={isDarkMode} />
+
+        {/* Player Check-In */}
+        <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
 
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
           className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-2xl shadow-slate-300/50 p-6 border border-white/50"
         >
           <h2 className={`font-bold mb-5 flex items-center gap-2 text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
@@ -449,7 +449,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.35 }}
         >
           <DailyFact />
         </motion.div>
