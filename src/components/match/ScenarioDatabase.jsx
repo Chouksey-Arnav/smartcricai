@@ -3701,6 +3701,138 @@ export function getScenariosByDifficulty(difficulty) {
   return scenarioDatabase.filter(s => s.difficulty === difficulty);
 }
 
+// ========== 10 NEW CHALLENGING MINI-MATCH SCENARIOS ==========
+{
+  id: 'challenge_001',
+  category: 'batting',
+  difficulty: 'hard',
+  situation: 'ODI: 78 runs needed off 54 balls. You are set on 62*. Your partner gets out. Number 8 comes in.',
+  question: 'How do you approach the partnership?',
+  options: [
+    { text: 'Farm 90% of strike, shield the tail completely, only give them the last ball of overs', correct: false, explanation: 'Too extreme! They need some strike to stay engaged. Give them safe singles occasionally.' },
+    { text: 'Let them take half the strike to build their confidence', correct: false, explanation: 'Too risky! They cannot handle this pressure. You are the key.' },
+    { text: 'Take most strike, rotate when safe, communicate clearly', correct: true, explanation: 'Perfect balance! You lead the chase but involve them smartly. Communication is key!' },
+    { text: 'Both play defensively to ensure no more wickets fall', correct: false, explanation: 'Rate will climb! 78 off 54 needs active scoring. Stay positive!' }
+  ]
+},
+{
+  id: 'challenge_002',
+  category: 'bowling',
+  difficulty: 'hard',
+  situation: 'T20: Last over, defending 12. Ball 1: dot. Ball 2: wide + 4 (overthrow). Now defending 7 off 4.',
+  question: 'Ball 3 - what is your recovery plan?',
+  options: [
+    { text: 'Panic and try a wild variation you have never bowled before', correct: false, explanation: 'Stick to what you know! Trust your practiced skills under pressure!' },
+    { text: 'Give up mentally, just finish the over', correct: false, explanation: 'Never! 7 off 4 is very defendable! Stay in the fight!' },
+    { text: 'Reset completely. That is done. Execute your best ball now.', correct: true, explanation: 'Elite short-term memory! Cannot change what happened. Only this ball matters!' },
+    { text: 'Bowl bouncer in frustration at the overthrow', correct: false, explanation: 'Emotion-based bowling fails! Stay calm and execute your plan!' }
+  ]
+},
+{
+  id: 'challenge_003',
+  category: 'fielding',
+  difficulty: 'medium',
+  situation: 'Cover fielder. Ball hit firmly to your right. If you dive and miss, it is 4. If you stop it, save runs.',
+  question: 'Risk assessment?',
+  options: [
+    { text: 'Let it go - too risky to dive', correct: false, explanation: 'Wrong mentality! Back yourself. You train for this!' },
+    { text: 'Half-commit to the dive without full effort', correct: false, explanation: 'Worst option! Either commit fully or do not dive!' },
+    { text: 'Dive with full commitment - trust your training', correct: true, explanation: 'Perfect! Fielding is about commitment. You miss 100% of the attempts you do not make!' },
+    { text: 'Stand still and watch it go past while thinking about whether you should have dived', correct: false, explanation: 'Indecision costs runs! React instinctively and commit!' }
+  ]
+},
+{
+  id: 'challenge_004',
+  category: 'captaincy',
+  difficulty: 'medium',
+  situation: 'T20: You win toss. Humid evening, dew expected later. What do you do?',
+  question: 'Toss decision with dew factor?',
+  options: [
+    { text: 'Bowl first - ball will get wet with dew, harder to bowl later', correct: false, explanation: 'While dew helps batting, chasing adds pressure. Bat first, post big total!' },
+    { text: 'Bat first - set target, let them chase under pressure with dew', correct: true, explanation: 'Smart! Yes dew helps batting, but scoreboard pressure is bigger factor. Post total!' },
+    { text: 'Forfeit the toss and let them decide', correct: false, explanation: 'Why give away advantage? Make the decision!' },
+    { text: 'Ask match referee about dew levels before deciding', correct: false, explanation: 'Overthinking! Make a decision with available info now!' }
+  ]
+},
+{
+  id: 'challenge_005',
+  category: 'mental',
+  difficulty: 'hard',
+  situation: 'You are 98*. Last ball before tea. Could reach 100 before break or wait till after.',
+  question: 'Your approach to this ball?',
+  options: [
+    { text: 'Try to force a boundary to reach 100 before tea', correct: false, explanation: 'Unnecessary risk! Forcing it could get you out on 98!' },
+    { text: 'Block it defensively to guarantee you get to tea safely', correct: false, explanation: 'If it is a bad ball, why not score? Play on merit!' },
+    { text: 'Play the ball on its merit - if it is there to hit, go for it; if not, defend', correct: true, explanation: 'Perfect mindset! Process over outcome. Trust your game to make the right call!' },
+    { text: 'Ask partner what to do before the ball is bowled', correct: false, explanation: 'Your call! Trust your instincts and game awareness!' }
+  ]
+},
+{
+  id: 'challenge_006',
+  category: 'pressure',
+  difficulty: 'medium',
+  situation: 'Last ball, defending 2 runs. You are fielding at long-off. High ball coming toward you.',
+  question: 'What are you thinking as the ball is in the air?',
+  options: [
+    { text: 'If I catch this, we win the match and I will be the hero', correct: false, explanation: 'Outcome thinking creates pressure! Focus only on watching the ball!' },
+    { text: 'What if I drop it and we lose because of me', correct: false, explanation: 'Fear-based thinking! Negative thoughts create drops. Be confident!' },
+    { text: 'Watch the ball, get under it, catch it', correct: true, explanation: 'Perfect! Simplify the moment. Trust your training. Process, not outcome!' },
+    { text: 'Think about the crowd and how they are watching me right now', correct: false, explanation: 'Distraction! Block out everything except the ball. Focus!' }
+  ]
+},
+{
+  id: 'challenge_007',
+  category: 'batting',
+  difficulty: 'medium',
+  situation: 'Test: You are on 195*. Could become first player in your club to score a double hundred.',
+  question: 'Mindset for the next 5 runs?',
+  options: [
+    { text: 'Think about the milestone and how amazing it would be to score a double hundred and what that would mean for my career', correct: false, explanation: 'Milestone focus creates tension! Focus on batting well, not the number!' },
+    { text: 'Get nervous and defensive, blocking everything to make sure I do not get out before reaching 200', correct: false, explanation: 'Fear of failure! Play your natural game. That got you to 195!' },
+    { text: 'Just bat normally. The runs will come.', correct: true, explanation: 'Perfect! Trust your process. Milestones take care of themselves!' },
+    { text: 'Try to accelerate and reach it quickly in case I get out soon', correct: false, explanation: 'Forcing it increases risk! Stay patient and disciplined!' }
+  ]
+},
+{
+  id: 'challenge_008',
+  category: 'bowling',
+  difficulty: 'medium',
+  situation: 'You just took 2 wickets in 2 balls. On a hat-trick now. Massive pressure.',
+  question: 'Hat-trick ball - what do you bowl?',
+  options: [
+    { text: 'Try something special to make the hat-trick memorable', correct: false, explanation: 'Bowl YOUR ball! What works for you, not what looks good!' },
+    { text: 'Your best ball - the one you trust most', correct: true, explanation: 'Perfect! Trust your strength. Do not overthink. Execute what you do best!' },
+    { text: 'Copy what a famous bowler would do in this situation', correct: false, explanation: 'Be yourself! Your skill got you here. Trust it!' },
+    { text: 'Ask your captain what to bowl because the pressure is too high to decide yourself', correct: false, explanation: 'Back yourself! You are the bowler. Execute what YOU trust!' }
+  ]
+},
+{
+  id: 'challenge_009',
+  category: 'strategy',
+  difficulty: 'hard',
+  situation: 'ODI: Batting first. 225-7 after 45 overs. Tail is in. Last 5 overs - go hard or preserve wickets?',
+  question: 'Strategic call?',
+  options: [
+    { text: 'Send message to defend, get to 50 overs, add 20-25 runs safely', correct: false, explanation: 'Too defensive! 20 runs will not help. Take risks with tail!' },
+    { text: 'Go hard, try to reach 270+, accept risk of all out', correct: true, explanation: 'Correct! Tail cannot build anyway. Swing hard, add 40-50 if possible!' },
+    { text: 'Block for 4 overs, then slog last over only', correct: false, explanation: 'Wastes overs! If tail is in, use all 5 overs to attack!' },
+    { text: 'Retire set batsman to protect them for second innings', correct: false, explanation: 'Only one innings in ODI! Stay in and finish strong!' }
+  ]
+},
+{
+  id: 'challenge_010',
+  category: 'fielding',
+  difficulty: 'easy',
+  situation: 'You saved a boundary with a brilliant dive. Team celebrates. Next ball is coming.',
+  question: 'Your immediate focus?',
+  options: [
+    { text: 'Celebrate with the team for a bit longer', correct: false, explanation: 'Ball is coming! Refocus immediately!' },
+    { text: 'Get ready for the next ball', correct: true, explanation: 'Professional! One save does not define the game. Stay locked in!' },
+    { text: 'Feel proud and relax now that you have made your contribution', correct: false, explanation: 'Never relax! Every ball needs full focus and commitment!' },
+    { text: 'Think about how good that save felt', correct: false, explanation: 'Present moment! Next ball is what matters now!' }
+  ]
+},
+
 export function getCategoryCounts() {
   return {
     batting: scenarioDatabase.filter(s => s.category === 'batting').length,
