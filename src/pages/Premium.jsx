@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Crown, Sparkles, Target, Brain, TrendingUp, Check, Loader2, Zap } from 'lucide-react';
+import { Crown, Sparkles, Target, Brain, TrendingUp, Check, Loader2, Zap, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
-import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
 
 export default function Premium() {
@@ -14,54 +13,66 @@ export default function Premium() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
-  });
-
-  const { data: subscription } = useQuery({
-    queryKey: ['subscription', user?.email],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
-      return subs[0] || null;
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
     },
-    enabled: !!user?.email,
   });
 
-  const isPremium = subscription?.is_premium && new Date(subscription.subscription_end) > new Date();
-
-  const premiumFeatures = [
-    { icon: Brain, title: 'AI Drill Recommendations', description: 'Get personalized drill suggestions based on your performance and goals' },
-    { icon: Target, title: 'Advanced Analytics', description: 'Deep insights into your training patterns, progress, and areas for improvement' },
-    { icon: Sparkles, title: 'Unlimited AI Coaching', description: 'No limits on AI coach interactions - chat as much as you need' },
-    { icon: TrendingUp, title: 'Custom Training Plans', description: 'AI-generated personalized weekly training schedules' },
-    { icon: Zap, title: 'Priority Support', description: 'Get help faster with premium support and exclusive features' },
-    { icon: Brain, title: 'Exclusive Mental Training', description: 'Access to advanced mental routines and visualization techniques' },
-    { icon: Target, title: 'Performance Tracking', description: 'Track your stats, compare with past performances, and see your growth' },
-  ];
-
-  const handleUpgrade = async (planType) => {
-    setIsProcessing(true);
+  // Check localStorage for premium status
+  const premiumData = typeof window !== 'undefined' ? localStorage.getItem('smartcrick_premium') : null;
+  let isPremium = false;
+  let currentPlan = null;
+  
+  if (premiumData) {
     try {
-      // In a real implementation, you would:
-      // 1. Create a Stripe checkout session via backend
-      // 2. Redirect to Stripe checkout
-      // 3. Handle webhook for successful payment
-      
-      // For now, we'll simulate the upgrade
-      toast.success('Redirecting to payment...');
-      
-      // Simulate payment processing
-      setTimeout(() => {
-        toast.success('Premium activated! Welcome aboard! 🎉');
-        queryClient.invalidateQueries({ queryKey: ['subscription'] });
-        setIsProcessing(false);
-      }, 2000);
-      
-    } catch (error) {
-      console.error('Upgrade error:', error);
-      toast.error('Failed to process upgrade');
-      setIsProcessing(false);
-    }
+      const data = JSON.parse(premiumData);
+      currentPlan = data.plan;
+      isPremium = !!data.plan;
+    } catch (e) {}
+  }
+
+  const planFeatures = {
+    free: [
+      '30-Day Challenge',
+      'Smart Start',
+      'Unlimited AI Coach',
+      'Foundation & Skill & Performance Paths',
+      'YouTube Drill Finder',
+      'Basic Drill Library',
+      'Custom Drill Workout Creator',
+      'Workout Builder',
+      'AI Workout (saves workouts)',
+      'Fitness Builder',
+      'Mental Creator',
+      'Basic Mental Training',
+      'All Quizzes',
+      'Match Tracking & Performance Logging',
+      'Unlimited Basic Mini Match Scenarios',
+      'Scheduling & Task Management',
+      'Why Did I Get Out? Database',
+      'Live Progress Tracking'
+    ],
+    monthly: [
+      'Everything in Free',
+      'Elite Builder Skill Path (4th path unlocked)',
+      'Advanced Drill Library (all drills)',
+      'Advanced Mental Training (all routines)',
+      'Pro & Challenging Mini Match Scenarios'
+    ],
+    yearly: [
+      'Everything in Monthly',
+      'SmartCrick Head Coach (Exclusive)'
+    ],
+    lifetime: [
+      'Everything in Yearly',
+      '90-Day Challenge Architect',
+      'All Future Updates',
+      'Never Pay Again'
+    ]
   };
 
   return (
@@ -92,8 +103,8 @@ export default function Premium() {
             <div className="text-center mb-6">
               <Crown className="w-16 h-16 text-amber-500 mx-auto mb-3" />
               <h3 className="text-2xl font-bold text-slate-800 mb-2">You're Premium! 🎉</h3>
-              <p className="text-slate-600">
-                Subscription active until {new Date(subscription.subscription_end).toLocaleDateString()}
+              <p className="text-slate-600 capitalize">
+                {currentPlan} Plan Active
               </p>
             </div>
             
@@ -103,43 +114,13 @@ export default function Premium() {
           </motion.div>
         ) : (
           <>
-            {/* Features List */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-3"
-            >
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Premium Features:</h3>
-              {premiumFeatures.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.05 }}
-                  className="bg-white rounded-2xl p-4 shadow-md flex items-start gap-4"
-                >
-                  <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
-                    <feature.icon className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-800 mb-1">{feature.title}</h4>
-                    <p className="text-sm text-slate-600">{feature.description}</p>
-                  </div>
-                  <Check className="w-6 h-6 text-emerald-500 shrink-0 ml-auto" />
-                </motion.div>
-              ))}
-            </motion.div>
-
             {/* Pricing Plans */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.1 }}
               className="space-y-4"
             >
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Choose Your Plan:</h3>
-              
               {/* Free Plan */}
               <div className="bg-white rounded-2xl shadow-md p-6 border-2 border-slate-200">
                 <div className="flex items-center justify-between mb-4">
@@ -152,8 +133,13 @@ export default function Premium() {
                     <div className="text-sm text-slate-500">forever</div>
                   </div>
                 </div>
-                <div className="text-center py-2 text-sm text-slate-600">
-                  Limited AI coaching • Basic drills • Community features
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {planFeatures.free.map((feature, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-sm text-slate-600">
+                      <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -169,8 +155,15 @@ export default function Premium() {
                     <div className="text-sm text-slate-500">per month</div>
                   </div>
                 </div>
+                <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
+                  {planFeatures.monthly.map((feature, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                      <Check className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <span className="font-medium">{feature}</span>
+                    </div>
+                  ))}
+                </div>
                 <Button
-                  onClick={() => handleUpgrade('monthly')}
                   disabled={isProcessing}
                   className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                 >
@@ -190,7 +183,7 @@ export default function Premium() {
 
               {/* Yearly Plan */}
               <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-xl p-6 border-4 border-amber-400 relative">
-                <div className="absolute top-3 right-3 bg-white text-amber-600 px-3 py-1 rounded-full text-xs font-bold">
+                <div className="absolute top-3 right-3 bg-white text-amber-600 px-3 py-1 rounded-full text-xs font-bold z-10">
                   BEST VALUE
                 </div>
                 <div className="flex items-center justify-between mb-4 text-white">
@@ -203,8 +196,15 @@ export default function Premium() {
                     <div className="text-sm text-amber-100">per year</div>
                   </div>
                 </div>
+                <div className="space-y-2 mb-4 max-h-24 overflow-y-auto">
+                  {planFeatures.yearly.map((feature, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-sm text-white">
+                      <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
+                      <span className="font-medium">{feature}</span>
+                    </div>
+                  ))}
+                </div>
                 <Button
-                  onClick={() => handleUpgrade('yearly')}
                   disabled={isProcessing}
                   className="w-full h-12 bg-white text-amber-600 hover:bg-amber-50"
                 >
@@ -241,8 +241,15 @@ export default function Premium() {
                     <div className="text-sm text-purple-100">forever</div>
                   </div>
                 </div>
+                <div className="space-y-2 mb-4 max-h-24 overflow-y-auto">
+                  {planFeatures.lifetime.map((feature, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-sm text-white">
+                      <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
+                      <span className="font-medium">{feature}</span>
+                    </div>
+                  ))}
+                </div>
                 <Button
-                  onClick={() => handleUpgrade('lifetime')}
                   disabled={isProcessing}
                   className="w-full h-12 bg-white text-purple-600 hover:bg-purple-50"
                 >
@@ -258,7 +265,7 @@ export default function Premium() {
                     </>
                   )}
                 </Button>
-                <div className="mt-3 text-center text-xs text-purple-100">
+                <div className="mt-3 text-center text-xs text-purple-100 relative z-10">
                   🔥 Pay once, train forever • No recurring fees
                 </div>
               </div>
@@ -268,7 +275,7 @@ export default function Premium() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.3 }}
               className="bg-emerald-50 rounded-2xl p-4 text-center"
             >
               <p className="text-sm text-emerald-800 font-medium">
