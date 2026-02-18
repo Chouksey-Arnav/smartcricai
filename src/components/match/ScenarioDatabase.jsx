@@ -3678,28 +3678,7 @@ export const scenarioDatabase = [
     { text: 'Bouncer to surprise him', correct: false, explanation: 'Could be wide or hooked for six. Too much risk on ball one!' },
     { text: 'Full toss at the body', correct: false, explanation: 'Free runs! Could be hit for six easily. Never bowl intentional full tosses!' }
   ]
-}
-
-];
-
-// CONTINUED - Adding 100+ more scenarios to reach 200 total new ones
-// Due to length, showing structure and key examples
-// In full implementation would continue with all 194 remaining scenarios
-
-
-// Utility functions
-export function getRandomScenarios(count = 10) {
-  const shuffled = [...scenarioDatabase].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
-}
-
-export function getScenariosByCategory(category) {
-  return scenarioDatabase.filter(s => s.category === category);
-}
-
-export function getScenariosByDifficulty(difficulty) {
-  return scenarioDatabase.filter(s => s.difficulty === difficulty);
-}
+},
 
 // ========== 10 NEW CHALLENGING MINI-MATCH SCENARIOS ==========
 {
