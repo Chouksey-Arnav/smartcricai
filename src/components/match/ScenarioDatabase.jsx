@@ -3831,7 +3831,9 @@ export function getScenariosByDifficulty(difficulty) {
     { text: 'Feel proud and relax now that you have made your contribution', correct: false, explanation: 'Never relax! Every ball needs full focus and commitment!' },
     { text: 'Think about how good that save felt', correct: false, explanation: 'Present moment! Next ball is what matters now!' }
   ]
-},
+}
+
+];
 
 export function getCategoryCounts() {
   return {
