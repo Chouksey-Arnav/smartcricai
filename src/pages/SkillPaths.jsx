@@ -227,7 +227,12 @@ export default function SkillPaths() {
                           Requires {path.unlockXP} XP (You have {userProgress?.total_xp || 0})
                         </p>
                       )}
-                      {isLocked && <p className="text-xs text-amber-600 font-semibold">🔒 Premium Required</p>}
+                      {isLocked && (
+                        <p className="text-xs text-amber-600 font-semibold flex items-center gap-1">
+                          <Lock className="w-3 h-3" />
+                          Premium Required
+                        </p>
+                      )}
                     </div>
                   </div>
                   
@@ -254,7 +259,19 @@ export default function SkillPaths() {
                           : 'bg-slate-300 cursor-not-allowed'
                       }`}
                     >
-                      {isLocked ? '🔒 Premium Only' : !meetsXPRequirement ? '🔒 Need More XP' : 'Start This Path'}
+                      {isLocked ? (
+                        <>
+                          <Lock className="w-4 h-4 mr-2" />
+                          Premium Only
+                        </>
+                      ) : !meetsXPRequirement ? (
+                        <>
+                          <Lock className="w-4 h-4 mr-2" />
+                          Need More XP
+                        </>
+                      ) : (
+                        'Start This Path'
+                      )}
                     </Button>
                     {(key === 'intermediate' || key === 'advanced') && !canStart && !isLocked && (
                       <Button
@@ -407,9 +424,12 @@ export default function SkillPaths() {
                   bowling: 'bg-green-100 text-green-700',
                   fielding: 'bg-purple-100 text-purple-700',
                   physical: 'bg-orange-100 text-orange-700',
-                  mental: 'bg-pink-100 text-pink-700',
+                  mental: 'bg-pink-200 text-pink-800',
                   tactics: 'bg-amber-100 text-amber-700',
-                  assessment: 'bg-red-100 text-red-700'
+                  assessment: 'bg-red-100 text-red-700',
+                  drill: 'bg-blue-200 text-blue-800',
+                  fitness: 'bg-orange-200 text-orange-800',
+                  youtube: 'bg-yellow-200 text-yellow-800'
                 };
                 
                 return (
@@ -504,7 +524,7 @@ export default function SkillPaths() {
             className="mt-6 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white text-center"
           >
             <Trophy className="w-12 h-12 mx-auto mb-3" />
-            <h3 className="text-xl font-bold mb-2">🎉 Path Complete!</h3>
+            <h3 className="text-xl font-bold mb-2">Path Complete!</h3>
             <p className="text-amber-100 mb-4">
               You've earned the {currentPathData.badge.emoji} {currentPathData.badge.name} badge!
             </p>
