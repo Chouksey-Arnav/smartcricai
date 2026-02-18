@@ -33,7 +33,7 @@ export default function NinetyDayChallenge() {
 
   if (!hasLifetimePlan) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
+      <div className="min-h-screen bg-white dark:bg-white pb-24">
         <Header title="90-Day Challenge Architect" showSettings={false} />
         
         <div className="px-6 py-4 max-w-lg mx-auto">
@@ -89,7 +89,7 @@ export default function NinetyDayChallenge() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
+    <div className="min-h-screen bg-white dark:bg-white pb-24">
       <Header title="90-Day Challenge Architect" showSettings={false} />
       
       <div className="px-6 py-4 max-w-4xl mx-auto">

@@ -55,7 +55,7 @@ export default function MentalRoutineCard({ routine, onClick, isLocked }) {
         </div>
         
         <div className="flex-1">
-          <h3 className="font-semibold text-slate-800 mb-1">{routine.title}</h3>
+          <h3 className="font-semibold text-slate-800 dark:text-slate-800 mb-1">{routine.title}</h3>
           <p className="text-sm text-slate-500 mb-2 line-clamp-2">
             {routine.description}
           </p>

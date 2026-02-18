@@ -53,7 +53,7 @@ export default function Premium() {
       'Match Tracking & Performance Logging',
       'Unlimited Basic Mini Match Scenarios',
       'Scheduling & Task Management',
-      'Why Did I Get Out? Database',
+      'Why Did I Get Out?',
       'Live Progress Tracking'
     ],
     monthly: [

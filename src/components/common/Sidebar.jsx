@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   // Premium Elite Features - Top Priority
-  { name: 'AI Head Coach', icon: Crown, page: 'HeadCoach', color: 'text-amber-500', premium: 'yearly', highlight: true },
+  { name: 'SmartCrick Head Coach', icon: Crown, page: 'HeadCoach', color: 'text-amber-500', premium: 'yearly', highlight: true },
   { name: '90-Day Challenge', icon: Rocket, page: 'NinetyDayChallenge', color: 'text-purple-500', premium: 'lifetime', highlight: true },
   
   // Top Features
