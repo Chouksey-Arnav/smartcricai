@@ -22,7 +22,17 @@ const cricketFacts = [
   "The middle stump is exactly in the center, with equal gaps on both sides.",
   "A cricket pitch is 22 yards long - about the same as 20 normal steps!",
   "Spin bowlers can make the ball turn up to 45 degrees from the pitch!",
-  "The world's oldest cricket ground still in use is in London, opened in 1814!"
+  "The world's oldest cricket ground still in use is in London, opened in 1814!",
+  "Sachin Tendulkar played international cricket for 24 years - longer than many careers!",
+  "The boundary rope must be at least 65 yards from the center of the pitch.",
+  "Cricket whites became tradition in the 1890s to reflect heat and look professional.",
+  "The fastest century in T20 cricket was scored in just 35 balls!",
+  "A cricket ball loses about 15% of its weight during a match from wear and tear.",
+  "The Duckworth-Lewis method uses 50,000 possible match scenarios to calculate fair targets!",
+  "Professional cricket bats are made from willow trees that are 15-20 years old.",
+  "The 'leg before wicket' (LBW) rule has been part of cricket since 1774!",
+  "In Test cricket, a new ball is available every 80 overs - that's about 480 deliveries!",
+  "Cricket stumps must weigh between 3-4 pounds each."
 ];
 
 export default function DailyFact() {

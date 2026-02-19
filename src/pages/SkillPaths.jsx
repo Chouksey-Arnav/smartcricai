@@ -93,12 +93,15 @@ export default function SkillPaths() {
   };
 
   const completeItem = useMutation({
-    mutationFn: async ({ itemId, xp }) => {
+    mutationFn: async ({ itemId, xp, itemName, weekTitle }) => {
       if (!user?.email || !skillPath || !userProgress) throw new Error("User not authenticated or skill path/progress not found");
-      const newCompleted = [...(skillPath.completed_items || []), itemId];
+      
+      // Check if already completed
+      const alreadyCompleted = skillPath.completed_items?.includes(itemId);
+      const newCompleted = alreadyCompleted ? [...(skillPath.completed_items || [])] : [...(skillPath.completed_items || []), itemId];
       const newXP = (skillPath.xp || 0) + xp;
       
-      // Also update UserProgress XP
+      // Update UserProgress XP
       const currentTotalXP = userProgress?.total_xp || 0;
       await base44.entities.UserProgress.update(userProgress.id, {
         total_xp: currentTotalXP + xp
@@ -111,6 +114,15 @@ export default function SkillPaths() {
           total_xp: (leaderboards[0].total_xp || 0) + xp
         });
       }
+
+      // Create personalized notification
+      await base44.entities.Notification.create({
+        user_email: user.email,
+        type: 'achievement',
+        title: `${weekTitle} Completed! 🎯`,
+        message: `Congratulations! You've completed "${itemName}" from ${currentPathData.name}. +${xp} XP earned!`,
+        related_id: itemId
+      });
       
       return await base44.entities.SkillPath.update(skillPath.id, {
         completed_items: newCompleted,
@@ -121,6 +133,7 @@ export default function SkillPaths() {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Progress saved! 🎯');
     },
     onError: (error) => {
@@ -481,42 +494,40 @@ export default function SkillPaths() {
                         )}
                       </div>
                       
-                      {!isCompleted && (
-                        <Button
-                          onClick={() => {
-                            // Navigate based on item type
-                            if (item.type === 'drill' && item.drillId) {
-                              navigate(createPageUrl(`DrillDetail?id=${item.drillId}`));
-                            } else if (item.type === 'mental' && item.mentalId) {
-                              navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}`));
-                            } else if (item.type === 'youtube' && item.url) {
-                              window.open(item.url, '_blank');
-                              completeItem.mutate({ itemId: item.id, xp: item.xp });
-                            } else {
-                              // For fitness or other types, mark as complete
-                              completeItem.mutate({ itemId: item.id, xp: item.xp });
-                            }
-                          }}
-                          size="sm"
-                          className={`shrink-0 ${
-                            skillPath.level === 'beginner' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                            skillPath.level === 'intermediate' ? 'bg-blue-600 hover:bg-blue-700' :
-                            skillPath.level === 'advanced' ? 'bg-purple-600 hover:bg-purple-700' :
-                            'bg-amber-600 hover:bg-amber-700'
-                          }`}
-                        >
-                          {item.type === 'drill' || item.type === 'mental' ? 'Start' : item.type === 'youtube' ? 'Watch' : 'Complete'}
-                        </Button>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          )
-        ))}
+                      <Button
+                        onClick={() => {
+                          // Navigate based on item type
+                          if (item.type === 'drill' && item.drillId) {
+                            navigate(createPageUrl(`DrillDetail?id=${item.drillId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
+                          } else if (item.type === 'mental' && item.mentalId) {
+                            navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
+                          } else if (item.type === 'youtube' && item.url) {
+                            window.open(item.url, '_blank');
+                            completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
+                          } else {
+                            // For fitness or other types, mark as complete
+                            completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
+                          }
+                        }}
+                        size="sm"
+                        className={`shrink-0 ${
+                          skillPath.level === 'beginner' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                          skillPath.level === 'intermediate' ? 'bg-blue-600 hover:bg-blue-700' :
+                          skillPath.level === 'advanced' ? 'bg-purple-600 hover:bg-purple-700' :
+                          'bg-amber-600 hover:bg-amber-700'
+                        }`}
+                      >
+                        {isCompleted ? 'Complete Again' : item.type === 'drill' || item.type === 'mental' ? 'Start' : item.type === 'youtube' ? 'Watch' : 'Complete'}
+                      </Button>
+                      </div>
+                      </motion.div>
+                      );
+                      })}
+                      </motion.div>
+                      )
+                      ))}
 
-        {/* Path Complete - Unlock Next */}
+                      {/* Path Complete - Unlock Next */}
         {canUnlockNext() && getNextLevel(skillPath.level) && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
