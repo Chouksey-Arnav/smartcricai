@@ -3,7 +3,7 @@ import Header from '@/components/common/Header';
 
 export default function DrillYouTubeFinder() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-white flex flex-col">
       <Header title="YouTube Drill Finder" />
       
       <div className="flex-1 px-4 py-4 max-w-7xl mx-auto w-full">

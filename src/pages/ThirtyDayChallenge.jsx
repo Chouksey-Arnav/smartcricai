@@ -51,13 +51,25 @@ export default function ThirtyDayChallenge() {
       const today = new Date().toISOString().split('T')[0];
       const guestEmail = user?.email || 'guest@smartcrick.app';
       
-      await base44.entities.ScheduledActivity.create({
-        user_email: guestEmail,
-        title: 'SmartCrick 30-Day Challenge Started!',
-        notes: 'Your transformative journey begins today',
-        date: today,
-        activity_type: 'custom'
-      });
+      // Create 30 scheduled activities for each day
+      const promises = [];
+      for (let day = 0; day < 30; day++) {
+        const date = new Date();
+        date.setDate(date.getDate() + day);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        promises.push(
+          base44.entities.ScheduledActivity.create({
+            user_email: guestEmail,
+            title: `30-Day Challenge - Day ${day + 1}`,
+            notes: `Complete your training for Day ${day + 1}`,
+            date: dateStr,
+            activity_type: '30_day_challenge'
+          })
+        );
+      }
+      
+      await Promise.all(promises);
 
       await base44.entities.Notification.create({
         user_email: guestEmail,
@@ -67,7 +79,6 @@ export default function ThirtyDayChallenge() {
         related_id: 'challenge_day_1'
       });
 
-      // Store challenge start date for daily notifications
       localStorage.setItem('challenge_start_date', today);
     },
     onSuccess: () => {
@@ -76,6 +87,39 @@ export default function ThirtyDayChallenge() {
       queryClient.invalidateQueries({ queryKey: ['savedChallenge'] });
       toast.success('Challenge started!');
       setChallengeStarted(true);
+    },
+  });
+
+  const stopChallengeMutation = useMutation({
+    mutationFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      
+      // Delete all 30-day challenge activities
+      const activities = await base44.entities.ScheduledActivity.filter({
+        user_email: guestEmail,
+        activity_type: '30_day_challenge'
+      });
+      
+      await Promise.all(activities.map(act => base44.entities.ScheduledActivity.delete(act.id)));
+      
+      // Delete challenge start notification
+      const startActivity = await base44.entities.ScheduledActivity.filter({
+        user_email: guestEmail,
+        title: 'SmartCrick 30-Day Challenge Started!'
+      });
+      
+      if (startActivity.length > 0) {
+        await base44.entities.ScheduledActivity.delete(startActivity[0].id);
+      }
+      
+      localStorage.removeItem('challenge_start_date');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
+      queryClient.invalidateQueries({ queryKey: ['savedChallenge'] });
+      toast.success('Challenge stopped');
+      setChallengeStarted(false);
     },
   });
 
@@ -129,7 +173,7 @@ export default function ThirtyDayChallenge() {
               />
             </div>
 
-            <div className="p-6 border-t">
+            <div className="p-6 border-t space-y-3">
               <Button
                 onClick={() => navigate(-1)}
                 variant="outline"
@@ -137,6 +181,18 @@ export default function ThirtyDayChallenge() {
               >
                 <ChevronLeft className="w-5 h-5 mr-2" />
                 Back to Home
+              </Button>
+              <Button
+                onClick={() => {
+                  if (confirm('Are you sure you want to stop the 30-Day Challenge? All progress will be reset.')) {
+                    stopChallengeMutation.mutate();
+                  }
+                }}
+                disabled={stopChallengeMutation.isPending}
+                variant="destructive"
+                className="w-full h-12"
+              >
+                {stopChallengeMutation.isPending ? 'Stopping...' : 'Stop 30-Day Challenge'}
               </Button>
             </div>
           </motion.div>

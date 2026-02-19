@@ -7,10 +7,12 @@ import NotificationBar from '@/components/common/NotificationBar';
 import FloatingTimer from '@/components/common/FloatingTimer';
 import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
+const pagesWithLightBg = ['HeadCoach', 'NinetyDayChallenge', 'ThirtyDayChallenge', 'Coach', 'DrillYouTubeFinder'];
 
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
   const isHomePage = currentPageName === 'Home';
+  const forceLightBg = pagesWithLightBg.includes(currentPageName);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -18,7 +20,7 @@ export default function Layout({ children, currentPageName }) {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className={forceLightBg ? "min-h-screen bg-white dark:bg-white" : "min-h-screen bg-slate-50"}>
       <Sidebar />
       <div className="fixed top-4 right-4 z-50 flex items-start gap-2">
         <NotificationBar />
@@ -167,7 +169,6 @@ export default function Layout({ children, currentPageName }) {
 
 
       {showNav && <BottomNav />}
-      <script defer data-relevanceai-share-id="bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064" src="https://app.relevanceai.com/embed/chat-bubble.js" data-share-styles="hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false" ></script>
       <script defer data-relevanceai-share-id="bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064" src="https://app.relevanceai.com/embed/chat-bubble.js" data-share-styles="hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false" ></script>
       <script>
         {`(function() {
