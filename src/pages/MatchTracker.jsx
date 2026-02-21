@@ -119,17 +119,17 @@ export default function MatchTracker() {
             <div>
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Date</label>
               <Input
-                type="date"
-                value={match.match_date}
-                onChange={(e) => setMatch({...match, match_date: e.target.value})}
-                className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-              />
+                    type="date"
+                    value={match.match_date}
+                    onChange={(e) => setMatch({...match, match_date: e.target.value})}
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
+                  />
             </div>
 
             <div>
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Match Type</label>
               <Select value={match.match_type} onValueChange={(val) => setMatch({...match, match_type: val})}>
-                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12">
                   <SelectValue placeholder="Select match type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -145,7 +145,7 @@ export default function MatchTracker() {
             <div>
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Result</label>
               <Select value={match.result} onValueChange={(val) => setMatch({...match, result: val})}>
-                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12">
                   <SelectValue placeholder="Select result" />
                 </SelectTrigger>
                 <SelectContent>
@@ -168,7 +168,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.batting_stats.runs}
                     onChange={(e) => setMatch({...match, batting_stats: {...match.batting_stats, runs: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
                 <div>
@@ -177,7 +177,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.batting_stats.balls}
                     onChange={(e) => setMatch({...match, batting_stats: {...match.batting_stats, balls: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
                 <div>
@@ -186,7 +186,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.batting_stats.fours}
                     onChange={(e) => setMatch({...match, batting_stats: {...match.batting_stats, fours: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
                 <div>
@@ -195,7 +195,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.batting_stats.sixes}
                     onChange={(e) => setMatch({...match, batting_stats: {...match.batting_stats, sixes: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.bowling_stats.wickets}
                     onChange={(e) => setMatch({...match, bowling_stats: {...match.bowling_stats, wickets: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
                 <div>
@@ -221,7 +221,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.bowling_stats.runs_conceded}
                     onChange={(e) => setMatch({...match, bowling_stats: {...match.bowling_stats, runs_conceded: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.fielding_stats.catches}
                     onChange={(e) => setMatch({...match, fielding_stats: {...match.fielding_stats, catches: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
                 <div>
@@ -247,7 +247,7 @@ export default function MatchTracker() {
                     type="number"
                     value={match.fielding_stats.run_outs}
                     onChange={(e) => setMatch({...match, fielding_stats: {...match.fielding_stats, run_outs: parseInt(e.target.value) || 0}})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
                   />
                 </div>
               </div>
@@ -274,7 +274,7 @@ export default function MatchTracker() {
                 value={match.notes}
                 onChange={(e) => setMatch({...match, notes: e.target.value})}
                 placeholder="How did it go? What did you learn?"
-                className="h-24 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                className="min-h-24 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
               />
             </div>
           </div>

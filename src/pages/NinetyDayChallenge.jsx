@@ -33,7 +33,7 @@ export default function NinetyDayChallenge() {
 
   if (!hasLifetimePlan) {
     return (
-      <div className="min-h-screen bg-white dark:bg-white pb-24">
+      <div className="min-h-screen bg-white pb-24">
         <Header title="90-Day Challenge Architect" showSettings={false} />
         
         <div className="px-6 py-4 max-w-lg mx-auto">
@@ -89,7 +89,7 @@ export default function NinetyDayChallenge() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-white pb-24">
+    <div className="min-h-screen bg-white pb-24">
       <Header title="90-Day Challenge Architect" showSettings={false} />
       
       <div className="px-6 py-4 max-w-4xl mx-auto">
@@ -108,7 +108,7 @@ export default function NinetyDayChallenge() {
         </motion.div>
 
         {/* AI Agent Embed with white background for dark mode */}
-        <div className="bg-white dark:bg-white rounded-3xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
           <iframe 
             src="https://app.relevanceai.com/agents/bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/366636d2-101a-46ed-ac68-c6ec3b4b1daa/embed-chat?hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false" 
             width="100%" 

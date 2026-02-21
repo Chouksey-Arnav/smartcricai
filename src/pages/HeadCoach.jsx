@@ -33,7 +33,7 @@ export default function HeadCoach() {
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-white dark:bg-white pb-24">
+      <div className="min-h-screen bg-white pb-24">
         <Header title="SmartCrick Head Coach" showSettings={false} />
         
         <div className="px-6 py-4 max-w-lg mx-auto">
@@ -94,7 +94,7 @@ export default function HeadCoach() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-white pb-24">
+    <div className="min-h-screen bg-white pb-24">
       <Header title="SmartCrick Head Coach" showSettings={false} />
       
       <div className="px-6 py-4 max-w-4xl mx-auto">
