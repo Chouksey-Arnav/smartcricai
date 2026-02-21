@@ -17,7 +17,13 @@ export default function SavedDrillWorkout() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: workout, isLoading } = useQuery({
@@ -48,12 +54,13 @@ export default function SavedDrillWorkout() {
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.email || !workout) return;
+      if (!workout) return;
+      const guestEmail = user?.email || 'guest@smartcrick.app';
 
       const xpEarned = workout.num_drills * 50;
 
       // Update user progress
-      const progress = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const progress = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       if (progress.length > 0) {
         await base44.entities.UserProgress.update(progress[0].id, {
           total_xp: (progress[0].total_xp || 0) + xpEarned
@@ -61,7 +68,7 @@ export default function SavedDrillWorkout() {
       }
 
       // Update Leaderboard
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned
@@ -70,7 +77,7 @@ export default function SavedDrillWorkout() {
 
       // Create notification
       await base44.entities.Notification.create({
-        user_email: user.email,
+        user_email: guestEmail,
         type: 'workout',
         title: `Workout Completed! 💪 +${xpEarned} XP`,
         message: `"${workout.workout_name}" completed! Amazing work!`,

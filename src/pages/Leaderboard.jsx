@@ -45,7 +45,8 @@ export default function Leaderboard() {
     staleTime: 60000,
   });
 
-  const userRank = leaderboard.findIndex(entry => entry.user_email === user?.email) + 1;
+  const guestEmail = user?.email || 'guest@smartcrick.app';
+  const userRank = leaderboard.findIndex(entry => entry.user_email === guestEmail) + 1;
 
   const getRankMedal = (index) => {
     if (index === 0) return '🥇';
@@ -111,7 +112,7 @@ export default function Leaderboard() {
         ) : (
           <div className="space-y-3">
             {leaderboard.map((entry, index) => {
-              const isCurrentUser = entry.user_email === user?.email;
+              const isCurrentUser = entry.user_email === guestEmail;
               const value = {
                 xp: entry.total_xp,
                 drills: entry.drills_completed,

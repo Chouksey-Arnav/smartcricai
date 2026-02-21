@@ -16,46 +16,48 @@ export default function AIDrillRecommendation() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: subscription } = useQuery({
-    queryKey: ['subscription', user?.email],
+    queryKey: ['subscription', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: guestEmail });
       return subs[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const { data: userProgress } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const progress = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const progress = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return progress[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const { data: userProfile } = useQuery({
-    queryKey: ['userProfile', user?.email],
+    queryKey: ['userProfile', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const profiles = await base44.entities.UserProfile.filter({ user_email: guestEmail });
       return profiles[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const { data: matches } = useQuery({
-    queryKey: ['matches', user?.email],
+    queryKey: ['matches', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return [];
-      return await base44.entities.Match.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      return await base44.entities.Match.filter({ user_email: guestEmail });
     },
-    enabled: !!user?.email,
     initialData: [],
   });
 

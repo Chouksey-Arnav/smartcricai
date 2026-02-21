@@ -35,24 +35,22 @@ export default function WorkoutBuilder() {
   });
 
   const { data: premiumStatus } = useQuery({
-    queryKey: ['premiumStatus', user?.email],
+    queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: guestEmail });
       return subs[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const isPremium = premiumStatus?.is_premium || false;
 
   const { data: savedWorkouts = [] } = useQuery({
-    queryKey: ['savedWorkouts', user?.email],
+    queryKey: ['savedWorkouts', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return [];
-      return await base44.entities.SavedWorkout.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      return await base44.entities.SavedWorkout.filter({ user_email: guestEmail });
     },
-    enabled: !!user?.email,
   });
 
   const [workoutName, setWorkoutName] = useState('');

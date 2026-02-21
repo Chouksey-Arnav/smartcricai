@@ -133,12 +133,12 @@ export default function ThirtyDayChallenge() {
 
   if (challengeStarted) {
     return (
-      <div className="min-h-screen bg-white dark:bg-white p-4 overflow-y-auto">
+      <div className="min-h-screen bg-white p-4 overflow-y-auto">
         <div className="w-full max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-white rounded-3xl shadow-2xl overflow-hidden"
+            className="bg-white rounded-3xl shadow-2xl overflow-hidden"
           >
             <div className="bg-gradient-to-r from-orange-400 to-red-500 p-6 text-center">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -202,7 +202,7 @@ export default function ThirtyDayChallenge() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-white flex items-center justify-center p-6 overflow-y-auto">
+    <div className="min-h-screen bg-white flex items-center justify-center p-6 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
