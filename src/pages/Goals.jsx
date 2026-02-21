@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import toast from 'react-hot-toast';
 
 const goalQuestions = [
