@@ -245,7 +245,17 @@ export default function Home() {
     else setGreeting('Good evening');
   }, []);
 
-  const displayName = progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.email || 'guest'],
+    queryFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const profiles = await base44.entities.Profile.filter({ user_email: guestEmail });
+      return profiles[0] || null;
+    },
+    staleTime: 60000,
+  });
+
+  const displayName = profile?.username || progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -343,7 +353,7 @@ export default function Home() {
             <p className="text-emerald-100 text-sm mb-1">{greeting}!</p>
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-white">
-                Hey, {user?.full_name?.split(' ')[0] || 'Champ'}
+                Hey, {displayName}
               </h1>
               <Link to={createPageUrl('ScheduleExtendedView')}>
                 <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
@@ -568,17 +578,6 @@ export default function Home() {
                 <Search className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Why Got Out?</h3>
                 <p className="text-xs text-red-50">Analyze dismissals</p>
-              </motion.div>
-            </Link>
-            <Link to={createPageUrl('VideoAnalysis')}>
-              <motion.div 
-                whileHover={{ scale: 1.05, y: -4 }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-gradient-to-br from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
-              >
-                <Video className="w-10 h-10 text-white mb-2" />
-                <h3 className="font-bold text-white text-sm mb-1">Video Analysis</h3>
-                <p className="text-xs text-rose-50">Upload & analyze</p>
               </motion.div>
             </Link>
           </div>

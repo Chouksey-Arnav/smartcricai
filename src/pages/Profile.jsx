@@ -21,38 +21,38 @@ export default function Profile() {
   });
 
   const { data: progress } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const { data: profile } = useQuery({
-    queryKey: ['profile', user?.email],
+    queryKey: ['profile', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.Profile.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.Profile.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const updateNameMutation = useMutation({
     mutationFn: async (username) => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       if (profile?.id) {
         return await base44.entities.Profile.update(profile.id, { username });
       } else {
         return await base44.entities.Profile.create({
-          user_email: user.email,
+          user_email: guestEmail,
           username
         });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       toast.success('Name updated successfully!');
       setIsEditingName(false);
       setNewUsername('');

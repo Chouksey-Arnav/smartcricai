@@ -60,7 +60,11 @@ export default function MentalTrainingCreator() {
 
   const saveMentalRoutineMutation = useMutation({
     mutationFn: async (routine) => {
-      return await base44.entities.MentalRoutine.create(routine);
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      return await base44.entities.MentalRoutine.create({
+        ...routine,
+        user_email: guestEmail
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
