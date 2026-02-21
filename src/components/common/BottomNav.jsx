@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Home, MessageCircle, Target, Crown, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -14,12 +14,27 @@ const navItems = [
 
 export default function BottomNav() {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const handleNavClick = (e, item) => {
+    e.preventDefault();
+    const pageUrl = createPageUrl(item.page);
+    const isActive = currentPath.includes(item.page);
+    
+    // If already on this page, navigate to its root
+    if (isActive) {
+      navigate(pageUrl, { replace: true });
+      window.scrollTo(0, 0);
+    } else {
+      navigate(pageUrl);
+    }
+  };
+
   return (
     <nav className={cn(
-      "fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-emerald-100 dark:border-slate-700 z-50 transition-transform duration-300",
+      "fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-emerald-100 dark:border-slate-700 z-50 transition-transform duration-300 bottom-nav-container",
       isCollapsed && "translate-y-full"
     )}>
       {/* Collapse/Expand Button */}
@@ -41,9 +56,10 @@ export default function BottomNav() {
         {navItems.map((item) => {
           const isActive = currentPath.includes(item.page);
           return (
-            <Link
+            <a
               key={item.name}
-              to={createPageUrl(item.page)}
+              href={createPageUrl(item.page)}
+              onClick={(e) => handleNavClick(e, item)}
               className={cn(
                 "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300",
                 isActive 
@@ -61,7 +77,7 @@ export default function BottomNav() {
               )}>
                 {item.name}
               </span>
-            </Link>
+            </a>
           );
         })}
       </div>

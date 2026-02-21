@@ -2,22 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun, X } from 'lucide-react';
+import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { createPageUrl } from '@/utils';
 import toast from 'react-hot-toast';
 
 export default function Settings() {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
-    // Check if dark mode is enabled
-    const isDark = localStorage.getItem('darkMode') === 'true';
+    const isDark = localStorage.getItem('theme') === 'dark';
     setDarkMode(isDark);
     if (isDark) {
       document.documentElement.classList.add('dark');
@@ -27,7 +28,7 @@ export default function Settings() {
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
-    localStorage.setItem('darkMode', newMode.toString());
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
     if (newMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -37,11 +38,22 @@ export default function Settings() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const handleLogout = () => {
     base44.auth.logout();
+  };
+
+  const handleDeleteAccount = () => {
+    toast.error('Account deletion requires contacting support. Please visit the Base44 dashboard.');
+    setShowDeleteConfirm(false);
   };
 
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -65,7 +77,7 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
       <Header title="Settings" showSettings={false} />
 
       <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
@@ -80,8 +92,8 @@ export default function Settings() {
               <User className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="font-bold text-xl">{user?.full_name || 'User'}</h2>
-              <p className="text-emerald-100 text-sm">{user?.email}</p>
+              <h2 className="font-bold text-xl">{user?.full_name || 'Guest User'}</h2>
+              <p className="text-emerald-100 text-sm">{user?.email || 'Not logged in'}</p>
             </div>
           </div>
         </motion.div>
@@ -93,30 +105,30 @@ export default function Settings() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: sectionIndex * 0.1 }}
-            className="bg-white rounded-3xl shadow-xl overflow-hidden"
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden"
           >
-            <div className="px-6 py-3 bg-slate-50 border-b">
-              <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">
+            <div className="px-6 py-3 bg-slate-50 dark:bg-slate-700 border-b dark:border-slate-600">
+              <h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm uppercase tracking-wide">
                 {section.title}
               </h3>
             </div>
-            <div className="divide-y">
+            <div className="divide-y dark:divide-slate-700">
               {section.items.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <div
                     key={index}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="w-5 h-5 text-slate-400" />
-                      <span className="font-medium text-slate-800">{item.label}</span>
+                      <Icon className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                      <span className="font-medium text-slate-800 dark:text-slate-200">{item.label}</span>
                     </div>
                     {item.isToggle ? (
                       <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
                     ) : (
                       <button onClick={item.action}>
-                        <ChevronRight className="w-5 h-5 text-slate-300" />
+                        <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600" />
                       </button>
                     )}
                   </div>
@@ -126,20 +138,64 @@ export default function Settings() {
           </motion.div>
         ))}
 
-        {/* Logout */}
-        <Button
-          onClick={handleLogout}
-          variant="destructive"
-          className="w-full h-14 bg-red-500 hover:bg-red-600 text-lg"
+        {/* Danger Zone */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-red-50 dark:bg-red-950 rounded-3xl shadow-xl overflow-hidden border-2 border-red-200 dark:border-red-800"
         >
-          <LogOut className="w-5 h-5 mr-2" />
-          Logout
-        </Button>
+          <div className="px-6 py-3 bg-red-100 dark:bg-red-900 border-b border-red-200 dark:border-red-800">
+            <h3 className="font-bold text-red-700 dark:text-red-300 text-sm uppercase tracking-wide">
+              Danger Zone
+            </h3>
+          </div>
+          <div className="p-6">
+            <Button
+              onClick={() => setShowDeleteConfirm(true)}
+              variant="destructive"
+              className="w-full h-12 bg-red-600 hover:bg-red-700"
+            >
+              <Trash2 className="w-5 h-5 mr-2" />
+              Delete Account
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Logout */}
+        {user && (
+          <Button
+            onClick={handleLogout}
+            variant="destructive"
+            className="w-full h-14 bg-red-500 hover:bg-red-600 text-lg"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Logout
+          </Button>
+        )}
 
         <p className="text-center text-xs text-slate-400">
-          App Version 1.0.0
+          SmartCrick AI • Version 1.0.0
         </p>
       </div>
+
+      {/* Delete Account Confirmation */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All your data, progress, workouts, and achievements will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700">
+              Yes, Delete My Account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Privacy Dialog */}
       <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
@@ -148,7 +204,7 @@ export default function Settings() {
             <DialogTitle>Privacy Policy</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-slate-700 leading-relaxed">
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Everything you say and do in Smart Cricket AI is always saved to personalize your experience, 
               but your data is private and is <strong>never used by anyone else</strong>. We respect your privacy 
               and keep all your training data secure and confidential.
@@ -168,23 +224,25 @@ export default function Settings() {
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-2">Name</label>
-              <p className="text-slate-800 font-semibold">{user?.full_name}</p>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">Name</label>
+              <p className="text-slate-800 dark:text-slate-200 font-semibold">{user?.full_name || 'Guest'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-2">Email</label>
-              <p className="text-slate-600">{user?.email}</p>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">Email</label>
+              <p className="text-slate-600 dark:text-slate-400">{user?.email || 'Not logged in'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-2">Account Type</label>
-              <p className="text-slate-600 capitalize">{user?.role || 'User'}</p>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">Account Type</label>
+              <p className="text-slate-600 dark:text-slate-400 capitalize">{user?.role || 'Guest'}</p>
             </div>
-            <Button onClick={() => {
-              setShowProfile(false);
-              navigate(createPageUrl('Profile'));
-            }} className="w-full">
-              View Full Profile
-            </Button>
+            {user && (
+              <Button onClick={() => {
+                setShowProfile(false);
+                navigate(createPageUrl('Profile'));
+              }} className="w-full">
+                View Full Profile
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
