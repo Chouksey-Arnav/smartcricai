@@ -44,7 +44,13 @@ export default function DrillWorkoutCreator() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
 
   const { data: allDrills } = useQuery({
@@ -75,11 +81,8 @@ export default function DrillWorkoutCreator() {
     }
 
     setIsSearching(true);
-
-    // Simulate brief loading for UX
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Filter drills based on selections
     const filtered = allDrills.filter(drill => {
       const matchesCategory = drill.category === category;
       const matchesSkillLevel = drill.skill_level === skillLevel;
@@ -100,8 +103,9 @@ export default function DrillWorkoutCreator() {
   const handleSave = () => {
     if (matchingDrills.length === 0) return;
 
+    const guestEmail = user?.email || 'guest@smartcrick.app';
     const workout = {
-      user_email: user.email,
+      user_email: guestEmail,
       workout_name: `${category.charAt(0).toUpperCase() + category.slice(1)} - ${skillLevel}`,
       num_drills: matchingDrills.length,
       skill_level: skillLevel,
@@ -129,7 +133,7 @@ export default function DrillWorkoutCreator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:to-slate-950 pb-24">
       <Header title="Drill Workout Creator" />
 
       <div className="px-6 py-6 max-w-2xl mx-auto space-y-6">
@@ -149,14 +153,14 @@ export default function DrillWorkoutCreator() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-3xl shadow-xl p-6 space-y-5"
+              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-5"
             >
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Drill Category
                 </label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="h-14 text-base">
+                  <SelectTrigger className="h-14 text-base bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -173,11 +177,11 @@ export default function DrillWorkoutCreator() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Skill Level
                 </label>
                 <Select value={skillLevel} onValueChange={setSkillLevel}>
-                  <SelectTrigger className="h-14 text-base">
+                  <SelectTrigger className="h-14 text-base bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                     <SelectValue placeholder="Select skill level" />
                   </SelectTrigger>
                   <SelectContent>
@@ -191,11 +195,11 @@ export default function DrillWorkoutCreator() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Workout Duration
                 </label>
                 <Select value={duration} onValueChange={setDuration}>
-                  <SelectTrigger className="h-14 text-base">
+                  <SelectTrigger className="h-14 text-base bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
@@ -231,12 +235,12 @@ export default function DrillWorkoutCreator() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl shadow-2xl p-6"
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6"
           >
             <div className="text-center mb-6">
               <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Workout Ready!</h3>
-              <p className="text-slate-600 capitalize">
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Workout Ready!</h3>
+              <p className="text-slate-600 dark:text-slate-400 capitalize">
                 {matchingDrills.length} {category} drills • {skillLevel} level • Up to {duration} min
               </p>
             </div>
@@ -248,15 +252,15 @@ export default function DrillWorkoutCreator() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer"
+                    className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl p-4 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
                         {index + 1}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-slate-800">{drill.title}</h4>
-                        <p className="text-xs text-slate-600">
+                        <h4 className="font-bold text-slate-800 dark:text-white">{drill.title}</h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
                           {drill.duration_minutes} min • {drill.target_skill}
                         </p>
                       </div>
@@ -268,7 +272,7 @@ export default function DrillWorkoutCreator() {
 
             {matchingDrills.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-slate-600">No drills found for these criteria. Try different options!</p>
+                <p className="text-slate-600 dark:text-slate-400">No drills found for these criteria. Try different options!</p>
               </div>
             )}
 

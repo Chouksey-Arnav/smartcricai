@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronLeft, 
-  CheckCircle2, 
-  XCircle,
-  ArrowRight,
-  Trophy,
-  RotateCcw
-} from 'lucide-react';
+import { CheckCircle, XCircle, ChevronLeft, ChevronRight, Trophy, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import toast from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 export default function QuizPlayer() {
   const navigate = useNavigate();
@@ -22,11 +17,8 @@ export default function QuizPlayer() {
   const quizId = urlParams.get('id');
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [score, setScore] = useState(0);
-  const [isFinished, setIsFinished] = useState(false);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [showResults, setShowResults] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -49,55 +41,26 @@ export default function QuizPlayer() {
   });
 
   const { data: progress } = useQuery({
-    queryKey: ['userProgress', user?.email],
+    queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const saveProgressMutation = useMutation({
-    mutationFn: async (finalScore) => {
-      if (!quiz) return;
+    mutationFn: async (score) => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
+      const xpEarned = score >= 80 ? 100 : score >= 50 ? 50 : 25;
+      const today = new Date().toISOString();
 
-      const percentage = Math.round((finalScore / questions.length) * 100);
-      const xpEarned = percentage >= 80 ? 100 : percentage >= 50 ? 50 : 25;
-
-      // Create notification
-      await base44.entities.Notification.create({
-        user_email: guestEmail,
-        type: 'quiz',
-        title: `Quiz Completed! 📚 +${xpEarned} XP`,
-        message: `You scored ${percentage}% on "${quiz.title}"!`,
-        related_id: quiz.id
-      });
-
-      const completedQuizzes = progress?.completed_quizzes || [];
       const quizScores = progress?.quiz_scores || [];
-      const newBadges = [...(progress?.badges || [])];
-
-      // Check for badges
-      if (finalScore === questions.length && !newBadges.includes('quiz-ace')) {
-        newBadges.push('quiz-ace');
-      }
-      if (completedQuizzes.length + 1 >= 5 && !newBadges.includes('quick-learner')) {
-        newBadges.push('quick-learner');
-      }
+      const completedQuizzes = progress?.completed_quizzes || [];
 
       const updateData = {
+        quiz_scores: [...quizScores, { quiz_id: quiz.id, score, date: today }],
         completed_quizzes: [...new Set([...completedQuizzes, quiz.id])],
-        quiz_scores: [
-          ...quizScores,
-          {
-            quiz_id: quiz.id,
-            score: finalScore,
-            date: new Date().toISOString(),
-          }
-        ],
-        badges: newBadges,
         total_xp: (progress?.total_xp || 0) + xpEarned,
       };
 
@@ -110,243 +73,233 @@ export default function QuizPlayer() {
         });
       }
 
-      // Update Leaderboard
       const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
-          quizzes_passed: (leaderboards[0].quizzes_passed || 0) + (percentage >= 80 ? 1 : 0)
+          quizzes_completed: (leaderboards[0].quizzes_completed || 0) + 1
         });
       }
+
+      await base44.entities.Notification.create({
+        user_email: guestEmail,
+        type: 'quiz',
+        title: `Quiz Complete! 🎯 +${xpEarned} XP`,
+        message: `You scored ${score}% on "${quiz.title}"!`,
+        related_id: quiz.id
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userProgress']);
-      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries(['leaderboard']);
     },
   });
 
-  const questions = quiz?.questions || [];
-  const currentQuestion = questions[currentQuestionIndex];
-
-  const handleAnswer = (answerIndex) => {
-    if (showResult) return;
-    setSelectedAnswer(answerIndex);
-    setShowResult(true);
-
-    const isCorrect = answerIndex === currentQuestion.correct_answer;
-    if (isCorrect) {
-      setScore(prev => prev + 1);
-    }
-    setAnswers(prev => [...prev, { questionIndex: currentQuestionIndex, selected: answerIndex, isCorrect }]);
-  };
-
-  const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowResult(false);
-    } else {
-      const finalScore = score + (selectedAnswer === currentQuestion.correct_answer ? 0 : 0);
-      saveProgressMutation.mutate(score);
-      setIsFinished(true);
-    }
-  };
-
-  const handleRestart = () => {
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setShowResult(false);
-    setScore(0);
-    setIsFinished(false);
-    setAnswers([]);
-  };
-
   if (isLoading || !quiz) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-900 dark:to-slate-950 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+  const questions = quiz.questions || [];
+  const currentQuestion = questions[currentQuestionIndex];
+  const userAnswer = answers[currentQuestionIndex];
+
+  const handleAnswer = (answerIndex) => {
+    setAnswers({...answers, [currentQuestionIndex]: answerIndex});
+  };
+
+  const handleSubmit = () => {
+    let correct = 0;
+    questions.forEach((q, idx) => {
+      if (answers[idx] === q.correct_answer) correct++;
+    });
+    
+    const score = Math.round((correct / questions.length) * 100);
+    setShowResults(true);
+    saveProgressMutation.mutate(score);
+    
+    if (score >= 80) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentQuestionIndex(0);
+    setAnswers({});
+    setShowResults(false);
+  };
+
+  const calculateScore = () => {
+    let correct = 0;
+    questions.forEach((q, idx) => {
+      if (answers[idx] === q.correct_answer) correct++;
+    });
+    return Math.round((correct / questions.length) * 100);
+  };
+
+  if (showResults) {
+    const score = calculateScore();
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
+        <Header title="Quiz Results" showBack onBack={() => navigate(createPageUrl('Quizzes'))} showSettings={false} />
+        
+        <div className="px-6 py-6 max-w-lg mx-auto">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className={`rounded-3xl p-8 text-center mb-6 ${
+              score >= 80 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' :
+              score >= 50 ? 'bg-gradient-to-r from-amber-500 to-orange-500' :
+              'bg-gradient-to-r from-red-500 to-pink-500'
+            } text-white`}
+          >
+            <Trophy className="w-20 h-20 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {score >= 80 ? 'Excellent!' : score >= 50 ? 'Good Job!' : 'Keep Practicing!'}
+            </h2>
+            <p className="text-3xl font-bold text-white mb-2">{score}%</p>
+            <p className="text-white/90">
+              {questions.filter((q, idx) => answers[idx] === q.correct_answer).length} / {questions.length} correct
+            </p>
+          </motion.div>
+
+          <div className="space-y-4 mb-6">
+            {questions.map((q, idx) => {
+              const userAns = answers[idx];
+              const isCorrect = userAns === q.correct_answer;
+              
+              return (
+                <div key={idx} className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    {isCorrect ? (
+                      <CheckCircle className="w-6 h-6 text-emerald-500 shrink-0" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-red-500 shrink-0" />
+                    )}
+                    <p className="font-semibold text-slate-800 dark:text-white">{q.question}</p>
+                  </div>
+                  
+                  {q.explanation && (
+                    <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-3 mt-3">
+                      <p className="text-sm text-slate-700 dark:text-slate-300"><strong>Explanation:</strong> {q.explanation}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              onClick={() => navigate(createPageUrl('Quizzes'))}
+              variant="outline"
+              className="flex-1"
+            >
+              Back to Quizzes
+            </Button>
+            <Button
+              onClick={handleRestart}
+              className="flex-1 bg-amber-500 hover:bg-amber-600"
+            >
+              <RotateCcw className="w-5 h-5 mr-2" />
+              Retake Quiz
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white pb-24">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100 px-6 py-4">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-slate-500 hover:text-slate-700 mb-3"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span>Back</span>
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-6 text-white">
+        <button onClick={() => navigate(createPageUrl('Quizzes'))} className="mb-4">
+          <ChevronLeft className="w-6 h-6" />
         </button>
-        
-        <h1 className="text-xl font-bold text-slate-800">{quiz.title}</h1>
-        
-        {!isFinished && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
-              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>Score: {score}</span>
-            </div>
-            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-amber-500 rounded-full"
-                animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-              />
-            </div>
-          </div>
-        )}
+        <h1 className="text-xl font-bold text-white">{quiz.title}</h1>
+        <p className="text-amber-100 text-sm mt-1">Question {currentQuestionIndex + 1} of {questions.length}</p>
       </div>
 
-      {/* Content */}
       <div className="px-6 py-6 max-w-lg mx-auto">
         <AnimatePresence mode="wait">
-          {isFinished ? (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center"
-            >
-              <div className={cn(
-                "w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center",
-                percentage >= 80 ? "bg-emerald-100" : percentage >= 50 ? "bg-amber-100" : "bg-red-100"
-              )}>
-                <Trophy className={cn(
-                  "w-12 h-12",
-                  percentage >= 80 ? "text-emerald-600" : percentage >= 50 ? "text-amber-600" : "text-red-600"
-                )} />
-              </div>
-              
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                {percentage >= 80 ? 'Excellent!' : percentage >= 50 ? 'Good Job!' : 'Keep Practicing!'}
-              </h2>
-              
-              <p className="text-slate-500 mb-2">
-                You scored {score} out of {questions.length}
+          <motion.div
+            key={currentQuestionIndex}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6">
+              <p className="text-lg font-medium text-slate-800 dark:text-white leading-relaxed">
+                {currentQuestion.question}
               </p>
-              
-              <div className="text-5xl font-bold text-amber-500 mb-6">
-                {percentage}%
-              </div>
+            </div>
 
-              <div className="flex gap-3 justify-center">
+            <div className="space-y-3">
+              {currentQuestion.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswer(index)}
+                  className={cn(
+                    "w-full p-4 rounded-2xl border-2 transition-all text-left",
+                    userAnswer === index
+                      ? "border-amber-500 bg-amber-50 dark:bg-amber-900/30"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0",
+                      userAnswer === index ? "bg-amber-500 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
+                    )}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-200">{option}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              {currentQuestionIndex > 0 && (
                 <Button
-                  onClick={handleRestart}
+                  onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
                   variant="outline"
-                  className="gap-2"
+                  className="flex-1"
                 >
-                  <RotateCcw className="w-4 h-4" />
-                  Try Again
+                  <ChevronLeft className="w-5 h-5 mr-2" />
+                  Previous
                 </Button>
-                <Button
-                  onClick={() => navigate(-1)}
-                  className="bg-amber-500 hover:bg-amber-600"
-                >
-                  Back to Quizzes
-                </Button>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key={currentQuestionIndex}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-            >
-              {/* Question */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
-                <p className="text-lg font-medium text-slate-800 leading-relaxed">
-                  {currentQuestion?.question}
-                </p>
-              </div>
-
-              {/* Options */}
-              <div className="space-y-3">
-                {currentQuestion?.options?.map((option, index) => {
-                  const isSelected = selectedAnswer === index;
-                  const isCorrect = index === currentQuestion.correct_answer;
-                  
-                  let optionStyle = "bg-white border-slate-200 hover:border-amber-300";
-                  if (showResult) {
-                    if (isCorrect) {
-                      optionStyle = "bg-emerald-50 border-emerald-400";
-                    } else if (isSelected && !isCorrect) {
-                      optionStyle = "bg-red-50 border-red-400";
-                    }
-                  } else if (isSelected) {
-                    optionStyle = "bg-amber-50 border-amber-400";
-                  }
-
-                  return (
-                    <motion.button
-                      key={index}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleAnswer(index)}
-                      disabled={showResult}
-                      className={cn(
-                        "w-full p-4 rounded-xl border-2 text-left transition-all flex items-center gap-3",
-                        optionStyle
-                      )}
-                    >
-                      <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0",
-                        showResult && isCorrect ? "bg-emerald-500 text-white" :
-                        showResult && isSelected ? "bg-red-500 text-white" :
-                        "bg-slate-100 text-slate-600"
-                      )}>
-                        {showResult && isCorrect ? <CheckCircle2 className="w-5 h-5" /> :
-                         showResult && isSelected ? <XCircle className="w-5 h-5" /> :
-                         String.fromCharCode(65 + index)}
-                      </div>
-                      <span className="text-slate-700">{option}</span>
-                    </motion.button>
-                  );
-                })}
-              </div>
-
-              {/* Explanation */}
-              <AnimatePresence>
-                {showResult && currentQuestion?.explanation && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4"
-                  >
-                    <p className="text-sm text-blue-800">
-                      <span className="font-semibold">💡 Explanation: </span>
-                      {currentQuestion.explanation}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Next Button */}
-              {showResult && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-6"
-                >
-                  <Button
-                    onClick={handleNext}
-                    className="w-full bg-amber-500 hover:bg-amber-600 gap-2"
-                  >
-                    {currentQuestionIndex < questions.length - 1 ? (
-                      <>Next Question <ArrowRight className="w-4 h-4" /></>
-                    ) : (
-                      'See Results'
-                    )}
-                  </Button>
-                </motion.div>
               )}
-            </motion.div>
-          )}
+              
+              {currentQuestionIndex < questions.length - 1 ? (
+                <Button
+                  onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
+                  disabled={userAnswer === undefined}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600"
+                >
+                  Next
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={Object.keys(answers).length < questions.length}
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+                >
+                  Submit Quiz
+                </Button>
+              )}
+            </div>
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>

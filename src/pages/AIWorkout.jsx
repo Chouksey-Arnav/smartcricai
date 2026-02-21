@@ -36,20 +36,18 @@ export default function AIWorkout() {
   const { data: workouts } = useQuery({
     queryKey: ['userGeneratedWorkouts', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return [];
-      const userWorkouts = await base44.entities.PreGeneratedWorkout.filter({ created_by: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const userWorkouts = await base44.entities.Workout.filter({ user_email: guestEmail });
       return userWorkouts.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
-    enabled: !!user?.email,
   });
 
   const activeWorkout = selectedWorkoutId 
     ? workouts?.find(w => w.id === selectedWorkoutId) 
     : null;
-  const exercises = activeWorkout?.exercises || [];
+  const exercises = activeWorkout?.drills || [];
   const currentExercise = exercises[currentExerciseIndex];
 
-  // Save workout progress to localStorage
   React.useEffect(() => {
     if (workoutStarted && activeWorkout) {
       const progress = {
@@ -62,7 +60,6 @@ export default function AIWorkout() {
     }
   }, [workoutStarted, currentExerciseIndex, completedSets, activeWorkout]);
 
-  // Restore workout progress on mount
   React.useEffect(() => {
     const savedProgress = localStorage.getItem('workoutProgress');
     if (savedProgress && workouts) {
@@ -77,7 +74,6 @@ export default function AIWorkout() {
     }
   }, [workouts]);
 
-  // Rest timer
   React.useEffect(() => {
     if (isResting && restTime > 0) {
       const timer = setTimeout(() => {
@@ -95,7 +91,6 @@ export default function AIWorkout() {
       const guestEmail = user?.email || 'guest@smartcrick.app';
       const xpEarned = activeWorkout?.xp_value || 90;
 
-      // Update UserProgress XP
       const userProgressData = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       if (userProgressData[0]) {
         await base44.entities.UserProgress.update(userProgressData[0].id, {
@@ -108,7 +103,6 @@ export default function AIWorkout() {
         });
       }
 
-      // Update Leaderboard
       const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
@@ -116,18 +110,17 @@ export default function AIWorkout() {
         });
       }
 
-      // Create notification
       if (activeWorkout) {
         await base44.entities.Notification.create({
           user_email: guestEmail,
           type: 'workout',
           title: 'Workout Completed! 💪',
-          message: `Crushed the ${activeWorkout.body_part} ${activeWorkout.level} workout! +${xpEarned} XP`,
+          message: `Crushed the ${activeWorkout.name} workout! +${xpEarned} XP`,
           related_id: activeWorkout.id
         });
       }
       localStorage.removeItem('workoutProgress');
-      return await base44.entities.PreGeneratedWorkout.delete(activeWorkout.id);
+      return await base44.entities.Workout.delete(activeWorkout.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
@@ -141,35 +134,29 @@ export default function AIWorkout() {
       });
       toast.success('Workout completed! Amazing job! 🎉');
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
   const handleCompleteSet = () => {
-    const exerciseId = currentExercise.name || index;
+    const exerciseId = currentExercise.drill_id || currentExerciseIndex;
     const currentSets = completedSets[exerciseId] || 0;
     const newSets = currentSets + 1;
     
     setCompletedSets({ ...completedSets, [exerciseId]: newSets });
 
-    if (newSets >= currentExercise.sets) {
-      // Move to next exercise
+    if (newSets >= (currentExercise.sets || 3)) {
       if (currentExerciseIndex < exercises.length - 1) {
-        toast.success(`${currentExercise.name} complete! 🎯`);
+        toast.success(`${currentExercise.drill_title} complete! 🎯`);
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCompletedSets({ ...completedSets, [exerciseId]: 0 });
       } else {
-        // Workout complete
         setWorkoutCompleted(true);
         completeWorkoutMutation.mutate();
       }
     } else {
-      // Start rest period
       const restSeconds = currentExercise.rest_seconds || 60;
       setRestTime(restSeconds);
       setIsResting(true);
-      toast.success(`Set ${newSets}/${currentExercise.sets} complete! Take a break! 😌`);
+      toast.success(`Set ${newSets}/${currentExercise.sets || 3} complete! Take a break! 😌`);
     }
   };
 
@@ -180,9 +167,8 @@ export default function AIWorkout() {
 
   const deleteAllWorkoutsMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.email) throw new Error("User not authenticated");
       await Promise.all(
-        workouts.map(w => base44.entities.PreGeneratedWorkout.delete(w.id))
+        workouts.map(w => base44.entities.Workout.delete(w.id))
       );
     },
     onSuccess: () => {
@@ -190,14 +176,11 @@ export default function AIWorkout() {
       toast.success('All workouts deleted');
       setSelectedWorkoutId(null);
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
   if (!selectedWorkoutId && workouts && workouts.length > 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-6 max-w-lg mx-auto">
           <motion.div
@@ -241,15 +224,15 @@ export default function AIWorkout() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg p-5"
+                className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-5"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-slate-800 text-lg capitalize">{workout.body_part} Workout</h3>
-                    <p className="text-sm text-slate-600">{workout.exercises.length} exercises • {workout.level}</p>
+                    <h3 className="font-bold text-slate-800 dark:text-white text-lg capitalize">{workout.name}</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{workout.drills?.length || 0} exercises</p>
                   </div>
-                  <div className="px-3 py-1 bg-purple-100 rounded-full text-xs font-bold text-purple-700">
-                    {workout.duration} min
+                  <div className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 rounded-full text-xs font-bold text-purple-700 dark:text-purple-300">
+                    +{workout.xp_value || 100} XP
                   </div>
                 </div>
                 <Button
@@ -269,17 +252,17 @@ export default function AIWorkout() {
 
   if (!workouts || workouts.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-12 max-w-lg mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl shadow-xl p-8"
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8"
           >
             <Sparkles className="w-16 h-16 text-purple-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800 mb-3">No Saved Workouts</h2>
-            <p className="text-slate-600 mb-6">Create a workout from the Fitness Builder to get started!</p>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">No Saved Workouts</h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">Create a workout from the Fitness Builder to get started!</p>
             <Button onClick={() => navigate(createPageUrl('FitnessBuilder'))} className="bg-purple-500 hover:bg-purple-600">
               Go to Fitness Builder
             </Button>
@@ -291,7 +274,7 @@ export default function AIWorkout() {
 
   if (workoutCompleted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-12 max-w-lg mx-auto text-center">
           <motion.div
@@ -317,7 +300,7 @@ export default function AIWorkout() {
 
   if (!workoutStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
           <motion.div
@@ -325,8 +308,8 @@ export default function AIWorkout() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white"
           >
-            <h2 className="font-bold text-2xl mb-2">{activeWorkout.body_part.charAt(0).toUpperCase() + activeWorkout.body_part.slice(1)} Workout</h2>
-            <p className="text-purple-100">{exercises.length} exercises • {activeWorkout.level}</p>
+            <h2 className="font-bold text-2xl mb-2">{activeWorkout.name}</h2>
+            <p className="text-purple-100">{exercises.length} exercises</p>
           </motion.div>
 
           <div className="space-y-3">
@@ -336,16 +319,16 @@ export default function AIWorkout() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg p-5"
+                className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-5"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
-                    <span className="font-bold text-purple-600">{index + 1}</span>
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
+                    <span className="font-bold text-purple-600 dark:text-purple-400">{index + 1}</span>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-slate-800">{exercise.name}</h4>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {exercise.sets} sets × {exercise.reps} reps
+                    <h4 className="font-bold text-slate-800 dark:text-white">{exercise.drill_title}</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                      {exercise.sets || 3} sets × {exercise.reps || 10} reps
                     </p>
                   </div>
                 </div>
@@ -374,11 +357,11 @@ export default function AIWorkout() {
     );
   }
 
-  const currentSets = completedSets[currentExercise.drill_id] || 0;
-  const progress = ((currentExerciseIndex + (currentSets / currentExercise.sets)) / exercises.length) * 100;
+  const currentSets = completedSets[currentExercise?.drill_id] || 0;
+  const progress = ((currentExerciseIndex + (currentSets / (currentExercise?.sets || 3))) / exercises.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-slate-900 dark:via-slate-950 dark:to-black pb-24">
       <Header title="AI Workout" showSettings={false} />
       
       <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
@@ -386,13 +369,13 @@ export default function AIWorkout() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-white rounded-2xl shadow-lg p-4"
+          className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4"
         >
-          <div className="flex justify-between text-sm text-slate-600 mb-2">
+          <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400 mb-2">
             <span>Exercise {currentExerciseIndex + 1} of {exercises.length}</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
+          <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
@@ -421,45 +404,45 @@ export default function AIWorkout() {
         </AnimatePresence>
 
         {/* Current Exercise */}
-        {!isResting && (
+        {!isResting && currentExercise && (
           <motion.div
             key={currentExerciseIndex}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="bg-white rounded-3xl shadow-2xl p-8"
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8"
           >
             <div className="text-center mb-6">
               <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-slate-800 mb-2">
-                {currentExercise.name}
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
+                {currentExercise.drill_title}
               </h2>
-              <p className="text-slate-600">
-                Set {currentSets + 1} of {currentExercise.sets}
+              <p className="text-slate-600 dark:text-slate-400">
+                Set {currentSets + 1} of {currentExercise.sets || 3}
               </p>
             </div>
 
-            <div className="bg-purple-50 rounded-2xl p-6 mb-6">
+            <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6 mb-6">
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">Target</p>
-                  <p className="text-3xl font-bold text-purple-600">{currentExercise.reps}</p>
-                  <p className="text-xs text-slate-500">reps</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Target</p>
+                  <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{currentExercise.reps || 10}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">reps</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">Rest After</p>
-                  <p className="text-3xl font-bold text-blue-600">{currentExercise.rest_seconds || 60}</p>
-                  <p className="text-xs text-slate-500">seconds</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Rest After</p>
+                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{currentExercise.rest_seconds || 60}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">seconds</p>
                 </div>
               </div>
             </div>
 
-            {currentExercise.notes && (
-              <div className="bg-slate-50 rounded-2xl p-4 mb-6">
-                <h4 className="font-semibold text-slate-800 mb-2">Instructions:</h4>
-                <p className="text-sm text-slate-600">{currentExercise.notes}</p>
+            {currentExercise.instructions && (
+              <div className="bg-slate-50 dark:bg-slate-700 rounded-2xl p-4 mb-6">
+                <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Instructions:</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{currentExercise.instructions}</p>
               </div>
             )}
 
@@ -468,7 +451,7 @@ export default function AIWorkout() {
               className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
             >
               <CheckCircle className="w-6 h-6 mr-2" />
-              Complete Set {currentSets + 1}/{currentExercise.sets}
+              Complete Set {currentSets + 1}/{currentExercise.sets || 3}
             </Button>
           </motion.div>
         )}

@@ -73,20 +73,17 @@ export default function MentalCoaching() {
     queryKey: ['mentalRoutines'],
     queryFn: async () => {
       const all = await base44.entities.MentalRoutine.list();
-      return all;
+      return all.filter(r => !r.created_by);
     },
   });
-
-  const routines = allRoutines;
 
   const { data: premiumStatus } = useQuery({
     queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const subs = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: guestEmail });
       return subs[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const isPremium = premiumStatus?.is_premium || false;
@@ -94,29 +91,23 @@ export default function MentalCoaching() {
   const { data: savedRoutines = [] } = useQuery({
     queryKey: ['savedMentalRoutines', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return [];
-      return await base44.entities.MentalRoutine.filter({ created_by: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      return await base44.entities.MentalRoutine.filter({ created_by: guestEmail });
     },
-    enabled: !!user?.email,
   });
 
   const deleteRoutineMutation = useMutation({
     mutationFn: async (routineId) => {
-      if (!user?.email) throw new Error("User not authenticated");
       await base44.entities.MentalRoutine.delete(routineId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('Routine deleted');
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
   const deleteAllRoutinesMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.email) throw new Error("User not authenticated");
       await Promise.all(
         savedRoutines.map(routine => base44.entities.MentalRoutine.delete(routine.id))
       );
@@ -125,21 +116,16 @@ export default function MentalCoaching() {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('All routines deleted');
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
-  // Sort and filter by search
-  const sortedRoutines = [...routines]
+  const sortedRoutines = [...allRoutines]
     .filter(r => !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.description.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => (a.duration_seconds || 0) - (b.duration_seconds || 0));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
       <Header title="Mental Training" showSettings={false} />
       
-      {/* Hero */}
       <div className="px-6 py-6 max-w-lg mx-auto">
         {/* Search Bar */}
         <div className="relative mb-4">
@@ -148,7 +134,7 @@ export default function MentalCoaching() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search mental routines..."
-            className="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 focus:border-purple-500 focus:outline-none"
+            className="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 focus:border-purple-500 focus:outline-none bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
           />
           <Brain className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
         </div>
@@ -161,7 +147,7 @@ export default function MentalCoaching() {
         >
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-5 h-5" />
-            <h3 className="font-bold text-sm">Mindfulness Quote of the Day</h3>
+            <h3 className="font-bold text-white text-sm">Mindfulness Quote of the Day</h3>
           </div>
           <p className="text-white italic text-sm font-medium leading-relaxed">
             "{getMindfulnessQuote()}"
@@ -189,13 +175,13 @@ export default function MentalCoaching() {
         </motion.div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-lg mb-4">
+        <div className="flex gap-2 bg-white dark:bg-slate-800 rounded-2xl p-2 shadow-lg mb-4">
           <button
             onClick={() => setActiveTab('all')}
             className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
               activeTab === 'all'
                 ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md'
-                : 'text-slate-600 hover:bg-slate-50'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             <Brain className="w-5 h-5" />
@@ -206,7 +192,7 @@ export default function MentalCoaching() {
             className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
               activeTab === 'saved'
                 ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md'
-                : 'text-slate-600 hover:bg-slate-50'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             <Heart className="w-5 h-5" />
@@ -219,7 +205,7 @@ export default function MentalCoaching() {
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-28 bg-slate-100 rounded-2xl animate-pulse" />
+                  <div key={i} className="h-28 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />
                 ))}
               </div>
             ) : sortedRoutines.length === 0 ? (
@@ -228,8 +214,8 @@ export default function MentalCoaching() {
                 animate={{ opacity: 1 }}
                 className="text-center py-12"
               >
-                <Brain className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-slate-500">No routines found.</p>
+                <Brain className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                <p className="text-slate-500 dark:text-slate-400">No routines found.</p>
               </motion.div>
             ) : (
               sortedRoutines.map((routine, index) => {
@@ -261,7 +247,6 @@ export default function MentalCoaching() {
             )}
           </div>
         ) : (
-          // Saved Routines Tab
           <div className="space-y-4">
             {savedRoutines.length > 0 && (
               <Button
@@ -282,11 +267,11 @@ export default function MentalCoaching() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-3xl p-8 text-center shadow-lg"
+                className="bg-white dark:bg-slate-800 rounded-3xl p-8 text-center shadow-lg"
               >
-                <Heart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                <h3 className="font-bold text-slate-800 text-lg mb-2">No Saved Routines Yet</h3>
-                <p className="text-slate-600 text-sm mb-6">
+                <Heart className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-2">No Saved Routines Yet</h3>
+                <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
                   Create and save custom mental routines to access them anytime
                 </p>
                 <Button
@@ -303,13 +288,13 @@ export default function MentalCoaching() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-2xl p-5 shadow-lg border-2 border-purple-100"
+                  className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-lg border-2 border-purple-100 dark:border-purple-900"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="font-bold text-slate-800 text-lg mb-1">{routine.title}</h3>
-                      <p className="text-sm text-slate-600">{routine.description}</p>
-                      <p className="text-xs text-purple-600 mt-1">
+                      <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-1">{routine.title}</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">{routine.description}</p>
+                      <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
                         {Math.floor(routine.duration_seconds / 60)} minutes
                       </p>
                     </div>
@@ -322,7 +307,7 @@ export default function MentalCoaching() {
                             deleteRoutineMutation.mutate(routine.id);
                           }
                         }}
-                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-5 h-5 text-red-500" />
                       </button>

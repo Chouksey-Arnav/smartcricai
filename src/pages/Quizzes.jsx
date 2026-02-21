@@ -19,6 +19,7 @@ const difficultyColors = {
   easy: 'bg-green-100 text-green-700',
   medium: 'bg-amber-100 text-amber-700',
   hard: 'bg-red-100 text-red-700',
+  pro: 'bg-purple-100 text-purple-700',
 };
 
 export default function Quizzes() {
@@ -46,7 +47,7 @@ export default function Quizzes() {
   const categories = ['all', 'rules', 'techniques', 'history', 'strategy'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
       <Header title="Cricket Quizzes" showSettings={false} />
       
       <div className="px-6 py-4 max-w-lg mx-auto space-y-4">
@@ -57,7 +58,7 @@ export default function Quizzes() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search quizzes..."
-            className="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 focus:border-amber-500 focus:outline-none"
+            className="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 focus:border-amber-500 focus:outline-none bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
           />
           <BookOpen className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
         </div>
@@ -90,7 +91,7 @@ export default function Quizzes() {
                   "px-4 py-2 rounded-full text-sm font-medium capitalize whitespace-nowrap transition-all",
                   selectedCategory === cat
                     ? "bg-amber-500 text-white"
-                    : "bg-white border border-slate-200 text-slate-600"
+                    : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
                 )}
               >
                 {cat === 'all' ? 'All Quizzes' : cat}
@@ -104,7 +105,7 @@ export default function Quizzes() {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-slate-100 rounded-2xl animate-pulse" />
+                <div key={i} className="h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />
               ))}
             </div>
           ) : filteredQuizzes.length === 0 ? (
@@ -113,8 +114,8 @@ export default function Quizzes() {
               animate={{ opacity: 1 }}
               className="text-center py-12"
             >
-              <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">No quizzes available yet.</p>
+              <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-500 dark:text-slate-400">No quizzes available yet.</p>
             </motion.div>
           ) : (
             filteredQuizzes.map((quiz, index) => {
@@ -133,7 +134,7 @@ export default function Quizzes() {
                   className={cn(
                     "p-4 rounded-2xl border-2 cursor-pointer transition-all",
                     config.bgColor,
-                    "border-transparent hover:border-slate-200"
+                    "dark:bg-slate-800 border-transparent hover:border-slate-200 dark:hover:border-slate-600"
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -145,9 +146,9 @@ export default function Quizzes() {
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="font-semibold text-slate-800 dark:text-slate-800">{quiz.title}</h3>
+                      <h3 className="font-semibold text-slate-800 dark:text-white">{quiz.title}</h3>
                       <div className="flex items-center gap-3 mt-2">
-                        <span className="text-sm text-slate-500">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">
                           {quiz.questions?.length || 0} questions
                         </span>
                         <span className={cn(
@@ -159,7 +160,7 @@ export default function Quizzes() {
                       </div>
                     </div>
                     
-                    <ChevronRight className="w-5 h-5 text-slate-400 self-center" />
+                    <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-600 self-center" />
                   </div>
                 </motion.div>
               );
