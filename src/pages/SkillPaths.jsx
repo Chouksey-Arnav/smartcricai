@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { skillPathsData, getPathProgress } from '@/components/skillPaths/SkillPathsDatabase';
+import { getMentalRoutineById } from '@/components/mental/PreGeneratedMentalRoutines';
 import Header from '@/components/common/Header';
 
 export default function SkillPaths() {
@@ -32,38 +33,35 @@ export default function SkillPaths() {
   const { data: skillPath } = useQuery({
     queryKey: ['skillPath', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.SkillPath.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.SkillPath.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const { data: userProgress } = useQuery({
     queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const { data: premiumStatus } = useQuery({
     queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const subscriptions = await base44.entities.PremiumSubscription.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const subscriptions = await base44.entities.PremiumSubscription.filter({ user_email: guestEmail });
       return subscriptions[0] || null;
     },
-    enabled: !!user?.email,
   });
 
   const createPath = useMutation({
     mutationFn: async (level) => {
-      if (!user?.email) throw new Error("User not authenticated");
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       return await base44.entities.SkillPath.create({
-        user_email: user.email,
+        user_email: guestEmail,
         level: level,
         completed_items: [],
         badges_earned: [],
@@ -76,9 +74,6 @@ export default function SkillPaths() {
       setShowEarlyAccessDialog(false);
       setEarlyAccessTarget(null);
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
   const handleEarlyAccess = (level) => {
@@ -94,39 +89,38 @@ export default function SkillPaths() {
 
   const completeItem = useMutation({
     mutationFn: async ({ itemId, xp, itemName, weekTitle }) => {
-      if (!user?.email || !skillPath || !userProgress) throw new Error("User not authenticated or skill path/progress not found");
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      if (!skillPath || !userProgress) throw new Error("Skill path or progress not found");
       
-      // Check if already completed
       const alreadyCompleted = skillPath.completed_items?.includes(itemId);
       const newCompleted = alreadyCompleted ? [...(skillPath.completed_items || [])] : [...(skillPath.completed_items || []), itemId];
-      const newXP = (skillPath.xp || 0) + xp;
+      const earnedXP = alreadyCompleted ? 0 : xp;
+      const newSkillPathXP = (skillPath.xp || 0) + earnedXP;
       
-      // Update UserProgress XP
-      const currentTotalXP = userProgress?.total_xp || 0;
-      await base44.entities.UserProgress.update(userProgress.id, {
-        total_xp: currentTotalXP + xp
-      });
+      if (!alreadyCompleted) {
+        await base44.entities.UserProgress.update(userProgress.id, {
+          total_xp: (userProgress.total_xp || 0) + earnedXP
+        });
 
-      // Update Leaderboard
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
-      if (leaderboards.length > 0) {
-        await base44.entities.Leaderboard.update(leaderboards[0].id, {
-          total_xp: (leaderboards[0].total_xp || 0) + xp
+        const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
+        if (leaderboards.length > 0) {
+          await base44.entities.Leaderboard.update(leaderboards[0].id, {
+            total_xp: (leaderboards[0].total_xp || 0) + earnedXP
+          });
+        }
+
+        await base44.entities.Notification.create({
+          user_email: guestEmail,
+          type: 'achievement',
+          title: `${weekTitle} Completed! 🎯`,
+          message: `Congratulations! You've completed "${itemName}" from ${currentPathData.name}. +${earnedXP} XP earned!`,
+          related_id: itemId
         });
       }
-
-      // Create personalized notification
-      await base44.entities.Notification.create({
-        user_email: user.email,
-        type: 'achievement',
-        title: `${weekTitle} Completed! 🎯`,
-        message: `Congratulations! You've completed "${itemName}" from ${currentPathData.name}. +${xp} XP earned!`,
-        related_id: itemId
-      });
       
       return await base44.entities.SkillPath.update(skillPath.id, {
         completed_items: newCompleted,
-        xp: newXP
+        xp: newSkillPathXP
       });
     },
     onSuccess: () => {
@@ -136,9 +130,6 @@ export default function SkillPaths() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Progress saved! 🎯');
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
   const unlockNextLevel = useMutation({
@@ -167,9 +158,6 @@ export default function SkillPaths() {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       toast.success('Skill path reset!');
     },
-    onError: (error) => {
-      toast.error(error.message);
-    }
   });
 
   const currentPathData = skillPath ? skillPathsData[skillPath.level] : null;
@@ -189,10 +177,9 @@ export default function SkillPaths() {
     return completedItems.length >= totalItems;
   };
 
-  // Path selection screen
   if (!skillPath) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 pb-24 pt-6">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:to-slate-950 pb-24 pt-6">
         <Header title="Skill Paths" showSettings={false} />
         <div className="max-w-lg mx-auto px-6 pt-4">
           <motion.div
@@ -200,15 +187,15 @@ export default function SkillPaths() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
               Choose Your Path
             </h1>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-400">
               Structured training to transform your cricket skills
             </p>
           </motion.div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(skillPathsData).map(([key, path], index) => {
               const isLocked = path.isPremium && !premiumStatus?.is_premium;
               const meetsXPRequirement = (userProgress?.total_xp || 0) >= path.unlockXP;
@@ -220,8 +207,8 @@ export default function SkillPaths() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className={`bg-white rounded-2xl shadow-lg p-6 border-2 ${
-                    canStart ? `border-${path.color}-200` : 'border-slate-200'
+                  className={`bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border-2 ${
+                    canStart ? `border-${path.color}-200` : 'border-slate-200 dark:border-slate-700'
                   } relative`}
                 >
                   {isLocked && (
@@ -233,8 +220,8 @@ export default function SkillPaths() {
                   <div className="flex items-start gap-3 mb-4">
                     <div className="text-4xl">{path.icon}</div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-slate-800">{path.name}</h3>
-                      <p className="text-sm text-slate-500 mb-1">{path.subtitle}</p>
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-white">{path.name}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-300 mb-1">{path.subtitle}</p>
                       {!meetsXPRequirement && !isLocked && (
                         <p className="text-xs text-amber-600 font-semibold">
                           Requires {path.unlockXP} XP (You have {userProgress?.total_xp || 0})
@@ -249,14 +236,14 @@ export default function SkillPaths() {
                     </div>
                   </div>
                   
-                  <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                  <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Star className={`w-4 h-4 text-${path.color}-500`} />
-                      <span className="text-sm font-semibold text-slate-700">Path Details</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Path Details</span>
                     </div>
-                    <p className="text-xs text-slate-600 mb-2">• {path.weeks.length} weeks of training</p>
-                    <p className="text-xs text-slate-600 mb-2">• Total {path.totalXP} XP to earn</p>
-                    <p className="text-xs text-slate-600">• Unlock: {path.badge.emoji} {path.badge.name}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">• {path.weeks.length} weeks of training</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">• Total {path.totalXP} XP to earn</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">• Unlock: {path.badge.emoji} {path.badge.name}</p>
                   </div>
 
                   <div className="space-y-2">
@@ -315,11 +302,14 @@ export default function SkillPaths() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6 w-[90%] max-w-md z-50"
               >
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">Access This Path Early?</h3>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Access This Path Early?</h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-2">
                   This path typically requires {skillPathsData[earlyAccessTarget]?.unlockXP} XP.
                 </p>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">
+                  {skillPathsData[earlyAccessTarget]?.isPremium && (
+                    <span className="text-red-500 font-bold block mb-2">Warning: This is a premium path. Accessing it early will still require a premium subscription to fully utilize.</span>
+                  )}
                   If you are already elite at cricket and ready for this challenge, you can access it early. Are you sure you want to proceed?
                 </p>
                 <div className="flex gap-3">
@@ -346,12 +336,10 @@ export default function SkillPaths() {
     );
   }
 
-  // Active path screen
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 pb-24 pt-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:to-slate-950 pb-24 pt-6">
       <Header title="Skill Paths" showSettings={false} />
       <div className="max-w-lg mx-auto px-6 pt-4">
-        {/* Exit Button */}
         <button
           onClick={() => {
             if (confirm(`Exit ${currentPathData.name}? All progress will be lost.`)) {
@@ -364,15 +352,14 @@ export default function SkillPaths() {
           Exit Path
         </button>
 
-        {/* XP Display */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className={`bg-gradient-to-r ${
-            skillPath.level === 'beginner' ? 'from-emerald-400 to-emerald-500' :
-            skillPath.level === 'intermediate' ? 'from-blue-400 to-blue-500' :
-            skillPath.level === 'advanced' ? 'from-purple-400 to-purple-500' :
-            'from-amber-400 to-amber-500'
+            skillPath.level === 'beginner' ? 'from-emerald-600 to-emerald-700' :
+            skillPath.level === 'intermediate' ? 'from-blue-600 to-blue-700' :
+            skillPath.level === 'advanced' ? 'from-purple-600 to-purple-700' :
+            'from-amber-600 to-amber-700'
           } rounded-2xl p-6 mb-6 text-white`}
         >
           <div className="flex items-center justify-between mb-4">
@@ -394,8 +381,7 @@ export default function SkillPaths() {
           </p>
         </motion.div>
 
-        {/* Week Selection */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide dark:bg-slate-900 rounded-2xl p-2">
         {currentPathData.weeks.map((week, idx) => {
         const weekColor = skillPath.level === 'beginner' ? 'emerald' :
                          skillPath.level === 'intermediate' ? 'blue' :
@@ -408,7 +394,7 @@ export default function SkillPaths() {
               "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
               selectedWeek === idx + 1
                 ? `bg-${weekColor}-500 text-white`
-                : "bg-white border border-slate-200 text-slate-600"
+                : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
             )}
           >
             Week {idx + 1}
@@ -417,7 +403,6 @@ export default function SkillPaths() {
         })}
         </div>
 
-        {/* Week Content */}
         {currentPathData.weeks.map((week, weekIdx) => (
           selectedWeek === weekIdx + 1 && (
             <motion.div
@@ -426,8 +411,8 @@ export default function SkillPaths() {
               animate={{ opacity: 1, x: 0 }}
               className="space-y-3"
             >
-              <div className="bg-white rounded-2xl p-4 shadow-md mb-4">
-                <h3 className="font-bold text-slate-800">{week.title}</h3>
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-md mb-4">
+                <h3 className="font-bold text-slate-800 dark:text-white">{week.title}</h3>
               </div>
 
               {week.items.map((item, itemIdx) => {
@@ -453,21 +438,21 @@ export default function SkillPaths() {
                     transition={{ delay: itemIdx * 0.05 }}
                     className={`p-5 rounded-2xl border-2 transition-all ${
                       isCompleted
-                        ? 'border-emerald-200 bg-emerald-50'
-                        : 'border-slate-200 bg-white'
+                        ? 'border-emerald-200 bg-emerald-50 dark:bg-emerald-950 dark:border-emerald-700'
+                        : 'border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       {isCompleted ? (
-                        <CheckCircle className="w-6 h-6 text-emerald-600 shrink-0 mt-1" />
+                        <CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0 mt-1" />
                       ) : (
-                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full shrink-0 mt-1" />
+                        <div className="w-6 h-6 border-2 border-slate-300 dark:border-slate-600 rounded-full shrink-0 mt-1" />
                       )}
                       
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className={`font-semibold ${
-                            isCompleted ? 'text-emerald-800' : 'text-slate-800'
+                            isCompleted ? 'text-emerald-800 dark:text-emerald-300' : 'text-slate-800 dark:text-white'
                           }`}>
                             {item.name}
                           </h3>
@@ -475,7 +460,7 @@ export default function SkillPaths() {
                             {item.type}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-600 mb-2">{item.description}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">{item.description}</p>
                         <div className="flex items-center gap-2 mb-2">
                           <Zap className="w-4 h-4 text-amber-500" />
                           <span className="text-sm font-semibold text-amber-600">+{item.xp} XP</span>
@@ -496,16 +481,19 @@ export default function SkillPaths() {
                       
                       <Button
                         onClick={() => {
-                          // Navigate based on item type
                           if (item.type === 'drill' && item.drillId) {
                             navigate(createPageUrl(`DrillDetail?id=${item.drillId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
                           } else if (item.type === 'mental' && item.mentalId) {
-                            navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
+                            const mentalRoutine = getMentalRoutineById(item.mentalId);
+                            if (mentalRoutine && mentalRoutine.is_premium && !premiumStatus?.is_premium) {
+                              toast('Premium required for this mental routine! 💎', { icon: '🔒', duration: 3000 });
+                            } else {
+                              navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
+                            }
                           } else if (item.type === 'youtube' && item.url) {
                             window.open(item.url, '_blank');
                             completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
                           } else {
-                            // For fitness or other types, mark as complete
                             completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
                           }
                         }}
@@ -527,7 +515,6 @@ export default function SkillPaths() {
                       )
                       ))}
 
-                      {/* Path Complete - Unlock Next */}
         {canUnlockNext() && getNextLevel(skillPath.level) && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
