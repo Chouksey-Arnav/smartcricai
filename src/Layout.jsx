@@ -6,6 +6,7 @@ import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
 import FloatingTimer from '@/components/common/FloatingTimer';
 import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
+
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 const pagesWithLightBg = ['HeadCoach', 'NinetyDayChallenge', 'ThirtyDayChallenge', 'Coach', 'DrillYouTubeFinder'];
 
@@ -16,8 +17,24 @@ export default function Layout({ children, currentPageName }) {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch {
+        return null;
+      }
+    },
   });
+
+  // Auto-detect system dark mode preference
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (!storedTheme) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', prefersDark);
+    }
+  }, []);
 
   return (
     <div className={forceLightBg ? "min-h-screen bg-white dark:bg-white" : "min-h-screen bg-slate-50"}>
@@ -36,6 +53,14 @@ export default function Layout({ children, currentPageName }) {
         body {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           -webkit-font-smoothing: antialiased;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: none;
+        }
+        
+        button, a, nav, .bottom-nav, .nav-item {
+          user-select: none;
+          -webkit-user-select: none;
+          -webkit-tap-highlight-color: transparent;
         }
         
         .scrollbar-hide::-webkit-scrollbar {
@@ -67,9 +92,20 @@ export default function Layout({ children, currentPageName }) {
 
 
 
-        /* Page content padding for notification bar and timer */
+        /* Page content padding for notification bar and timer + safe areas */
         .page-content-wrapper {
-          padding-top: ${isHomePage ? '0' : '100px'};
+          padding-top: max(${isHomePage ? '0' : '100px'}, env(safe-area-inset-top));
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Safe area for header */
+        header {
+          padding-top: env(safe-area-inset-top);
+        }
+
+        /* Safe area for bottom navigation */
+        nav.bottom-nav, .bottom-nav-container {
+          padding-bottom: env(safe-area-inset-bottom);
         }
 
         /* Dark mode support */
