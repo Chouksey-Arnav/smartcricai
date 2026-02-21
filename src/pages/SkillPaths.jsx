@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { skillPathsData, getPathProgress } from '@/components/skillPaths/SkillPathsDatabase';
-import { getMentalRoutineById } from '@/components/mental/PreGeneratedMentalRoutines';
 import Header from '@/components/common/Header';
 
 export default function SkillPaths() {
@@ -484,12 +483,7 @@ export default function SkillPaths() {
                           if (item.type === 'drill' && item.drillId) {
                             navigate(createPageUrl(`DrillDetail?id=${item.drillId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
                           } else if (item.type === 'mental' && item.mentalId) {
-                            const mentalRoutine = getMentalRoutineById(item.mentalId);
-                            if (mentalRoutine && mentalRoutine.is_premium && !premiumStatus?.is_premium) {
-                              toast('Premium required for this mental routine! 💎', { icon: '🔒', duration: 3000 });
-                            } else {
-                              navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
-                            }
+                            navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
                           } else if (item.type === 'youtube' && item.url) {
                             window.open(item.url, '_blank');
                             completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
