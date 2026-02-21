@@ -23,13 +23,15 @@ import {
   Zap,
   Award,
   TrendingUp,
-  Video
+  Video,
+  Calendar
 } from 'lucide-react';
 import StreakDisplay from '@/components/common/StreakDisplay';
 import DailyFact from '@/components/daily/DailyFact';
 import SmartStart from '@/components/home/SmartStart';
 import PlayerCheckIn from '@/components/home/PlayerCheckIn';
 import QuickPageSearch from '@/components/home/QuickPageSearch';
+import { Button } from '@/components/ui/button';
 
 const quickActions = [
   { 
@@ -165,7 +167,6 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved === 'dark';
-    // Default to dark mode
     localStorage.setItem('theme', 'dark');
     return true;
   });
@@ -188,17 +189,15 @@ export default function Home() {
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
     staleTime: 60000,
     refetchOnWindowFocus: true,
     retry: 3,
   });
 
-  // Auto-increment streak daily
   useEffect(() => {
     if (!user?.email || !progress) return;
     
@@ -249,7 +248,6 @@ export default function Home() {
   const displayName = progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
 
   useEffect(() => {
-    // Scroll to top on mount
     window.scrollTo(0, 0);
   }, []);
 
@@ -264,7 +262,6 @@ export default function Home() {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, []);
 
-  // Redirect to Get to Know You if not completed - only once per session
   useEffect(() => {
     const hasRedirected = sessionStorage.getItem('onboarding_redirect_done');
     if (user?.email && userProfile !== undefined && !userProfile?.quiz_completed && !hasRedirected) {
@@ -285,14 +282,14 @@ export default function Home() {
   }
 
   return (
-    <div className={`min-h-screen pb-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50'}`}>
+    <div className={`min-h-screen pb-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-slate-950 to-black' : 'bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50'}`}>
       {/* Header */}
-      <div className={`relative overflow-hidden px-6 pt-8 pb-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800' : 'bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500'}`}>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-24 -translate-x-24" />
-        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
+      <div className={`relative overflow-hidden px-6 pt-8 pb-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900' : 'bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500'}`}>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" style={{ filter: 'blur(100px)' }} />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-24 -translate-x-24" style={{ filter: 'blur(100px)' }} />
+        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full blur-2xl" style={{ filter: 'blur(50px)' }} />
         
-        <div className="relative max-w-lg mx-auto">
+        <div className="relative max-w-lg mx-auto pt-8">
           {/* Joke of the Day */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -344,9 +341,17 @@ export default function Home() {
             className="mb-6"
           >
             <p className="text-emerald-100 text-sm mb-1">{greeting}!</p>
-            <h1 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <span>Hey, {user?.full_name?.split(' ')[0] || 'Champ'}</span>
-            </h1>
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-3xl font-bold text-white">
+                Hey, {user?.full_name?.split(' ')[0] || 'Champ'}
+              </h1>
+              <Link to={createPageUrl('ScheduleExtendedView')}>
+                <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Schedule
+                </Button>
+              </Link>
+            </div>
             
             {(progress?.current_streak || 0) >= 0 && (
                 <div className="flex justify-start">
@@ -360,7 +365,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="grid grid-cols-3 gap-3"
+            className="grid grid-cols-2 gap-3"
           >
             <motion.div 
               whileHover={{ scale: 1.05 }}
@@ -371,6 +376,16 @@ export default function Home() {
                 {progress?.completed_drills?.length || 0}
               </p>
               <p className="text-xs text-emerald-50 font-medium">Drills</p>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-white/25 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 shadow-lg"
+            >
+              <Brain className="w-8 h-8 text-white mx-auto mb-1" />
+              <p className="text-2xl font-bold text-white">
+                {progress?.completed_mental_routines?.length || 0}
+              </p>
+              <p className="text-xs text-emerald-50 font-medium">Mental</p>
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05 }}
@@ -399,17 +414,25 @@ export default function Home() {
       {/* Main Content */}
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
         {/* Smart Start */}
-        <SmartStart isDarkMode={isDarkMode} />
+        <div className="pt-4">
+          <SmartStart isDarkMode={isDarkMode} />
+        </div>
 
         {/* Player Check-In */}
-        <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
+        <Link to={createPageUrl('ScheduleExtendedView')}>
+          <PlayerCheckIn user={user} isDarkMode={isDarkMode} />
+        </Link>
 
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-2xl shadow-slate-300/50 p-6 border border-white/50"
+          className={`rounded-3xl shadow-2xl p-6 border ${
+            isDarkMode 
+              ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' 
+              : 'bg-gradient-to-br from-white to-blue-50/30 border-white/50'
+          }`}
         >
           <h2 className={`font-bold mb-5 flex items-center gap-2 text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
             <Sparkles className="w-6 h-6 text-amber-500" />
@@ -479,6 +502,17 @@ export default function Home() {
                 <Dumbbell className="w-10 h-10 text-white mb-2" />
                 <h3 className="font-bold text-white text-sm mb-1">Fitness Builder</h3>
                 <p className="text-xs text-orange-50">AI workout plans</p>
+              </motion.div>
+            </Link>
+            <Link to={createPageUrl('AIWorkout')}>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-br from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 rounded-2xl p-5 transition-all shadow-lg hover:shadow-xl"
+              >
+                <Dumbbell className="w-10 h-10 text-white mb-2" />
+                <h3 className="font-bold text-white text-sm mb-1">AI Workout</h3>
+                <p className="text-xs text-cyan-50">Your custom workouts</p>
               </motion.div>
             </Link>
             <Link to={createPageUrl('MiniMatch')}>
@@ -580,6 +614,7 @@ export default function Home() {
 
         {/* Quick Page Search - Bottom */}
         <QuickPageSearch isDarkMode={isDarkMode} />
+        <div className="h-16" />
       </div>
     </div>
   );

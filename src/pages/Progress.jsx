@@ -39,11 +39,12 @@ export default function Progress() {
   const { data: progress, isLoading } = useQuery({
     queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.UserProgress.filter({ user_email: user.email });
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    enabled: !!user?.email,
+    staleTime: 60000,
+    refetchOnWindowFocus: true,
   });
 
   const stats = [
@@ -85,7 +86,7 @@ export default function Progress() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
       <Header title="Your Progress" showSettings={false} />
       
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
@@ -125,8 +126,8 @@ export default function Progress() {
               )}>
                 <stat.icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-slate-800">{stat.value}</p>
-              <p className="text-sm text-slate-500 dark:text-slate-800">{stat.label}</p>
+              <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+              <p className="text-sm text-slate-800">{stat.label}</p>
             </div>
           ))}
         </motion.div>
@@ -160,15 +161,15 @@ export default function Progress() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4"
+            className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-slate-500" />
+              <div className="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-500">Last Practice</p>
-                <p className="font-semibold text-slate-800">
+                <p className="text-sm text-slate-500 dark:text-slate-400">Last Practice</p>
+                <p className="font-semibold text-slate-800 dark:text-slate-200">
                   {format(new Date(progress.last_practice_date), 'MMMM d, yyyy')}
                 </p>
               </div>
@@ -181,12 +182,12 @@ export default function Progress() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
+          className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6"
         >
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-purple-500" />
-              <h2 className="font-bold text-slate-800">Your Milestones</h2>
+              <h2 className="font-bold text-slate-800 dark:text-white">Your Milestones</h2>
             </div>
             <Link to={createPageUrl('ExtendedMilestones')}>
               <button className="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
@@ -204,7 +205,7 @@ export default function Progress() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl shadow-xl border-2 border-amber-200 p-6 relative overflow-hidden"
+          className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 rounded-3xl shadow-xl border-2 border-amber-200 dark:border-amber-800 p-6 relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200/30 to-transparent rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-200/30 to-transparent rounded-full blur-2xl" />
@@ -213,7 +214,7 @@ export default function Progress() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Trophy className="w-6 h-6 text-amber-600" />
-                <h2 className="font-bold text-slate-800 text-lg">Earned Badges</h2>
+                <h2 className="font-bold text-slate-800 dark:text-white text-lg">Earned Badges</h2>
               </div>
               <Link to={createPageUrl('ExtendedMilestones')}>
                 <button className="text-sm font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1">
@@ -225,10 +226,10 @@ export default function Progress() {
             
             {(progress?.badges || []).length === 0 ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 mx-auto mb-3 bg-amber-100 rounded-2xl flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-3 bg-amber-100 dark:bg-amber-900 rounded-2xl flex items-center justify-center">
                   <Trophy className="w-8 h-8 text-amber-400" />
                 </div>
-                <p className="text-slate-600 text-sm">Complete challenges to earn badges!</p>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">Complete challenges to earn badges!</p>
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-3">
@@ -240,7 +241,7 @@ export default function Progress() {
                     transition={{ delay: index * 0.1 }}
                     className="relative group"
                   >
-                    <div className="w-full aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl shadow-lg flex items-center justify-center text-3xl transform transition-all group-hover:scale-110 group-hover:shadow-2xl group-hover:rotate-6 border-2 border-amber-300">
+                    <div className="w-full aspect-square bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900 dark:to-orange-900 rounded-2xl shadow-lg flex items-center justify-center text-3xl transform transition-all group-hover:scale-110 group-hover:shadow-2xl group-hover:rotate-6 border-2 border-amber-300 dark:border-amber-700">
                       {badge === 'first_steps' && '👟'}
                       {badge === 'rising_star' && '⭐'}
                       {badge === 'on_fire' && '🔥'}
@@ -263,16 +264,16 @@ export default function Progress() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
+            className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6"
           >
-            <h2 className="font-bold text-slate-800 mb-4">Recent Quiz Scores</h2>
+            <h2 className="font-bold text-slate-800 dark:text-white mb-4">Recent Quiz Scores</h2>
             <div className="space-y-3">
               {progress.quiz_scores.slice(-5).reverse().map((score, index) => (
                 <div 
                   key={index}
-                  className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
+                  className="flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-700 last:border-0"
                 >
-                  <span className="text-sm text-slate-600">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
                     {format(new Date(score.date), 'MMM d')}
                   </span>
                   <span className={cn(
@@ -296,11 +297,11 @@ export default function Progress() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <Trophy className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-700 mb-2">
+            <Trophy className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Start Your Journey!
             </h3>
-            <p className="text-slate-500">
+            <p className="text-slate-500 dark:text-slate-400">
               Complete drills and quizzes to track your progress and earn badges.
             </p>
           </motion.div>
