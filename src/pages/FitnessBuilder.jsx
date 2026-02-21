@@ -77,9 +77,8 @@ export default function FitnessBuilder() {
   const { data: preGeneratedWorkouts = [] } = useQuery({
     queryKey: ['preGeneratedWorkouts'],
     queryFn: async () => {
-      const workouts = await base44.entities.PreGeneratedWorkout.list();
-      // Filter out user-created ones (those with created_by)
-      return workouts.filter(w => !w.created_by);
+      const allWorkouts = await base44.entities.PreGeneratedWorkout.list();
+      return allWorkouts;
     },
   });
 

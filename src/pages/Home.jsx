@@ -424,7 +424,7 @@ export default function Home() {
       {/* Main Content */}
       <div className="px-6 -mt-12 max-w-lg mx-auto space-y-6">
         {/* Smart Start */}
-        <div className="pt-4">
+        <div className="pt-2 mt-2">
           <SmartStart isDarkMode={isDarkMode} />
         </div>
 

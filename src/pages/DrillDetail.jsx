@@ -114,13 +114,16 @@ export default function DrillDetail() {
 
   const completeDrillMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.email || !drill) return;
+      if (!drill) return;
+      const guestEmail = user?.email || 'guest@smartcrick.app';
 
       const today = new Date().toISOString().split('T')[0];
-      const completedDrills = progress?.completed_drills || [];
-      const lastPracticeDate = progress?.last_practice_date;
+      const guestProgress = await base44.entities.UserProgress.filter({ user_email: guestEmail });
+      const currentProgress = guestProgress[0] || progress;
+      const completedDrills = currentProgress?.completed_drills || [];
+      const lastPracticeDate = currentProgress?.last_practice_date;
       
-      let newStreak = progress?.current_streak || 0;
+      let newStreak = currentProgress?.current_streak || 0;
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
@@ -131,7 +134,7 @@ export default function DrillDetail() {
         newStreak = 1;
       }
 
-      const newBadges = [...(progress?.badges || [])];
+      const newBadges = [...(currentProgress?.badges || [])];
       
       // Check for badges
       if (!completedDrills.includes(drill.id) && completedDrills.length === 0) {
@@ -150,36 +153,46 @@ export default function DrillDetail() {
       const xpEarned = drill.xp_value || 50;
       const updateData = {
         completed_drills: [...new Set([...completedDrills, drill.id])],
-        total_practice_minutes: (progress?.total_practice_minutes || 0) + (drill.duration_minutes || 0),
+        total_practice_minutes: (currentProgress?.total_practice_minutes || 0) + (drill.duration_minutes || 0),
         current_streak: newStreak,
-        longest_streak: Math.max(newStreak, progress?.longest_streak || 0),
+        longest_streak: Math.max(newStreak, currentProgress?.longest_streak || 0),
         last_practice_date: today,
         badges: newBadges,
-        total_xp: (progress?.total_xp || 0) + xpEarned,
+        total_xp: (currentProgress?.total_xp || 0) + xpEarned,
       };
 
-      if (progress?.id) {
-        await base44.entities.UserProgress.update(progress.id, updateData);
+      if (currentProgress?.id) {
+        await base44.entities.UserProgress.update(currentProgress.id, updateData);
       } else {
         await base44.entities.UserProgress.create({
-          user_email: user.email,
+          user_email: guestEmail,
           ...updateData,
         });
       }
 
       // Update Leaderboard
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
           drills_completed: (leaderboards[0].drills_completed || 0) + 1,
-          current_streak: newStreak
+          current_streak: newStreak,
+          longest_streak: Math.max(newStreak, leaderboards[0].longest_streak || 0)
+        });
+      } else {
+        await base44.entities.Leaderboard.create({
+          user_email: guestEmail,
+          username: profile?.username || user?.full_name || 'Guest',
+          total_xp: xpEarned,
+          drills_completed: 1,
+          current_streak: newStreak,
+          longest_streak: newStreak
         });
       }
 
       // Create notification
       await base44.entities.Notification.create({
-        user_email: user.email,
+        user_email: guestEmail,
         type: 'drill',
         title: `Drill Completed! 🎯 +${xpEarned} XP`,
         message: `"${drill.title}" completed! Keep up the great work!`,

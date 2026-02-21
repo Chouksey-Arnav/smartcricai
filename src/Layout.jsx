@@ -8,7 +8,7 @@ import FloatingTimer from '@/components/common/FloatingTimer';
 import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
 
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
-const pagesWithLightBg = ['HeadCoach', 'NinetyDayChallenge', 'ThirtyDayChallenge', 'Coach', 'DrillYouTubeFinder'];
+const pagesWithLightBg = ['HeadCoach', 'NinetyDayChallenge', 'ThirtyDayChallenge', 'Coach', 'DrillYouTubeFinder', 'AIDrillRecommendation'];
 
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
@@ -196,9 +196,16 @@ export default function Layout({ children, currentPageName }) {
         html.dark .text-slate-300 {
           color: #94a3b8 !important;
         }
+
+        /* Force light mode for specific pages */
+        .force-light-mode,
+        .force-light-mode * {
+          background-color: white !important;
+          color: #000 !important;
+        }
         `}</style>
 
-        <div className={isHomePage ? '' : 'page-content-wrapper'}>
+        <div className={isHomePage ? '' : 'page-content-wrapper'} style={{ overscrollBehavior: 'contain' }}>
         {children}
         </div>
       

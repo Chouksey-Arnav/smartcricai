@@ -51,9 +51,18 @@ export default function Settings() {
     base44.auth.logout();
   };
 
-  const handleDeleteAccount = () => {
-    toast.error('Account deletion requires contacting support. Please visit the Base44 dashboard.');
-    setShowDeleteConfirm(false);
+  const handleDeleteAccount = async () => {
+    try {
+      await base44.auth.deleteUser();
+      toast.success('Account deleted successfully');
+      setShowDeleteConfirm(false);
+      setTimeout(() => {
+        base44.auth.logout();
+      }, 1000);
+    } catch (error) {
+      toast.error('Failed to delete account. Please try again or contact support.');
+      setShowDeleteConfirm(false);
+    }
   };
 
   const [showPrivacy, setShowPrivacy] = useState(false);
