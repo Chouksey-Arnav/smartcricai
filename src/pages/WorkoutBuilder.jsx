@@ -160,10 +160,13 @@ export default function WorkoutBuilder() {
         xp_value: 120
       });
     },
+    onMutate: () => {
+      toast.success('Starting workout now!');
+    },
     onSuccess: (newWorkout) => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
-      toast.success('Starting workout now!');
-      navigate(createPageUrl(`WorkoutPlayer?id=${newWorkout.id}`));
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      navigate(createPageUrl(`AIWorkout`));
     },
   });
 

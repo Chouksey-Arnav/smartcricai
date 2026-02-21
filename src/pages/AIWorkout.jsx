@@ -122,17 +122,20 @@ export default function AIWorkout() {
       localStorage.removeItem('workoutProgress');
       return await base44.entities.Workout.delete(activeWorkout.id);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
-      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
-      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    onMutate: async () => {
+      setWorkoutCompleted(true);
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
       toast.success('Workout completed! Amazing job! 🎉');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 

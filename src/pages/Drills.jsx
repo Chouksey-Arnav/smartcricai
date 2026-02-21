@@ -101,9 +101,21 @@ export default function Drills() {
     mutationFn: async (workoutId) => {
       await base44.entities.CustomDrillWorkout.delete(workoutId);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
+    onMutate: async (workoutId) => {
+      await queryClient.cancelQueries({ queryKey: ['savedDrillWorkouts'] });
+      const previousWorkouts = queryClient.getQueryData(['savedDrillWorkouts', user?.email || 'guest']);
+      queryClient.setQueryData(['savedDrillWorkouts', user?.email || 'guest'], old => 
+        old?.filter(w => w.id !== workoutId) || []
+      );
       toast.success('Workout deleted');
+      return { previousWorkouts };
+    },
+    onError: (err, workoutId, context) => {
+      queryClient.setQueryData(['savedDrillWorkouts', user?.email || 'guest'], context.previousWorkouts);
+      toast.error('Failed to delete workout');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
     },
   });
 

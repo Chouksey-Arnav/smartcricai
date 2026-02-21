@@ -44,11 +44,17 @@ export default function SavedDrillWorkout() {
         ? completedDrills.filter(id => id !== drillId)
         : [...completedDrills, drillId];
       
-      setCompletedDrills(newCompleted);
       return newCompleted;
     },
-    onSuccess: () => {
+    onMutate: async (drillId) => {
+      const isCompleted = completedDrills.includes(drillId);
+      const newCompleted = isCompleted
+        ? completedDrills.filter(id => id !== drillId)
+        : [...completedDrills, drillId];
+      setCompletedDrills(newCompleted);
       toast.success('Progress saved!');
+    },
+    onSuccess: () => {
     },
   });
 
