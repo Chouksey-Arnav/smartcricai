@@ -11,6 +11,17 @@ export default function ThirtyDayChallenge() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
+  // Force light mode on this page
+  React.useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    return () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    };
+  }, []);
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
@@ -26,18 +37,33 @@ export default function ThirtyDayChallenge() {
   const [challengeStarted, setChallengeStarted] = useState(false);
   const [iframeLoading, setIframeLoading] = useState(true);
 
+  // Generate guest ID if needed
+  const getGuestId = () => {
+    if (user?.email) return user.email;
+    let guestId = localStorage.getItem('smartcrick_guest_id');
+    if (!guestId) {
+      guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+      localStorage.setItem('smartcrick_guest_id', guestId);
+    }
+    return guestId;
+  };
+
   // Check if challenge was started before
   const { data: savedChallenge } = useQuery({
-    queryKey: ['savedChallenge', user?.email],
+    queryKey: ['savedChallenge', getGuestId()],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const activities = await base44.entities.ScheduledActivity.filter({ 
-        user_email: user.email,
-        title: 'SmartCrick 30-Day Challenge Started!'
-      });
-      return activities.length > 0 ? activities[0] : null;
+      try {
+        const guestId = getGuestId();
+        const activities = await base44.entities.ScheduledActivity.filter({ 
+          user_email: guestId,
+          title: 'SmartCrick 30-Day Challenge Started!'
+        });
+        return activities.length > 0 ? activities[0] : null;
+      } catch (error) {
+        console.error('Error fetching saved challenge:', error);
+        return null;
+      }
     },
-    enabled: !!user?.email,
   });
 
   useEffect(() => {
@@ -49,7 +75,7 @@ export default function ThirtyDayChallenge() {
   const startChallengeMutation = useMutation({
     mutationFn: async () => {
       const today = new Date().toISOString().split('T')[0];
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const guestId = getGuestId();
       
       // Create 30 scheduled activities for each day
       const promises = [];
@@ -60,7 +86,7 @@ export default function ThirtyDayChallenge() {
         
         promises.push(
           base44.entities.ScheduledActivity.create({
-            user_email: guestEmail,
+            user_email: guestId,
             title: `30-Day Challenge - Day ${day + 1}`,
             notes: `Complete your training for Day ${day + 1}`,
             date: dateStr,
@@ -72,7 +98,7 @@ export default function ThirtyDayChallenge() {
       await Promise.all(promises);
 
       await base44.entities.Notification.create({
-        user_email: guestEmail,
+        user_email: guestId,
         type: 'achievement',
         title: '30-Day Challenge Started - Day 1!',
         message: 'Congratulations! You\'ve started Day 1 of your 30-day challenge! Keep going!',
@@ -85,18 +111,22 @@ export default function ThirtyDayChallenge() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
       queryClient.invalidateQueries({ queryKey: ['savedChallenge'] });
-      toast.success('Challenge started!');
+      toast.success('Challenge started! 🎉');
       setChallengeStarted(true);
+    },
+    onError: (error) => {
+      console.error('Error starting challenge:', error);
+      toast.error('Failed to start challenge. Please try again.');
     },
   });
 
   const stopChallengeMutation = useMutation({
     mutationFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const guestId = getGuestId();
       
       // Delete all 30-day challenge activities
       const activities = await base44.entities.ScheduledActivity.filter({
-        user_email: guestEmail,
+        user_email: guestId,
         activity_type: '30_day_challenge'
       });
       
@@ -104,7 +134,7 @@ export default function ThirtyDayChallenge() {
       
       // Delete challenge start notification
       const startActivity = await base44.entities.ScheduledActivity.filter({
-        user_email: guestEmail,
+        user_email: guestId,
         title: 'SmartCrick 30-Day Challenge Started!'
       });
       
@@ -120,6 +150,10 @@ export default function ThirtyDayChallenge() {
       queryClient.invalidateQueries({ queryKey: ['savedChallenge'] });
       toast.success('Challenge stopped');
       setChallengeStarted(false);
+    },
+    onError: (error) => {
+      console.error('Error stopping challenge:', error);
+      toast.error('Failed to stop challenge. Please try again.');
     },
   });
 

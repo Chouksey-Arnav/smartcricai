@@ -2,8 +2,19 @@ import React from 'react';
 import Header from '@/components/common/Header';
 
 export default function DrillYouTubeFinder() {
+  // Force light mode on this page
+  React.useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    return () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white dark:bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header title="YouTube Drill Finder" />
       
       <div className="flex-1 px-4 py-4 max-w-7xl mx-auto w-full">

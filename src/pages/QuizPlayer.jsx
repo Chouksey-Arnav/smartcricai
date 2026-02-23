@@ -51,47 +51,74 @@ export default function QuizPlayer() {
 
   const saveProgressMutation = useMutation({
     mutationFn: async (score) => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      const xpEarned = score >= 80 ? 100 : score >= 50 ? 50 : 25;
-      const today = new Date().toISOString();
+      try {
+        const getGuestId = () => {
+          if (user?.email) return user.email;
+          let guestId = localStorage.getItem('smartcrick_guest_id');
+          if (!guestId) {
+            guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+            localStorage.setItem('smartcrick_guest_id', guestId);
+          }
+          return guestId;
+        };
 
-      const quizScores = progress?.quiz_scores || [];
-      const completedQuizzes = progress?.completed_quizzes || [];
+        const guestId = getGuestId();
+        const xpEarned = score >= 80 ? 100 : score >= 50 ? 50 : 25;
+        const today = new Date().toISOString();
 
-      const updateData = {
-        quiz_scores: [...quizScores, { quiz_id: quiz.id, score, date: today }],
-        completed_quizzes: [...new Set([...completedQuizzes, quiz.id])],
-        total_xp: (progress?.total_xp || 0) + xpEarned,
-      };
+        const quizScores = progress?.quiz_scores || [];
+        const completedQuizzes = progress?.completed_quizzes || [];
 
-      if (progress?.id) {
-        await base44.entities.UserProgress.update(progress.id, updateData);
-      } else {
-        await base44.entities.UserProgress.create({
-          user_email: guestEmail,
-          ...updateData,
+        const updateData = {
+          quiz_scores: [...quizScores, { quiz_id: quiz.id, score, date: today }],
+          completed_quizzes: [...new Set([...completedQuizzes, quiz.id])],
+          total_xp: (progress?.total_xp || 0) + xpEarned,
+        };
+
+        if (progress?.id) {
+          await base44.entities.UserProgress.update(progress.id, updateData);
+        } else {
+          await base44.entities.UserProgress.create({
+            user_email: guestId,
+            ...updateData,
+          });
+        }
+
+        const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
+        if (leaderboards.length > 0) {
+          await base44.entities.Leaderboard.update(leaderboards[0].id, {
+            total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
+            quizzes_completed: (leaderboards[0].quizzes_completed || 0) + 1
+          });
+        } else {
+          await base44.entities.Leaderboard.create({
+            user_email: guestId,
+            total_xp: xpEarned,
+            quizzes_completed: 1
+          });
+        }
+
+        await base44.entities.Notification.create({
+          user_email: guestId,
+          type: 'quiz',
+          title: `Quiz Complete! 🎯 +${xpEarned} XP`,
+          message: `You scored ${score}% on "${quiz.title}"!`,
+          related_id: quiz.id
         });
+      } catch (error) {
+        console.error('Error saving quiz progress:', error);
+        throw error;
       }
-
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
-      if (leaderboards.length > 0) {
-        await base44.entities.Leaderboard.update(leaderboards[0].id, {
-          total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
-          quizzes_completed: (leaderboards[0].quizzes_completed || 0) + 1
-        });
-      }
-
-      await base44.entities.Notification.create({
-        user_email: guestEmail,
-        type: 'quiz',
-        title: `Quiz Complete! 🎯 +${xpEarned} XP`,
-        message: `You scored ${score}% on "${quiz.title}"!`,
-        related_id: quiz.id
-      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userProgress']);
       queryClient.invalidateQueries(['leaderboard']);
+      queryClient.invalidateQueries(['notifications']);
+      toast.success('Quiz results saved!');
+    },
+    onError: (error) => {
+      console.error('Failed to save quiz results:', error);
+      toast.error('Failed to save results. Your score is recorded locally.');
     },
   });
 
@@ -112,21 +139,26 @@ export default function QuizPlayer() {
   };
 
   const handleSubmit = () => {
-    let correct = 0;
-    questions.forEach((q, idx) => {
-      if (answers[idx] === q.correct_answer) correct++;
-    });
-    
-    const score = Math.round((correct / questions.length) * 100);
-    setShowResults(true);
-    saveProgressMutation.mutate(score);
-    
-    if (score >= 80) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
+    try {
+      let correct = 0;
+      questions.forEach((q, idx) => {
+        if (answers[idx] === q.correct_answer) correct++;
       });
+      
+      const score = Math.round((correct / questions.length) * 100);
+      setShowResults(true);
+      saveProgressMutation.mutate(score);
+      
+      if (score >= 80) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      toast.error('Failed to submit quiz. Please try again.');
     }
   };
 
@@ -292,10 +324,10 @@ export default function QuizPlayer() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={Object.keys(answers).length < questions.length}
+                  disabled={Object.keys(answers).length < questions.length || saveProgressMutation.isPending}
                   className="flex-1 bg-emerald-500 hover:bg-emerald-600"
                 >
-                  Submit Quiz
+                  {saveProgressMutation.isPending ? 'Submitting...' : 'Submit Quiz'}
                 </Button>
               )}
             </div>

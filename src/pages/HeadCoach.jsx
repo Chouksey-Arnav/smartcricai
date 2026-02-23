@@ -9,6 +9,17 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function HeadCoach() {
+  // Force light mode on this page
+  React.useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    return () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    };
+  }, []);
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {

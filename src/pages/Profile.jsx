@@ -40,22 +40,52 @@ export default function Profile() {
 
   const updateNameMutation = useMutation({
     mutationFn: async (username) => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const getGuestId = () => {
+        if (user?.email) return user.email;
+        let guestId = localStorage.getItem('smartcrick_guest_id');
+        if (!guestId) {
+          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+          localStorage.setItem('smartcrick_guest_id', guestId);
+        }
+        return guestId;
+      };
+
+      const guestId = getGuestId();
+
+      // Update Profile entity
+      let updatedProfile;
       if (profile?.id) {
-        return await base44.entities.Profile.update(profile.id, { username });
+        updatedProfile = await base44.entities.Profile.update(profile.id, { username });
       } else {
-        return await base44.entities.Profile.create({
-          user_email: guestEmail,
+        updatedProfile = await base44.entities.Profile.create({
+          user_email: guestId,
           username
         });
       }
+
+      // Update UserProgress entity with display_name
+      if (progress?.id) {
+        await base44.entities.UserProgress.update(progress.id, { display_name: username });
+      } else {
+        await base44.entities.UserProgress.create({
+          user_email: guestId,
+          display_name: username
+        });
+      }
+
+      return updatedProfile;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
-      toast.success('Name updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      toast.success('Name updated across all features! ✅');
       setIsEditingName(false);
       setNewUsername('');
+    },
+    onError: (error) => {
+      console.error('Error updating name:', error);
+      toast.error('Failed to update name. Please try again.');
     },
   });
 

@@ -4,6 +4,17 @@ import Header from '@/components/common/Header';
 export default function Coach() {
   const [isLoading, setIsLoading] = React.useState(true);
 
+  // Force light mode on this page
+  React.useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    return () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white pb-0">
       <Header title="SmartCric Coach" showSettings={false} />
