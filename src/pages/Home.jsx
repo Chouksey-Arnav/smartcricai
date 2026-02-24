@@ -31,6 +31,7 @@ import DailyFact from '@/components/daily/DailyFact';
 import SmartStart from '@/components/home/SmartStart';
 import PlayerCheckIn from '@/components/home/PlayerCheckIn';
 import QuickPageSearch from '@/components/home/QuickPageSearch';
+import HomeStats from '@/components/home/HomeStats';
 import { Button } from '@/components/ui/button';
 
 const quickActions = [
