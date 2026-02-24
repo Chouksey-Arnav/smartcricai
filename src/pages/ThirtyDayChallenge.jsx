@@ -90,7 +90,8 @@ export default function ThirtyDayChallenge() {
             title: `30-Day Challenge - Day ${day + 1}`,
             notes: `Complete your training for Day ${day + 1}`,
             date: dateStr,
-            activity_type: '30_day_challenge'
+            activity_type: '30_day_challenge',
+            day_number: day + 1
           })
         );
       }

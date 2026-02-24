@@ -40,6 +40,16 @@ export default function Schedule() {
     },
   });
 
+  const getGuestId = () => {
+    if (user?.email) return user.email;
+    let guestId = localStorage.getItem('smartcrick_guest_id');
+    if (!guestId) {
+      guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+      localStorage.setItem('smartcrick_guest_id', guestId);
+    }
+    return guestId;
+  };
+
   const { data: activities = [] } = useQuery({
     queryKey: ['scheduledActivities', user?.email || 'guest'],
     queryFn: async () => {
