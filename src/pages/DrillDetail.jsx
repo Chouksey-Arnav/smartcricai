@@ -115,11 +115,22 @@ export default function DrillDetail() {
   const completeDrillMutation = useMutation({
     mutationFn: async () => {
       if (!drill) return;
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      
+      const getGuestId = () => {
+        if (user?.email) return user.email;
+        let guestId = localStorage.getItem('smartcrick_guest_id');
+        if (!guestId) {
+          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+          localStorage.setItem('smartcrick_guest_id', guestId);
+        }
+        return guestId;
+      };
 
+      const guestId = getGuestId();
       const today = new Date().toISOString().split('T')[0];
-      const guestProgress = await base44.entities.UserProgress.filter({ user_email: guestEmail });
-      const currentProgress = guestProgress[0] || progress;
+      
+      const guestProgress = await base44.entities.UserProgress.filter({ user_email: guestId });
+      const currentProgress = guestProgress[0] || null;
       const completedDrills = currentProgress?.completed_drills || [];
       const lastPracticeDate = currentProgress?.last_practice_date;
       
@@ -165,34 +176,36 @@ export default function DrillDetail() {
         await base44.entities.UserProgress.update(currentProgress.id, updateData);
       } else {
         await base44.entities.UserProgress.create({
-          user_email: guestEmail,
+          user_email: guestId,
           ...updateData,
         });
       }
 
       // Update Leaderboard
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
           drills_completed: (leaderboards[0].drills_completed || 0) + 1,
           current_streak: newStreak,
-          longest_streak: Math.max(newStreak, leaderboards[0].longest_streak || 0)
+          highest_streak: Math.max(newStreak, leaderboards[0].highest_streak || 0),
+          weekly_minutes: (leaderboards[0].weekly_minutes || 0) + (drill.duration_minutes || 0)
         });
       } else {
         await base44.entities.Leaderboard.create({
-          user_email: guestEmail,
-          username: profile?.username || user?.full_name || 'Guest',
+          user_email: guestId,
+          username: currentProgress?.display_name || 'Player',
           total_xp: xpEarned,
           drills_completed: 1,
           current_streak: newStreak,
-          longest_streak: newStreak
+          highest_streak: newStreak,
+          weekly_minutes: drill.duration_minutes || 0
         });
       }
 
       // Create notification
       await base44.entities.Notification.create({
-        user_email: guestEmail,
+        user_email: guestId,
         type: 'drill',
         title: `Drill Completed! 🎯 +${xpEarned} XP`,
         message: `"${drill.title}" completed! Keep up the great work!`,
@@ -201,8 +214,14 @@ export default function DrillDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userProgress']);
+      queryClient.invalidateQueries(['leaderboard']);
+      queryClient.invalidateQueries(['notifications']);
       setIsCompleted(true);
       toast.success('Drill completed! Great work! 🎉');
+    },
+    onError: (error) => {
+      console.error('Error completing drill:', error);
+      toast.error('Failed to save completion. Please try again.');
     },
   });
 
