@@ -117,7 +117,8 @@ export default function Progress() {
               key={stat.label}
               className={cn(
                 "p-4 rounded-2xl",
-                stat.bgColor
+                stat.bgColor,
+                "dark:bg-slate-800"
               )}
             >
               <div className={cn(
@@ -126,8 +127,8 @@ export default function Progress() {
               )}>
                 <stat.icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-              <p className="text-sm text-slate-800">{stat.label}</p>
+              <p className="text-2xl font-bold text-slate-800 dark:text-white">{stat.value}</p>
+              <p className="text-sm text-slate-800 dark:text-slate-300">{stat.label}</p>
             </div>
           ))}
         </motion.div>

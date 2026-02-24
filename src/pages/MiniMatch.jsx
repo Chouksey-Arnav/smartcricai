@@ -31,19 +31,67 @@ export default function MiniMatch() {
   const { data: completions } = useQuery({
     queryKey: ['scenarioCompletions', user?.email || 'guest'],
     queryFn: async () => {
-      if (!user?.email) return [];
-      return await base44.entities.ScenarioCompletion.filter({ user_email: user.email });
+      const getGuestId = () => {
+        if (user?.email) return user.email;
+        let guestId = localStorage.getItem('smartcrick_guest_id');
+        if (!guestId) {
+          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+          localStorage.setItem('smartcrick_guest_id', guestId);
+        }
+        return guestId;
+      };
+
+      const guestId = getGuestId();
+      return await base44.entities.ScenarioCompletion.filter({ user_email: guestId });
     },
-    enabled: !!user?.email,
   });
 
   const saveCompletion = useMutation({
     mutationFn: async (data) => {
-      if (!user?.email) return;
-      return await base44.entities.ScenarioCompletion.create(data);
+      const getGuestId = () => {
+        if (user?.email) return user.email;
+        let guestId = localStorage.getItem('smartcrick_guest_id');
+        if (!guestId) {
+          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+          localStorage.setItem('smartcrick_guest_id', guestId);
+        }
+        return guestId;
+      };
+
+      const guestId = getGuestId();
+      
+      await base44.entities.ScenarioCompletion.create({
+        ...data,
+        user_email: guestId
+      });
+
+      // Update Match IQ on UserProgress and Leaderboard
+      const completions = await base44.entities.ScenarioCompletion.filter({ user_email: guestId });
+      const total = completions.length;
+      const correct = completions.filter(c => c.was_correct).length;
+      const matchIQ = total > 0 ? Math.round((correct / total) * 100) : 50;
+
+      const progressResults = await base44.entities.UserProgress.filter({ user_email: guestId });
+      if (progressResults[0]) {
+        await base44.entities.UserProgress.update(progressResults[0].id, {
+          match_iq: matchIQ
+        });
+      }
+
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
+      if (leaderboards[0]) {
+        await base44.entities.Leaderboard.update(leaderboards[0].id, {
+          match_iq: matchIQ
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scenarioCompletions'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+    },
+    onError: (error) => {
+      console.error('Error saving scenario completion:', error);
     },
   });
 
@@ -91,15 +139,12 @@ export default function MiniMatch() {
     
     setShowResult(true);
 
-    if (user?.email) {
-      saveCompletion.mutate({
-        user_email: user.email,
-        scenario_id: currentScenario.id,
-        choice_made: selectedOption?.text || 'Time ran out',
-        was_correct: selectedOption?.correct || false,
-        completed_date: new Date().toISOString()
-      });
-    }
+    saveCompletion.mutate({
+      scenario_id: currentScenario.id,
+      choice_made: selectedOption?.text || 'Time ran out',
+      was_correct: selectedOption?.correct || false,
+      completed_date: new Date().toISOString()
+    });
   };
 
   const completedCount = completions?.length || 0;
@@ -130,11 +175,7 @@ export default function MiniMatch() {
                 Make smart decisions under pressure. Every choice counts!
               </p>
               <div className="bg-white/10 rounded-xl p-4 border border-white/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy className="w-4 h-4 text-white" />
-                  <p className="text-sm font-semibold">Database: {scenarioDatabase.length}+ scenarios</p>
-                </div>
-                <p className="text-xs text-orange-50">Batting • Bowling • Fielding • Captaincy • Pressure</p>
+                <p className="text-sm text-orange-50">Batting • Bowling • Fielding • Captaincy • Pressure</p>
               </div>
             </motion.div>
 
@@ -167,7 +208,10 @@ export default function MiniMatch() {
                     <>
                       <div className="flex gap-2 mb-3">
                         <button
-                          onClick={() => setTimerMode(5)}
+                          onClick={() => {
+                            setTimerMode(5);
+                            setTimeLeft(5);
+                          }}
                           className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
                             timerMode === 5 ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                           }`}
@@ -175,7 +219,10 @@ export default function MiniMatch() {
                           5s
                         </button>
                         <button
-                          onClick={() => setTimerMode(4)}
+                          onClick={() => {
+                            setTimerMode(4);
+                            setTimeLeft(4);
+                          }}
                           className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
                             timerMode === 4 ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                           }`}
@@ -183,7 +230,10 @@ export default function MiniMatch() {
                           4s
                         </button>
                         <button
-                          onClick={() => setTimerMode(3)}
+                          onClick={() => {
+                            setTimerMode(3);
+                            setTimeLeft(3);
+                          }}
                           className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
                             timerMode === 3 ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                           }`}

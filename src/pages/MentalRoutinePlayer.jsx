@@ -20,7 +20,7 @@ export default function MentalRoutinePlayer() {
   const urlParams = new URLSearchParams(window.location.search);
   const routineId = urlParams.get('id');
 
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [stepTimeRemaining, setStepTimeRemaining] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
