@@ -76,6 +76,8 @@ export default function DrillDetail() {
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const drillId = urlParams.get('id');
+  const workoutId = urlParams.get('workoutId');
+  const drillIndexInWorkout = urlParams.get('drillIndex');
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
@@ -115,6 +117,20 @@ export default function DrillDetail() {
   const completeDrillMutation = useMutation({
     mutationFn: async () => {
       if (!drill) return;
+
+      // If drill is part of a workout, update the workout's drill completion
+      if (workoutId && drillIndexInWorkout !== null) {
+        const workouts = await base44.entities.Workout.filter({ id: workoutId });
+        const workout = workouts[0];
+        if (workout) {
+          const updatedDrills = [...workout.drills];
+          const idx = parseInt(drillIndexInWorkout);
+          if (updatedDrills[idx]) {
+            updatedDrills[idx].completed_sets = updatedDrills[idx].sets || 3;
+          }
+          await base44.entities.Workout.update(workoutId, { drills: updatedDrills });
+        }
+      }
       
       const getGuestId = () => {
         if (user?.email) return user.email;
@@ -216,6 +232,8 @@ export default function DrillDetail() {
       queryClient.invalidateQueries(['userProgress']);
       queryClient.invalidateQueries(['leaderboard']);
       queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries(['workout', workoutId]);
+      queryClient.invalidateQueries(['userGeneratedWorkouts']);
       setIsCompleted(true);
       toast.success('Drill completed! Great work! 🎉');
     },

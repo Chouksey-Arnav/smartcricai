@@ -256,6 +256,26 @@ export default function Drills() {
           ) : (
             // Saved Workouts Tab
             <div className="space-y-4">
+              {savedWorkouts.length > 0 && (
+                <Button
+                  onClick={() => {
+                    if (confirm('Delete ALL your saved drill workouts? This cannot be undone.')) {
+                      const guestEmail = user?.email || 'guest@smartcrick.app';
+                      base44.entities.CustomDrillWorkout.filter({ user_email: guestEmail }).then(workouts => {
+                        Promise.all(workouts.map(w => base44.entities.CustomDrillWorkout.delete(w.id))).then(() => {
+                          queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
+                          toast.success('All saved drill workouts deleted');
+                        });
+                      });
+                    }
+                  }}
+                  variant="destructive"
+                  className="w-full bg-red-500 hover:bg-red-600"
+                >
+                  <Trash2 className="w-5 h-5 mr-2" />
+                  Delete All Saved Drill Workouts
+                </Button>
+              )}
               {savedWorkouts.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

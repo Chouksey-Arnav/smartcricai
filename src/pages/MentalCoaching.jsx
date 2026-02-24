@@ -108,8 +108,10 @@ export default function MentalCoaching() {
 
   const deleteAllRoutinesMutation = useMutation({
     mutationFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const routinesToDelete = await base44.entities.MentalRoutine.filter({ created_by: guestEmail });
       await Promise.all(
-        savedRoutines.map(routine => base44.entities.MentalRoutine.delete(routine.id))
+        routinesToDelete.map(routine => base44.entities.MentalRoutine.delete(routine.id))
       );
     },
     onSuccess: () => {
@@ -260,7 +262,7 @@ export default function MentalCoaching() {
                 className="w-full bg-red-500 hover:bg-red-600"
               >
                 <Trash2 className="w-5 h-5 mr-2" />
-                {deleteAllRoutinesMutation.isPending ? 'Deleting...' : 'Delete All Routines'}
+                {deleteAllRoutinesMutation.isPending ? 'Deleting...' : 'Delete All My Routines'}
               </Button>
             )}
             {savedRoutines.length === 0 ? (

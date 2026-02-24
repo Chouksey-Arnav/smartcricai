@@ -117,19 +117,25 @@ export default function MatchTracker() {
             <h3 className="font-bold text-slate-800 dark:text-white mb-4">Match Details</h3>
             
             <div>
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Date</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Match Date
+              </label>
               <Input
-                    type="date"
-                    value={match.match_date}
-                    onChange={(e) => setMatch({...match, match_date: e.target.value})}
-                    className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12"
-                  />
+                type="date"
+                value={match.match_date}
+                onChange={(e) => setMatch({...match, match_date: e.target.value})}
+                className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12 text-base"
+              />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Match Type</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                Match Type
+              </label>
               <Select value={match.match_type} onValueChange={(val) => setMatch({...match, match_type: val})}>
-                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12">
+                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12 text-base">
                   <SelectValue placeholder="Select match type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,9 +149,12 @@ export default function MatchTracker() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Result</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Match Result
+              </label>
               <Select value={match.result} onValueChange={(val) => setMatch({...match, result: val})}>
-                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12">
+                <SelectTrigger className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white h-12 text-base">
                   <SelectValue placeholder="Select result" />
                 </SelectTrigger>
                 <SelectContent>
@@ -160,7 +169,12 @@ export default function MatchTracker() {
 
           {showBatting && (
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4">🏏 Batting Stats</h3>
+              <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                  <span className="text-xl">🏏</span>
+                </div>
+                Batting Stats
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Runs</label>
@@ -204,7 +218,12 @@ export default function MatchTracker() {
 
           {showBowling && (
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4">🎳 Bowling Stats</h3>
+              <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center">
+                  <span className="text-xl">🎳</span>
+                </div>
+                Bowling Stats
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Wickets</label>
@@ -230,7 +249,12 @@ export default function MatchTracker() {
 
           {showFielding && (
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4">🧤 Fielding Stats</h3>
+              <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <span className="text-xl">🧤</span>
+                </div>
+                Fielding Stats
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Catches</label>
@@ -256,7 +280,10 @@ export default function MatchTracker() {
 
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-4">
             <div>
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Confidence Rating</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block flex items-center gap-2">
+                <span className="text-lg">⭐</span>
+                Confidence Rating
+              </label>
               <Input
                 type="range"
                 min="1"
@@ -269,7 +296,10 @@ export default function MatchTracker() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Match Notes</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block flex items-center gap-2">
+                <span className="text-lg">📝</span>
+                Match Notes
+              </label>
               <Textarea
                 value={match.notes}
                 onChange={(e) => setMatch({...match, notes: e.target.value})}

@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { motion } from 'framer-motion';
-import { Plus, X, Save, GripVertical, Dumbbell, Target } from 'lucide-react';
+import { Plus, X, Save, GripVertical, Dumbbell, Target, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -82,6 +82,21 @@ export default function WorkoutBuilder() {
       }
     ]);
     setDialogOpen(false);
+  };
+
+  const addRestBlock = () => {
+    setSelectedDrills([
+      ...selectedDrills,
+      {
+        drill_id: `rest_${Math.random().toString(36).substr(2, 9)}`,
+        drill_title: 'Rest Period',
+        sets: 1,
+        reps: 60,
+        completed_sets: 0,
+        type: 'rest',
+        rest_seconds: 60
+      }
+    ]);
   };
 
   const addExercise = (exercise) => {
@@ -245,7 +260,14 @@ export default function WorkoutBuilder() {
             </div>
 
             {/* Add Buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
+          <Button 
+            onClick={addRestBlock}
+            className="h-12 bg-blue-500 hover:bg-blue-600"
+          >
+            <Clock className="w-5 h-5 mr-2" />
+            Add Rest
+          </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="h-12 bg-emerald-500 hover:bg-emerald-600">
@@ -347,30 +369,48 @@ export default function WorkoutBuilder() {
                                       {drill.category === 'bodyweight' ? 'Bodyweight' : 'Weighted'}
                                     </span>
                                   )}
+                                  {drill.type === 'rest' && (
+                                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                                      Rest Block
+                                    </span>
+                                  )}
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-2">
+                                {drill.type === 'rest' ? (
                                   <div>
-                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Sets</label>
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Duration (seconds)</label>
                                     <Input
                                       type="number"
-                                      min="1"
-                                      value={drill.sets}
-                                      onChange={(e) => updateDrill(index, 'sets', e.target.value)}
-                                      className="h-9"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Reps</label>
-                                    <Input
-                                      type="number"
-                                      min="1"
+                                      min="10"
                                       value={drill.reps}
                                       onChange={(e) => updateDrill(index, 'reps', e.target.value)}
                                       className="h-9"
                                     />
                                   </div>
-                                </div>
+                                ) : (
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Sets</label>
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        value={drill.sets}
+                                        onChange={(e) => updateDrill(index, 'sets', e.target.value)}
+                                        className="h-9"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Reps</label>
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        value={drill.reps}
+                                        onChange={(e) => updateDrill(index, 'reps', e.target.value)}
+                                        className="h-9"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
                               </div>
 
                               <button

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Dumbbell, Clock, Play, CheckCircle, Loader2, X, Zap, Target, TrendingUp, Sparkles, Award, Trophy, Flame, Heart, RotateCcw } from 'lucide-react';
+import { Dumbbell, Clock, Play, CheckCircle, Loader2, X, Zap, Target, TrendingUp, Sparkles, Award, Trophy, Flame, Heart, RotateCcw, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { findWorkout, parseWorkoutIntoExercises } from '@/components/fitness/FitnessBuilderDatabase';
+import QuickStartWorkoutsList from '@/components/fitness/QuickStartWorkoutsList';
 
 const bodyParts = [
   { id: 'arms', name: 'Arms', icon: Dumbbell },
@@ -183,56 +184,25 @@ export default function FitnessBuilder() {
           <p className="text-orange-100 text-sm">Curated training programs for you</p>
         </motion.div>
 
-        {/* Pre-Generated Quick Start Workouts */}
-        {preGeneratedWorkouts.length > 0 && step === 1 && (
+        {/* Featured Workouts - Quick Start */}
+        {step === 1 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-2xl p-5 shadow-lg"
           >
-            <h3 className="font-bold text-slate-800 mb-3">Quick Start Workouts</h3>
-            <div className="space-y-2">
-              {preGeneratedWorkouts.slice(0, 3).map((workout, index) => (
-                <button
-                  key={workout.id}
-                  onClick={async () => {
-                    const guestEmail = user?.email || 'guest@smartcrick.app';
-                    const workoutData = {
-                      user_email: guestEmail,
-                      name: `${workout.body_part.toUpperCase()} - ${workout.level}`,
-                      drills: workout.exercises.map(ex => ({
-                        drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}`,
-                        drill_title: ex.name,
-                        sets: ex.sets,
-                        reps: ex.reps,
-                        completed_sets: 0,
-                        type: 'exercise',
-                        category: 'fitness',
-                        instructions: ex.notes || '',
-                        rest_seconds: ex.rest_seconds || 60
-                      })),
-                      status: 'not_started',
-                      xp_value: workout.xp_value || 100
-                    };
-                    const newWorkout = await base44.entities.Workout.create(workoutData);
-                    queryClient.invalidateQueries({ queryKey: ['workouts'] });
-                    toast.success('Workout ready! Starting now!');
-                    navigate(createPageUrl(`WorkoutPlayer?id=${newWorkout.id}`));
-                  }}
-                  className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 border border-orange-200 transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-slate-800 capitalize">{workout.body_part} Workout</p>
-                      <p className="text-sm text-slate-600">{workout.exercises.length} exercises • {workout.level}</p>
-                    </div>
-                    <div className="px-3 py-1 bg-orange-500 rounded-full text-xs font-bold text-white">
-                      {workout.duration} min
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
+            <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <Flame className="w-5 h-5 text-orange-500" />
+              Featured Workouts
+            </h3>
+            <QuickStartWorkoutsList user={user} isPremium={isPremium} />
+            <Button
+              onClick={() => setStep(2)}
+              variant="outline"
+              className="w-full mt-4 h-12 border-2 border-purple-300 text-purple-600 hover:bg-purple-50"
+            >
+              Or Create Custom Workout
+            </Button>
           </motion.div>
         )}
 

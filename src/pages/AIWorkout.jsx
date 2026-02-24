@@ -215,7 +215,7 @@ export default function AIWorkout() {
                 className="w-full bg-red-500 hover:bg-red-600"
               >
                 <Trash2 className="w-5 h-5 mr-2" />
-                {deleteAllWorkoutsMutation.isPending ? 'Deleting...' : 'Delete All Saved Workouts'}
+                {deleteAllWorkoutsMutation.isPending ? 'Deleting...' : 'Delete All Workouts'}
               </Button>
             )}
           </div>
@@ -331,7 +331,7 @@ export default function AIWorkout() {
                   <div className="flex-1">
                     <h4 className="font-bold text-slate-800 dark:text-white">{exercise.drill_title}</h4>
                     <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                      {exercise.sets || 3} sets × {exercise.reps || 10} reps
+                      {exercise.type === 'rest' ? `Rest for ${exercise.reps}s` : `${exercise.sets || 3} sets × ${exercise.reps || 10} reps`}
                     </p>
                   </div>
                 </div>
@@ -415,17 +415,38 @@ export default function AIWorkout() {
             exit={{ opacity: 0, x: -20 }}
             className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8"
           >
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-10 h-10 text-white" />
+            {currentExercise.type === 'rest' ? (
+              <div className="text-center">
+                <Clock className="w-20 h-20 text-blue-500 mx-auto mb-4" />
+                <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-4">Rest Period</h2>
+                <div className="text-6xl font-bold text-blue-600 mb-6">{currentExercise.reps}s</div>
+                <Button
+                  onClick={() => {
+                    if (currentExerciseIndex < exercises.length - 1) {
+                      setCurrentExerciseIndex(currentExerciseIndex + 1);
+                      toast.success('Rest complete! Next exercise!');
+                    } else {
+                      completeWorkoutMutation.mutate();
+                    }
+                  }}
+                  className="w-full h-16 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-xl font-bold"
+                >
+                  Skip Rest
+                </Button>
               </div>
-              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                {currentExercise.drill_title}
-              </h2>
-              <p className="text-slate-600 dark:text-slate-400">
-                Set {currentSets + 1} of {currentExercise.sets || 3}
-              </p>
-            </div>
+            ) : (
+              <>
+                <div className="text-center mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
+                    {currentExercise.drill_title}
+                  </h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    Set {currentSets + 1} of {currentExercise.sets || 3}
+                  </p>
+                </div>
 
             <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6 mb-6">
               <div className="grid grid-cols-2 gap-4 text-center">
@@ -449,13 +470,15 @@ export default function AIWorkout() {
               </div>
             )}
 
-            <Button
-              onClick={handleCompleteSet}
-              className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
-            >
-              <CheckCircle className="w-6 h-6 mr-2" />
-              Complete Set {currentSets + 1}/{currentExercise.sets || 3}
-            </Button>
+                <Button
+                  onClick={handleCompleteSet}
+                  className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
+                >
+                  <CheckCircle className="w-6 h-6 mr-2" />
+                  Complete Set {currentSets + 1}/{currentExercise.sets || 3}
+                </Button>
+              </>
+            )}
           </motion.div>
         )}
       </div>
