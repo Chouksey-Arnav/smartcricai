@@ -190,9 +190,44 @@ export default function Home() {
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ['userProgress', user?.email || 'guest'],
     queryFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
-      return results[0] || null;
+      const getGuestId = () => {
+        if (user?.email) return user.email;
+        let guestId = localStorage.getItem('smartcrick_guest_id');
+        if (!guestId) {
+          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+          localStorage.setItem('smartcrick_guest_id', guestId);
+        }
+        return guestId;
+      };
+
+      const guestId = getGuestId();
+      const results = await base44.entities.UserProgress.filter({ user_email: guestId });
+      const currentProgress = results[0] || null;
+
+      // Check and reset streak if needed
+      if (currentProgress?.last_practice_date) {
+        const today = new Date().toISOString().split('T')[0];
+        const lastDate = currentProgress.last_practice_date;
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+        // Reset streak if last practice was before yesterday
+        if (lastDate !== today && lastDate !== yesterdayStr) {
+          await base44.entities.UserProgress.update(currentProgress.id, {
+            current_streak: 0
+          });
+          const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
+          if (leaderboards.length > 0) {
+            await base44.entities.Leaderboard.update(leaderboards[0].id, {
+              current_streak: 0
+            });
+          }
+          return { ...currentProgress, current_streak: 0 };
+        }
+      }
+
+      return currentProgress;
     },
     staleTime: 60000,
     refetchOnWindowFocus: true,

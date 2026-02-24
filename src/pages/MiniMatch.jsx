@@ -122,6 +122,7 @@ export default function MiniMatch() {
 
   const startGame = () => {
     setGameStarted(true);
+    setTimeLeft(timerMode); // Initialize timer with selected mode
     pickRandomScenario();
   };
 
@@ -281,7 +282,7 @@ export default function MiniMatch() {
                 <Zap className="w-8 h-8 text-orange-500" />
                 Mini-Match Situations
               </h1>
-              <p className="text-slate-600 dark:text-slate-300">
+              <p className="text-slate-600 dark:text-white">
                 Face realistic cricket moments and make smart decisions!
               </p>
             </motion.div>
@@ -348,7 +349,7 @@ export default function MiniMatch() {
                       {currentScenario.situation}
                     </h2>
                     {currentScenario.question && (
-                      <p className="text-slate-600 dark:text-slate-300 mb-4 font-medium">
+                      <p className="text-slate-600 dark:text-white mb-4 font-medium">
                         {currentScenario.question}
                       </p>
                     )}

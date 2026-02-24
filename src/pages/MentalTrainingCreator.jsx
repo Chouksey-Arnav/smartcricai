@@ -60,10 +60,20 @@ export default function MentalTrainingCreator() {
 
   const saveMentalRoutineMutation = useMutation({
     mutationFn: async (routine) => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const getGuestId = () => {
+        if (user?.email) return user.email;
+        let guestId = localStorage.getItem('smartcrick_guest_id');
+        if (!guestId) {
+          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+          localStorage.setItem('smartcrick_guest_id', guestId);
+        }
+        return guestId;
+      };
+      
+      const guestId = getGuestId();
       return await base44.entities.MentalRoutine.create({
         ...routine,
-        user_email: guestEmail
+        user_email: guestId
       });
     },
     onSuccess: () => {
