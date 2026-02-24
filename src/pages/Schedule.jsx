@@ -53,8 +53,8 @@ export default function Schedule() {
   const { data: activities = [] } = useQuery({
     queryKey: ['scheduledActivities', user?.email || 'guest'],
     queryFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      return await base44.entities.ScheduledActivity.filter({ user_email: guestEmail });
+      const guestId = getGuestId();
+      return await base44.entities.ScheduledActivity.filter({ user_email: guestId });
     },
   });
 
@@ -68,9 +68,9 @@ export default function Schedule() {
 
   const addActivityMutation = useMutation({
     mutationFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const guestId = getGuestId();
       return await base44.entities.ScheduledActivity.create({
-        user_email: guestEmail,
+        user_email: guestId,
         title: newActivity.title,
         notes: newActivity.notes,
         date: selectedDay,
@@ -82,6 +82,10 @@ export default function Schedule() {
       setShowActivityForm(false);
       setNewActivity({ title: '', notes: '', activity_type: 'practice' });
       toast.success('Activity added!');
+    },
+    onError: (error) => {
+      console.error('Error adding activity:', error);
+      toast.error('Failed to add activity. Please try again.');
     },
   });
 
@@ -180,17 +184,26 @@ export default function Schedule() {
                 </button>
 
                 <div className="space-y-1">
-                  {dayActivities.slice(0, 2).map(act => (
-                    <div
-                      key={act.id}
-                      onClick={() => setSelectedActivity(act)}
-                      className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-1 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                    >
-                      <p className="text-xs text-slate-800 dark:text-white font-medium truncate">
-                        {activityIcons[act.activity_type] || '📌'} {act.title}
-                      </p>
-                    </div>
-                  ))}
+                  {dayActivities.slice(0, 2).map(act => {
+                    const is30DayChallenge = act.activity_type === '30_day_challenge';
+                    return (
+                      <div
+                        key={act.id}
+                        onClick={() => setSelectedActivity(act)}
+                        className={`border rounded-lg p-1 cursor-pointer transition-colors ${
+                          is30DayChallenge
+                            ? 'bg-orange-50 dark:bg-orange-900/30 border-orange-300 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50'
+                            : 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50'
+                        }`}
+                      >
+                        <p className={`text-xs font-medium truncate ${
+                          is30DayChallenge ? 'text-orange-800 dark:text-orange-200' : 'text-slate-800 dark:text-white'
+                        }`}>
+                          {is30DayChallenge && act.day_number ? `🔥 Day ${act.day_number}` : `${activityIcons[act.activity_type] || '📌'} ${act.title}`}
+                        </p>
+                      </div>
+                    );
+                  })}
                   {dayActivities.length > 2 && (
                     <p className="text-xs text-slate-500 dark:text-slate-400 text-center">+{dayActivities.length - 2}</p>
                   )}
@@ -304,7 +317,11 @@ export default function Schedule() {
             <div className="space-y-4 py-4">
               <div>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Title</p>
-                <p className="font-semibold text-slate-800 dark:text-white">{selectedActivity.title}</p>
+                <p className="font-semibold text-slate-800 dark:text-white">
+                  {selectedActivity.activity_type === '30_day_challenge' && selectedActivity.day_number 
+                    ? `🔥 30-Day Challenge - Day ${selectedActivity.day_number}` 
+                    : selectedActivity.title}
+                </p>
               </div>
               {selectedActivity.notes && (
                 <div>
