@@ -89,7 +89,7 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
                 : 'bg-white hover:bg-slate-50 border border-slate-200'
             } ${checkInMutation.isPending && 'opacity-50'}`}
           >
-            <mood.icon className="w-10 h-10 mb-2 text-slate-600" />
+            <mood.icon className={`w-10 h-10 mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} />
             <p className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               {mood.label}
             </p>

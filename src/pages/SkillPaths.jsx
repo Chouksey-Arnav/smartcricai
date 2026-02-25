@@ -495,6 +495,10 @@ export default function SkillPaths() {
                             navigate(createPageUrl(`MentalRoutinePlayer?id=${item.mentalId}&skillPathId=${skillPath.id}&itemId=${item.id}&xp=${item.xp}&weekTitle=${encodeURIComponent(week.title)}&itemName=${encodeURIComponent(item.name)}`));
                           } else if (item.type === 'youtube' && item.url) {
                             window.open(item.url, '_blank');
+                            setTimeout(() => {
+                              completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
+                            }, 500);
+                          } else if (item.type === 'fitness') {
                             completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
                           } else {
                             completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name, weekTitle: week.title });
@@ -508,7 +512,7 @@ export default function SkillPaths() {
                           'bg-amber-600 hover:bg-amber-700'
                         }`}
                       >
-                        {isCompleted ? 'Complete Again' : item.type === 'drill' || item.type === 'mental' ? 'Start' : item.type === 'youtube' ? 'Watch' : 'Complete'}
+                        {isCompleted ? 'Complete Again' : item.type === 'drill' || item.type === 'mental' ? 'Start' : item.type === 'youtube' ? 'Watch' : item.type === 'fitness' ? 'Complete' : 'Complete'}
                       </Button>
                       </div>
                       </motion.div>

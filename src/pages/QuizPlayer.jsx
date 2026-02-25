@@ -64,15 +64,30 @@ export default function QuizPlayer() {
 
         const guestId = getGuestId();
         const xpEarned = score >= 80 ? 100 : score >= 50 ? 50 : 25;
-        const today = new Date().toISOString();
+        const today = new Date().toISOString().split('T')[0];
 
         const quizScores = progress?.quiz_scores || [];
         const completedQuizzes = progress?.completed_quizzes || [];
+
+        // Update streak logic
+        const lastPractice = progress?.last_practice_date;
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        let newStreak = progress?.current_streak || 0;
+        if (lastPractice !== today) {
+          newStreak = lastPractice === yesterdayStr ? newStreak + 1 : 1;
+        }
+        const longestStreak = Math.max(newStreak, progress?.longest_streak || 0);
 
         const updateData = {
           quiz_scores: [...quizScores, { quiz_id: quiz.id, score, date: today }],
           completed_quizzes: [...new Set([...completedQuizzes, quiz.id])],
           total_xp: (progress?.total_xp || 0) + xpEarned,
+          last_practice_date: today,
+          current_streak: newStreak,
+          longest_streak: longestStreak
         };
 
         if (progress?.id) {
@@ -88,13 +103,18 @@ export default function QuizPlayer() {
         if (leaderboards.length > 0) {
           await base44.entities.Leaderboard.update(leaderboards[0].id, {
             total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
-            quizzes_completed: (leaderboards[0].quizzes_completed || 0) + 1
+            quizzes_completed: (leaderboards[0].quizzes_completed || 0) + 1,
+            current_streak: newStreak,
+            highest_streak: longestStreak
           });
         } else {
           await base44.entities.Leaderboard.create({
             user_email: guestId,
+            username: user?.full_name || 'Guest Player',
             total_xp: xpEarned,
-            quizzes_completed: 1
+            quizzes_completed: 1,
+            current_streak: 1,
+            highest_streak: 1
           });
         }
 
