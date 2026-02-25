@@ -168,7 +168,9 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved === 'dark';
+    // Default to dark mode
     localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.add('dark');
     return true;
   });
   

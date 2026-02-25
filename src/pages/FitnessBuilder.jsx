@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Dumbbell, Clock, Play, CheckCircle, Loader2, X, Zap, Target, TrendingUp, Sparkles, Award, Trophy, Flame, Heart, RotateCcw, ArrowRight } from 'lucide-react';
+import { Dumbbell, Clock, Play, CheckCircle, Loader2, X, Zap, Target, TrendingUp, Sparkles, Award, Trophy, Flame, Heart, RotateCcw, ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
@@ -189,13 +189,24 @@ export default function FitnessBuilder() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl p-5 shadow-lg"
+            className="bg-white rounded-2xl p-5 shadow-lg min-h-[70vh]"
           >
             <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
               <Flame className="w-5 h-5 text-orange-500" />
               Featured Workouts
             </h3>
-            <QuickStartWorkoutsList user={user} isPremium={isPremium} />
+            
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Input
+                placeholder="Search workouts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 text-base"
+              />
+            </div>
+            
+            <QuickStartWorkoutsList user={user} isPremium={isPremium} searchQuery={searchQuery} />
             <Button
               onClick={() => setStep(2)}
               variant="outline"

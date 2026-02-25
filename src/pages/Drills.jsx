@@ -256,6 +256,12 @@ export default function Drills() {
           ) : (
             // Saved Workouts Tab
             <div className="space-y-4">
+              <Link to={createPageUrl('DrillWorkoutCreator')}>
+                <Button className="w-full h-14 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Access Your Pre-Made Drill Workouts Here
+                </Button>
+              </Link>
               {savedWorkouts.length > 0 && (
                 <Button
                   onClick={() => {

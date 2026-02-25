@@ -212,7 +212,9 @@ export default function Layout({ children, currentPageName }) {
 
 
       {showNav && <BottomNav />}
-      <script defer data-relevanceai-share-id="bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064" src="https://app.relevanceai.com/embed/chat-bubble.js" data-share-styles="hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false" ></script>
+      
+      <script defer data-relevanceai-share-id="bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064" src="https://app.relevanceai.com/embed/chat-bubble.js" data-share-styles="hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false&position=bottom-right"></script>
+
 
       <script>
         {`(function() {

@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { quickStartWorkouts } from './QuickStartWorkouts';
 
-export default function QuickStartWorkoutsList({ user, isPremium }) {
+export default function QuickStartWorkoutsList({ user, isPremium, searchQuery = '' }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -61,9 +61,21 @@ export default function QuickStartWorkoutsList({ user, isPremium }) {
     'core': Dumbbell
   };
 
+  const filteredWorkouts = quickStartWorkouts.filter(workout =>
+    workout.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    workout.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    workout.level.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    workout.goal.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="max-h-[500px] overflow-y-auto scrollbar-visible space-y-3 pr-2">
-      {quickStartWorkouts.map((workout, index) => {
+      {filteredWorkouts.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-slate-500">No workouts found matching "{searchQuery}"</p>
+        </div>
+      ) : (
+        filteredWorkouts.map((workout, index) => {
         const isLocked = workout.is_premium && !isPremium;
         const TargetIcon = targetIcons[workout.target] || Dumbbell;
         
@@ -127,7 +139,7 @@ export default function QuickStartWorkoutsList({ user, isPremium }) {
             </Button>
           </motion.div>
         );
-      })}
+      }))}
     </div>
   );
 }

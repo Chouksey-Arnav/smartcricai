@@ -380,10 +380,14 @@ export default function WorkoutBuilder() {
                                   <div>
                                     <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Duration (seconds)</label>
                                     <Input
-                                      type="number"
-                                      min="10"
+                                      type="text"
+                                      inputMode="numeric"
+                                      pattern="[0-9]*"
                                       value={drill.reps}
-                                      onChange={(e) => updateDrill(index, 'reps', e.target.value)}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/[^0-9]/g, '');
+                                        updateDrill(index, 'reps', val || '10');
+                                      }}
                                       className="h-9"
                                     />
                                   </div>
