@@ -54,8 +54,8 @@ export default function ScheduleExtendedView() {
     const dayMatches = matches.filter(m => m.match_date === dateStr);
     
     return [
-      ...dayActivities.map(a => ({ ...a, type: 'activity' })),
-      ...dayMatches.map(m => ({ ...m, type: 'match' }))
+      ...dayActivities.map(a => ({ ...a, type: 'activity', title: a.title })),
+      ...dayMatches.map(m => ({ ...m, type: 'match', title: `${m.match_type} match` }))
     ];
   };
 
@@ -136,31 +136,42 @@ export default function ScheduleExtendedView() {
                       <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No events</p>
                     </div>
                   ) : (
-                    dayActivities.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-2 rounded-lg text-xs ${
-                          item.type === 'match'
-                            ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
-                            : 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800'
-                        }`}
-                      >
-                        <p className="font-semibold truncate text-slate-800 dark:text-white">
-                          {item.type === 'match' ? '🏏 ' : ''}
-                          {item.title || `${item.match_type} match`}
-                        </p>
-                        {item.notes && (
-                          <p className="text-xs text-slate-600 dark:text-slate-400 truncate mt-0.5">{item.notes}</p>
-                        )}
-                        {item.result && (
-                          <span className={`text-xs font-bold ${
-                            item.result === 'won' ? 'text-green-600' : 'text-slate-600 dark:text-slate-400'
-                          }`}>
-                            {item.result}
-                          </span>
-                        )}
-                      </div>
-                    ))
+                    dayActivities.map((item, idx) => {
+                      const isCustomCheckin = item.activity_type === 'custom' && item.title?.includes('Check-In');
+                      const is30DayChallenge = item.activity_type === '30_day_challenge';
+                      
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-2 rounded-lg text-xs ${
+                            item.type === 'match'
+                              ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                              : is30DayChallenge
+                              ? 'bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800'
+                              : isCustomCheckin
+                              ? 'bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800'
+                              : 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800'
+                          }`}
+                        >
+                          <p className="font-semibold truncate text-slate-800 dark:text-white">
+                            {item.type === 'match' ? '🏏 ' : 
+                             is30DayChallenge ? '🔥 ' :
+                             isCustomCheckin ? '💬 ' : ''}
+                            {item.title || `${item.match_type} match`}
+                          </p>
+                          {item.notes && (
+                            <p className="text-xs text-slate-600 dark:text-slate-400 truncate mt-0.5">{item.notes}</p>
+                          )}
+                          {item.result && (
+                            <span className={`text-xs font-bold ${
+                              item.result === 'won' ? 'text-green-600' : 'text-slate-600 dark:text-slate-400'
+                            }`}>
+                              {item.result}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </motion.div>

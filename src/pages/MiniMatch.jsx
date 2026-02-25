@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, CheckCircle, XCircle, Brain, Trophy, ArrowRight, Timer } from 'lucide-react';
+import { Zap, CheckCircle, XCircle, Brain, Trophy, ArrowRight, Timer, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { scenarioDatabase, getRandomScenarios } from '@/components/match/ScenarioDatabase';
@@ -117,12 +117,16 @@ export default function MiniMatch() {
     setCurrentScenario(random);
     setSelectedOption(null);
     setShowResult(false);
-    setTimeLeft(timerMode); // Reset timer to selected mode
+    if (timerEnabled) {
+      setTimeLeft(timerMode);
+    }
   };
 
   const startGame = () => {
     setGameStarted(true);
-    setTimeLeft(timerMode); // Initialize timer with selected mode
+    if (timerEnabled) {
+      setTimeLeft(timerMode);
+    }
     pickRandomScenario();
   };
 

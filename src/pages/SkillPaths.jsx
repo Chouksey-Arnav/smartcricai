@@ -227,10 +227,10 @@ export default function SkillPaths() {
                         </p>
                       )}
                       {isLocked && (
-                        <p className="text-xs text-amber-600 font-semibold flex items-center gap-1">
-                          <Lock className="w-3 h-3" />
-                          Premium Required
-                        </p>
+                       <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1 flex-wrap">
+                         <Lock className="w-3 h-3 shrink-0" />
+                         <span>Premium Required</span>
+                       </p>
                       )}
                     </div>
                   </div>
@@ -276,7 +276,7 @@ export default function SkillPaths() {
                       <Button
                         onClick={() => handleEarlyAccess(key)}
                         variant="outline"
-                        className="w-full border-amber-500 text-amber-600 hover:bg-amber-50"
+                        className="w-full border-amber-500 text-amber-600 hover:bg-amber-50 text-xs sm:text-sm px-2 h-10"
                       >
                         Access Early (Already Elite)
                       </Button>
@@ -339,6 +339,15 @@ export default function SkillPaths() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:to-slate-950 pb-24 pt-6">
       <Header title="Skill Paths" showSettings={false} />
       <div className="max-w-lg mx-auto px-6 pt-4">
+        {/* Display Current XP */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-4 mb-4 text-white text-center shadow-lg"
+        >
+          <p className="text-sm opacity-90 mb-1">Your Total XP</p>
+          <p className="text-4xl font-bold">{userProgress?.total_xp || 0}</p>
+        </motion.div>
         <button
           onClick={() => {
             if (confirm(`Exit ${currentPathData.name}? All progress will be lost.`)) {

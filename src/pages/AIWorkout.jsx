@@ -88,31 +88,54 @@ export default function AIWorkout() {
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
       const xpEarned = activeWorkout?.xp_value || 90;
+      const today = new Date().toISOString().split('T')[0];
 
-      const userProgressData = await base44.entities.UserProgress.filter({ user_email: guestEmail });
+      const userProgressData = await base44.entities.UserProgress.filter({ user_email: guestId });
       if (userProgressData[0]) {
+        const lastPractice = userProgressData[0].last_practice_date;
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        let newStreak = userProgressData[0].current_streak || 0;
+        if (lastPractice !== today) {
+          newStreak = lastPractice === yesterdayStr ? newStreak + 1 : 1;
+        }
+        const longestStreak = Math.max(newStreak, userProgressData[0].longest_streak || 0);
+        
         await base44.entities.UserProgress.update(userProgressData[0].id, {
-          total_xp: (userProgressData[0].total_xp || 0) + xpEarned
+          total_xp: (userProgressData[0].total_xp || 0) + xpEarned,
+          last_practice_date: today,
+          current_streak: newStreak,
+          longest_streak: longestStreak,
+          total_practice_minutes: (userProgressData[0].total_practice_minutes || 0) + 25
         });
       } else {
         await base44.entities.UserProgress.create({
-          user_email: guestEmail,
+          user_email: guestId,
           total_xp: xpEarned,
+          last_practice_date: today,
+          current_streak: 1,
+          longest_streak: 1,
+          total_practice_minutes: 25
         });
       }
 
-      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
-          total_xp: (leaderboards[0].total_xp || 0) + xpEarned
+          total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
+          current_streak: userProgressData[0] ? (userProgressData[0].current_streak || 1) : 1,
+          highest_streak: userProgressData[0] ? (userProgressData[0].longest_streak || 1) : 1,
+          weekly_minutes: (leaderboards[0].weekly_minutes || 0) + 25
         });
       }
 
       if (activeWorkout) {
         await base44.entities.Notification.create({
-          user_email: guestEmail,
+          user_email: guestId,
           type: 'workout',
           title: 'Workout Completed! 💪',
           message: `Crushed the ${activeWorkout.name} workout! +${xpEarned} XP`,
@@ -120,7 +143,7 @@ export default function AIWorkout() {
         });
       }
       localStorage.removeItem('workoutProgress');
-      return await base44.entities.Workout.delete(activeWorkout.id);
+      return await base44.entities.Workout.update(activeWorkout.id, { status: 'completed' });
     },
     onMutate: async () => {
       setWorkoutCompleted(true);
@@ -199,7 +222,7 @@ export default function AIWorkout() {
             <Button
               onClick={() => navigate(createPageUrl('FitnessBuilder'))}
               variant="outline"
-              className="w-full border-2 border-purple-500 text-purple-600 hover:bg-purple-50"
+              className="w-full border-2 border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30"
             >
               Back to Fitness Builder
             </Button>
@@ -227,23 +250,47 @@ export default function AIWorkout() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-5"
+                className={`rounded-2xl shadow-lg p-5 ${
+                  workout.status === 'completed'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/30 border-2 border-emerald-300 dark:border-emerald-700'
+                    : 'bg-white dark:bg-slate-800'
+                }`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-slate-800 dark:text-white text-lg capitalize">{workout.name}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{workout.drills?.length || 0} exercises</p>
+                    <h3 className="font-bold text-slate-800 dark:text-white text-lg capitalize flex items-center gap-2">
+                      {workout.name}
+                      {workout.status === 'completed' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {workout.drills?.length || 0} exercises
+                      {workout.status === 'completed' && ' • Completed'}
+                    </p>
                   </div>
-                  <div className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 rounded-full text-xs font-bold text-purple-700 dark:text-purple-300">
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    workout.status === 'completed'
+                      ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                      : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                  }`}>
                     +{workout.xp_value || 100} XP
                   </div>
                 </div>
                 <Button
-                  onClick={() => setSelectedWorkoutId(workout.id)}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  onClick={() => {
+                    setSelectedWorkoutId(workout.id);
+                    setWorkoutStarted(false);
+                    setWorkoutCompleted(false);
+                    setCurrentExerciseIndex(0);
+                    setCompletedSets({});
+                  }}
+                  className={`w-full ${
+                    workout.status === 'completed'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
+                      : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+                  }`}
                 >
                   <Play className="w-5 h-5 mr-2" />
-                  Select Workout
+                  {workout.status === 'completed' ? 'Start Again' : 'Select Workout'}
                 </Button>
               </motion.div>
             ))}

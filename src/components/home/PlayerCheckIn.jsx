@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Heart, Smile, Meh, Frown, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 const moods = [
   { value: 'great', label: 'Great!', icon: Smile, color: 'from-emerald-500 to-teal-500' },
@@ -15,6 +17,7 @@ const moods = [
 
 export default function PlayerCheckIn({ user, isDarkMode }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedMood, setSelectedMood] = useState(null);
   const [hasCheckedIn, setHasCheckedIn] = useState(() => {
     const today = new Date().toDateString();
@@ -25,8 +28,12 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
   const checkInMutation = useMutation({
     mutationFn: async (mood) => {
       const today = new Date().toISOString().split('T')[0];
+      const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+      if (!user?.email) {
+        localStorage.setItem('smartcrick_guest_id', guestId);
+      }
       await base44.entities.ScheduledActivity.create({
-        user_email: user.email,
+        user_email: guestId,
         title: `Mood Check-In: ${mood.label}`,
         notes: `Feeling ${mood.label.toLowerCase()} today`,
         date: today,
@@ -37,8 +44,11 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
       const today = new Date().toDateString();
       localStorage.setItem('checkin_date', today);
       setHasCheckedIn(true);
-      toast.success(`Check-in saved! Hope you have a great training session!`);
+      toast.success(`Check-in logged to schedule! 📅`);
       queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
+      setTimeout(() => {
+        navigate(createPageUrl('ScheduleExtendedView'));
+      }, 1000);
     },
   });
 
