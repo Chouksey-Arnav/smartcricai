@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Dumbbell, Clock, Play, CheckCircle, Loader2, X, Zap, Target, TrendingUp, Sparkles, Award, Trophy, Flame, Heart, RotateCcw, ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -53,6 +54,7 @@ export default function FitnessBuilder() {
   const [selectedDuration, setSelectedDuration] = useState(null);
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
