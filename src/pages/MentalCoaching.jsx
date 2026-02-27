@@ -72,8 +72,9 @@ export default function MentalCoaching() {
   const { data: allRoutines = [], isLoading } = useQuery({
     queryKey: ['mentalRoutines'],
     queryFn: async () => {
-      const all = await base44.entities.MentalRoutine.list();
-      return all.filter(r => !r.created_by);
+      const all = await base44.entities.MentalRoutine.list('-created_date', 200);
+      // Filter: show only global routines (no user_email = admin seeded ones)
+      return all.filter(r => !r.created_by || r.created_by === null);
     },
   });
 

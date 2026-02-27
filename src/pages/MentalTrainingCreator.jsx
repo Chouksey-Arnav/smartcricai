@@ -71,9 +71,11 @@ export default function MentalTrainingCreator() {
       };
       
       const guestId = getGuestId();
+      // Save with created_by so it shows under "My Routines"
       return await base44.entities.MentalRoutine.create({
         ...routine,
-        user_email: guestId
+        user_email: guestId,
+        created_by: guestId
       });
     },
     onSuccess: () => {
