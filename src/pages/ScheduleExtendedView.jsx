@@ -161,6 +161,16 @@ export default function ScheduleExtendedView() {
                   </div>
                 </div>
 
+                <button
+                  onClick={() => {
+                    setSelectedDay(format(day, 'yyyy-MM-dd'));
+                    setShowActivityForm(true);
+                  }}
+                  className="w-full mb-2 p-1 bg-indigo-100 dark:bg-indigo-900/30 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded-lg text-indigo-600 dark:text-indigo-400 text-xs font-medium transition-colors"
+                >
+                  <Plus className="w-3 h-3 mx-auto" />
+                </button>
+
                 <div className="space-y-2">
                   {dayActivities.length === 0 ? (
                     <div className="text-center py-4">
