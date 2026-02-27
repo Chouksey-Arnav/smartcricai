@@ -13,21 +13,22 @@ export default function WhyDidIGetOut() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
 
+  // Match the exact values from the CSV database
   const shots = [
-    'Drive', 'Cut', 'Pull', 'Hook', 'Sweep', 'Reverse Sweep',
-    'Cover Drive', 'Straight Drive', 'Square Cut', 'Late Cut',
-    'Flick', 'Glance', 'Defensive Push', 'Block', 'Leave'
+    'drive', 'cut', 'pull', 'hook', 'sweep', 'reverse sweep',
+    'cover drive', 'straight drive', 'square cut', 'late cut',
+    'flick', 'glance', 'defensive push', 'block', 'leave'
   ];
 
   const balls = [
-    'Fast Full', 'Fast Short', 'Yorker', 'Bouncer',
-    'Off Spin', 'Leg Spin', 'Googly', 'Doosra',
-    'Inswinger', 'Outswinger', 'Slower Ball', 'Knuckleball'
+    'fast full', 'fast short', 'yorker', 'bouncer',
+    'off spin', 'leg spin', 'googly', 'doosra',
+    'inswinger', 'outswinger', 'slower ball', 'knuckleball'
   ];
 
   const fields = [
-    'Attacking (3 slips)', 'Defensive (All around)', 'Leg Side Heavy',
-    'Off Side Packed', 'Deep Field', 'Up Close Catchers', 'Standard ODI'
+    'attacking three slips', 'defensive all around', 'leg side heavy',
+    'offside packed', 'deep field', 'up close catchers', 'standard ODI'
   ];
 
   const analyzeWicket = async () => {
@@ -38,42 +39,36 @@ export default function WhyDidIGetOut() {
 
     try {
       // Fetch from pre-generated library
-      const analyses = await base44.entities.DismissalAnalysis.filter({
-        shot_played: shotPlayed.toLowerCase().replace(/ /g, '_'),
-        ball_type: ballType.toLowerCase().replace(/ /g, '_'),
-        field_setup: fieldSetup.toLowerCase().replace(/ /g, '_')
-      });
+      // The CSV has columns: Shot, Ball Type, Field Setup
+    const all = await base44.entities.DismissalAnalysis.list();
+    const analyses = all.filter(a => 
+      a.Shot?.toLowerCase() === shotPlayed.toLowerCase() &&
+      a['Ball Type']?.toLowerCase() === ballType.toLowerCase() &&
+      a['Field Setup']?.toLowerCase() === fieldSetup.toLowerCase()
+    );
 
       let result;
       if (analyses.length > 0) {
-        // Use existing analysis
+        // Use existing analysis from CSV database
         const dismissal = analyses[0];
+        const tipsRaw = dismissal['What to Do Better Next Time'] || '';
+        const tipsList = tipsRaw.split(';').map(t => t.trim()).filter(Boolean);
+        const drillsRaw = dismissal['Recommended Drills'] || '';
+        const drillsList = drillsRaw.split(',').map(d => d.trim()).filter(Boolean);
+        const riskScore = parseInt(dismissal['Shot Selection Risk (out of 10)']) || 7;
+
         result = {
-          what_went_wrong: dismissal.analysis,
-          why_it_happened: dismissal.key_mistake,
-          what_to_do_next_time: dismissal.improvement_tips || [],
+          what_went_wrong: dismissal['What Went Wrong'] || dismissal.analysis || '',
+          why_it_happened: dismissal['Root Cause'] || dismissal.key_mistake || '',
+          what_to_do_next_time: tipsList.length > 0 ? tipsList : (dismissal.improvement_tips || []),
           recommended_drill: {
-            drill_name: dismissal.recommended_drills?.[0] || 'Practice this shot',
-            how_it_helps: 'Improves your technique and decision making',
-            quick_steps: dismissal.match_situation_advice
+            drill_name: drillsList[0] || 'Practice this shot',
+            how_it_helps: drillsList.length > 1 ? `Also try: ${drillsList.slice(1).join(', ')}` : 'Improves your technique and decision making',
+            quick_steps: 'Focus on recognising the length and line early. Use shadow practice to ingrain the correct movement pattern.'
           },
-          match_awareness_tip: dismissal.match_situation_advice,
-          positive_note: 'Every dismissal is a learning opportunity!',
-          danger_rating: (() => {
-            const shot = shotPlayed.toLowerCase();
-            const ball = ballType.toLowerCase();
-            const field = fieldSetup.toLowerCase();
-
-            if (shot.includes('drive') && ball.includes('yorker')) return 9;
-            if (shot.includes('sweep') && ball.includes('bouncer')) return 10;
-            if (shot.includes('cut') && field.includes('off side packed')) return 8;
-            if (shot.includes('pull') && field.includes('leg side heavy')) return 8;
-            if (shot.includes('block') || shot.includes('leave')) return 3;
-            if (ball.includes('slower ball') && shot.includes('drive')) return 6;
-            if (ball.includes('bouncer') && shot.includes('hook')) return 5;
-
-            return 7;
-          })()
+          match_awareness_tip: 'Always assess the field setup before playing an attacking shot. Match conditions and field placement should guide your shot selection.',
+          positive_note: 'Every dismissal is a learning opportunity. The best players in the world study their mistakes to become unstoppable!',
+          danger_rating: riskScore
         };
       } else {
         // Fallback generic analysis

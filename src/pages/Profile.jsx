@@ -73,13 +73,22 @@ export default function Profile() {
         });
       }
 
+      // Also update Leaderboard username
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
+      if (leaderboards.length > 0) {
+        await base44.entities.Leaderboard.update(leaderboards[0].id, { username });
+      } else {
+        await base44.entities.Leaderboard.create({ user_email: guestId, username, total_xp: 0 });
+      }
+
       return updatedProfile;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      toast.success('Name updated across all features! ✅');
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      toast.success('Name updated everywhere! ✅');
       setIsEditingName(false);
       setNewUsername('');
     },
