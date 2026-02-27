@@ -13,23 +13,39 @@ export default function WhyDidIGetOut() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
 
-  // Match the exact values from the CSV database
+  // Values matching stored database enum values
   const shots = [
-    'drive', 'cut', 'pull', 'hook', 'sweep', 'reverse sweep',
-    'cover drive', 'straight drive', 'square cut', 'late cut',
-    'flick', 'glance', 'defensive push', 'block', 'leave'
+    'drive', 'cut', 'pull', 'hook', 'sweep', 'reverse_sweep',
+    'cover_drive', 'straight_drive', 'square_cut', 'late_cut', 'flick'
   ];
+  const shotLabels = {
+    'drive': 'Drive', 'cut': 'Cut', 'pull': 'Pull', 'hook': 'Hook',
+    'sweep': 'Sweep', 'reverse_sweep': 'Reverse Sweep',
+    'cover_drive': 'Cover Drive', 'straight_drive': 'Straight Drive',
+    'square_cut': 'Square Cut', 'late_cut': 'Late Cut', 'flick': 'Flick'
+  };
 
   const balls = [
-    'fast full', 'fast short', 'yorker', 'bouncer',
-    'off spin', 'leg spin', 'googly', 'doosra',
-    'inswinger', 'outswinger', 'slower ball', 'knuckleball'
+    'fast_full', 'fast_short', 'yorker', 'bouncer',
+    'off_spin', 'leg_spin', 'googly', 'doosra',
+    'in_swinger', 'out_swinger', 'slower_ball'
   ];
+  const ballLabels = {
+    'fast_full': 'Fast Full', 'fast_short': 'Fast Short', 'yorker': 'Yorker',
+    'bouncer': 'Bouncer', 'off_spin': 'Off Spin', 'leg_spin': 'Leg Spin',
+    'googly': 'Googly', 'doosra': 'Doosra', 'in_swinger': 'Inswinger',
+    'out_swinger': 'Outswinger', 'slower_ball': 'Slower Ball'
+  };
 
   const fields = [
-    'attacking three slips', 'defensive all around', 'leg side heavy',
-    'offside packed', 'deep field', 'up close catchers', 'standard ODI'
+    'attacking', 'defensive', 'leg_side_heavy',
+    'off_side_packed', 'deep_field', 'up_close_catchers', 'standard_odi'
   ];
+  const fieldLabels = {
+    'attacking': 'Attacking (3 slips)', 'defensive': 'Defensive (All around)',
+    'leg_side_heavy': 'Leg Side Heavy', 'off_side_packed': 'Off Side Packed',
+    'deep_field': 'Deep Field', 'up_close_catchers': 'Up Close Catchers', 'standard_odi': 'Standard ODI'
+  };
 
   const analyzeWicket = async () => {
     if (!shotPlayed || !ballType || !fieldSetup) return;
@@ -39,12 +55,13 @@ export default function WhyDidIGetOut() {
 
     try {
       // Fetch from pre-generated library
-      // The CSV has columns: Shot, Ball Type, Field Setup
-    const all = await base44.entities.DismissalAnalysis.list();
-    const analyses = all.filter(a => 
-      a.Shot?.toLowerCase() === shotPlayed.toLowerCase() &&
-      a['Ball Type']?.toLowerCase() === ballType.toLowerCase() &&
-      a['Field Setup']?.toLowerCase() === fieldSetup.toLowerCase()
+      // Normalize values to match stored snake_case DB format
+    const normalize = (s) => s.toLowerCase().replace(/ /g, '_').replace(/\(.*\)/g, '').trim().replace(/_+$/, '');
+    const all = await base44.entities.DismissalAnalysis.list('-created_date', 900);
+    const analyses = all.filter(a =>
+      normalize(a.shot_played || '') === normalize(shotPlayed) &&
+      normalize(a.ball_type || '') === normalize(ballType) &&
+      (normalize(a.field_setup || '') === normalize(fieldSetup) || a.field_setup?.toLowerCase().includes(fieldSetup.toLowerCase().split(' ')[0]))
     );
 
       let result;
