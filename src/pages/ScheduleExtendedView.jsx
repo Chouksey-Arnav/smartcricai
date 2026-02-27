@@ -15,7 +15,11 @@ import { createPageUrl } from '@/utils';
 
 export default function ScheduleExtendedView() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date()));
+  const [showActivityForm, setShowActivityForm] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [newActivity, setNewActivity] = useState({ title: '', notes: '', activity_type: 'practice' });
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
