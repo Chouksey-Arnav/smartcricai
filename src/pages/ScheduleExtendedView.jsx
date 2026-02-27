@@ -72,6 +72,25 @@ export default function ScheduleExtendedView() {
     ];
   };
 
+  const addActivityMutation = useMutation({
+    mutationFn: async () => {
+      const guestId = getGuestId();
+      return await base44.entities.ScheduledActivity.create({
+        user_email: guestId,
+        title: newActivity.title,
+        notes: newActivity.notes,
+        date: selectedDay,
+        activity_type: newActivity.activity_type
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
+      setShowActivityForm(false);
+      setNewActivity({ title: '', notes: '', activity_type: 'practice' });
+      toast.success('Activity added!');
+    },
+  });
+
   const nextWeek = () => setCurrentWeekStart(addWeeks(currentWeekStart, 1));
   const prevWeek = () => setCurrentWeekStart(subWeeks(currentWeekStart, 1));
   const goToToday = () => setCurrentWeekStart(startOfWeek(new Date()));
