@@ -92,6 +92,7 @@ import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
 import WorkoutPlayer from './pages/WorkoutPlayer';
+import AdminSeedMentals from './pages/AdminSeedMentals';
 import __Layout from './Layout.jsx';
 
 
@@ -141,6 +142,7 @@ export const PAGES = {
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
     "WorkoutPlayer": WorkoutPlayer,
+    "AdminSeedMentals": AdminSeedMentals,
 }
 
 export const pagesConfig = {
