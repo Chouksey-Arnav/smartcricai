@@ -66,24 +66,37 @@ export default function WhyDidIGetOut() {
       if (analyses.length > 0) {
         // Use existing analysis from CSV database
         const dismissal = analyses[0];
-        const tipsRaw = dismissal['What to Do Better Next Time'] || '';
-        const tipsList = tipsRaw.split(';').map(t => t.trim()).filter(Boolean);
-        const drillsRaw = dismissal['Recommended Drills'] || '';
-        const drillsList = drillsRaw.split(',').map(d => d.trim()).filter(Boolean);
-        const riskScore = parseInt(dismissal['Shot Selection Risk (out of 10)']) || 7;
+        // Use the stored entity fields (snake_case from import)
+        const tipsList = Array.isArray(dismissal.improvement_tips) ? dismissal.improvement_tips : 
+          (dismissal.improvement_tips || '').split(';').map(t => t.trim()).filter(Boolean);
+        const drillsList = Array.isArray(dismissal.recommended_drills) ? dismissal.recommended_drills : 
+          (dismissal.recommended_drills || '').split(',').map(d => d.trim()).filter(Boolean);
+        const riskScore = 7; // Will be shown from danger_rating calc below
 
         result = {
-          what_went_wrong: dismissal['What Went Wrong'] || dismissal.analysis || '',
-          why_it_happened: dismissal['Root Cause'] || dismissal.key_mistake || '',
+          what_went_wrong: dismissal.analysis || '',
+          why_it_happened: dismissal.key_mistake || '',
           what_to_do_next_time: tipsList.length > 0 ? tipsList : (dismissal.improvement_tips || []),
           recommended_drill: {
             drill_name: drillsList[0] || 'Practice this shot',
             how_it_helps: drillsList.length > 1 ? `Also try: ${drillsList.slice(1).join(', ')}` : 'Improves your technique and decision making',
             quick_steps: 'Focus on recognising the length and line early. Use shadow practice to ingrain the correct movement pattern.'
           },
-          match_awareness_tip: 'Always assess the field setup before playing an attacking shot. Match conditions and field placement should guide your shot selection.',
+          match_awareness_tip: dismissal.match_situation_advice || 'Always assess the field setup before playing an attacking shot.',
           positive_note: 'Every dismissal is a learning opportunity. The best players in the world study their mistakes to become unstoppable!',
-          danger_rating: riskScore
+          danger_rating: (() => {
+            const s = shotPlayed; const b = ballType; const f = fieldSetup;
+            if (s === 'drive' && b === 'yorker') return 9;
+            if (s === 'sweep' && b === 'bouncer') return 10;
+            if (s === 'cut' && f === 'off_side_packed') return 8;
+            if (s === 'pull' && f === 'leg_side_heavy') return 8;
+            if (s === 'block') return 3;
+            if (b === 'slower_ball' && s === 'drive') return 6;
+            if (b === 'bouncer' && s === 'hook') return 5;
+            if (b === 'fast_short' && (s === 'drive' || s === 'cover_drive')) return 9;
+            if (f === 'attacking' && (s === 'drive' || s === 'cut')) return 8;
+            return 7;
+          })()
         };
       } else {
         // Fallback generic analysis
