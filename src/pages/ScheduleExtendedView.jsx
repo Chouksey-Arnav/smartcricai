@@ -24,11 +24,16 @@ export default function ScheduleExtendedView() {
     },
   });
 
-  const { data: activities = [] } = useQuery({
+  const getGuestId = () => {
+    if (user?.email) return user.email;
+    return localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
+  };
+
+  const { data: activities = [], refetch: refetchActivities } = useQuery({
     queryKey: ['scheduledActivities', user?.email || 'guest'],
     queryFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      return await base44.entities.ScheduledActivity.filter({ user_email: guestEmail });
+      const guestId = getGuestId();
+      return await base44.entities.ScheduledActivity.filter({ user_email: guestId });
     },
   });
 
