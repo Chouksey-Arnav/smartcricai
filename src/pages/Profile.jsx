@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, Users, Star, Settings, UserPlus, MessageCircle, Edit2, Check, X } from 'lucide-react';
+import { Trophy, Star, Settings, Edit2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/common/Header';
@@ -214,7 +214,7 @@ export default function Profile() {
           </motion.div>
         )}
 
-        {/* Badges */}
+        {/* XP & Streak Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -222,50 +222,25 @@ export default function Profile() {
           className="bg-white rounded-3xl shadow-xl p-6"
         >
           <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-500" />
-            Achievement Badges
+            <Star className="w-5 h-5 text-amber-500" />
+            Your Progress
           </h3>
-          <BadgeDisplay badges={progress?.badges || []} size="md" />
-        </motion.div>
-
-        {/* Social Badges */}
-        {profile?.social_badges?.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl shadow-xl p-6 border-2 border-pink-200"
-          >
-            <h3 className="font-bold text-purple-800 mb-4">🌟 Social Badges</h3>
-            <div className="flex flex-wrap gap-2">
-              {profile.social_badges.map((badge, i) => (
-                <div key={i} className="px-4 py-2 bg-white rounded-full border-2 border-purple-300 text-sm font-medium text-purple-700">
-                  {badge}
-                </div>
-              ))}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-amber-50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-amber-600">{progress?.total_xp || 0}</p>
+              <p className="text-xs text-slate-500">Total XP</p>
             </div>
-          </motion.div>
-        )}
-
-        {/* Social Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white rounded-3xl shadow-xl p-6"
-        >
-          <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-blue-500" />
-            Community
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-xl">
-              <p className="text-3xl font-bold text-blue-600">{profile?.followers?.length || 0}</p>
-              <p className="text-sm text-slate-600">Followers</p>
+            <div className="bg-orange-50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-orange-600">{progress?.current_streak || 0}</p>
+              <p className="text-xs text-slate-500">Day Streak</p>
             </div>
-            <div className="text-center p-4 bg-emerald-50 rounded-xl">
-              <p className="text-3xl font-bold text-emerald-600">{profile?.following?.length || 0}</p>
-              <p className="text-sm text-slate-600">Following</p>
+            <div className="bg-blue-50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-blue-600">{progress?.completed_mental_routines?.length || 0}</p>
+              <p className="text-xs text-slate-500">Mental Sessions</p>
+            </div>
+            <div className="bg-emerald-50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-emerald-600">{progress?.total_practice_minutes || 0}</p>
+              <p className="text-xs text-slate-500">Practice Mins</p>
             </div>
           </div>
         </motion.div>
