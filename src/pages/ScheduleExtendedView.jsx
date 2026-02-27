@@ -221,6 +221,46 @@ export default function ScheduleExtendedView() {
           })}
         </div>
 
+      {/* Add Activity Dialog */}
+      <Dialog open={showActivityForm} onOpenChange={setShowActivityForm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Activity for {selectedDay && format(new Date(selectedDay + 'T12:00:00'), 'MMM d')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              value={newActivity.title}
+              onChange={(e) => setNewActivity({...newActivity, title: e.target.value})}
+              placeholder="Activity title"
+            />
+            <select
+              value={newActivity.activity_type}
+              onChange={(e) => setNewActivity({...newActivity, activity_type: e.target.value})}
+              className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+            >
+              <option value="practice">Practice 🏏</option>
+              <option value="match">Match 🏆</option>
+              <option value="training">Training 💪</option>
+              <option value="mental">Mental 🧠</option>
+              <option value="rest">Rest 😌</option>
+              <option value="other">Other 📌</option>
+            </select>
+            <Input
+              value={newActivity.notes}
+              onChange={(e) => setNewActivity({...newActivity, notes: e.target.value})}
+              placeholder="Notes (optional)"
+            />
+            <Button
+              onClick={() => addActivityMutation.mutate()}
+              disabled={!newActivity.title || addActivityMutation.isPending}
+              className="w-full bg-indigo-500 hover:bg-indigo-600"
+            >
+              {addActivityMutation.isPending ? 'Adding...' : 'Add Activity'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
         {/* Legend */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg">
           <h4 className="font-bold text-slate-800 dark:text-white mb-3">Legend</h4>
