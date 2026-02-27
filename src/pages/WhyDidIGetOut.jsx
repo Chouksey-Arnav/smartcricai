@@ -55,14 +55,12 @@ export default function WhyDidIGetOut() {
 
     try {
       // Fetch from pre-generated library
-      // Normalize values to match stored snake_case DB format
-    const normalize = (s) => s.toLowerCase().replace(/ /g, '_').replace(/\(.*\)/g, '').trim().replace(/_+$/, '');
-    const all = await base44.entities.DismissalAnalysis.list('-created_date', 900);
-    const analyses = all.filter(a =>
-      normalize(a.shot_played || '') === normalize(shotPlayed) &&
-      normalize(a.ball_type || '') === normalize(ballType) &&
-      (normalize(a.field_setup || '') === normalize(fieldSetup) || a.field_setup?.toLowerCase().includes(fieldSetup.toLowerCase().split(' ')[0]))
-    );
+      // Query directly using stored DB enum values (already snake_case)
+    const all = await base44.entities.DismissalAnalysis.filter({
+      shot_played: shotPlayed,
+      ball_type: ballType,
+      field_setup: fieldSetup
+    });
 
       let result;
       if (analyses.length > 0) {
@@ -173,7 +171,7 @@ export default function WhyDidIGetOut() {
                 </SelectTrigger>
                 <SelectContent>
                   {shots.map(shot => (
-                    <SelectItem key={shot} value={shot}>{shot}</SelectItem>
+                    <SelectItem key={shot} value={shot}>{shotLabels[shot] || shot}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -189,7 +187,7 @@ export default function WhyDidIGetOut() {
                 </SelectTrigger>
                 <SelectContent>
                   {balls.map(ball => (
-                    <SelectItem key={ball} value={ball}>{ball}</SelectItem>
+                    <SelectItem key={ball} value={ball}>{ballLabels[ball] || ball}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -205,7 +203,7 @@ export default function WhyDidIGetOut() {
                 </SelectTrigger>
                 <SelectContent>
                   {fields.map(field => (
-                    <SelectItem key={field} value={field}>{field}</SelectItem>
+                    <SelectItem key={field} value={field}>{fieldLabels[field] || field}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
