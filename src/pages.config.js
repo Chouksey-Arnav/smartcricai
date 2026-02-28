@@ -49,6 +49,7 @@
  */
 import AIDrillRecommendation from './pages/AIDrillRecommendation';
 import AIWorkout from './pages/AIWorkout';
+import AdminSeedMentals from './pages/AdminSeedMentals';
 import AdvancedPathDetails from './pages/AdvancedPathDetails';
 import Chat from './pages/Chat';
 import Coach from './pages/Coach';
@@ -92,13 +93,13 @@ import WhyDidIGetOut from './pages/WhyDidIGetOut';
 import WorkoutBuilder from './pages/WorkoutBuilder';
 import WorkoutHistory from './pages/WorkoutHistory';
 import WorkoutPlayer from './pages/WorkoutPlayer';
-import AdminSeedMentals from './pages/AdminSeedMentals';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AIDrillRecommendation": AIDrillRecommendation,
     "AIWorkout": AIWorkout,
+    "AdminSeedMentals": AdminSeedMentals,
     "AdvancedPathDetails": AdvancedPathDetails,
     "Chat": Chat,
     "Coach": Coach,
@@ -142,7 +143,6 @@ export const PAGES = {
     "WorkoutBuilder": WorkoutBuilder,
     "WorkoutHistory": WorkoutHistory,
     "WorkoutPlayer": WorkoutPlayer,
-    "AdminSeedMentals": AdminSeedMentals,
 }
 
 export const pagesConfig = {

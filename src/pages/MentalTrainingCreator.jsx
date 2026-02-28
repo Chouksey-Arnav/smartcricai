@@ -45,58 +45,49 @@ export default function MentalTrainingCreator() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try { return await base44.auth.me(); } catch { return null; }
+    },
   });
 
-  const { data: userProfile } = useQuery({
-    queryKey: ['userProfile', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-      return profiles[0] || null;
-    },
-    enabled: !!user?.email,
-  });
+  const getGuestId = () => {
+    if (user?.email) return user.email;
+    let guestId = localStorage.getItem('smartcrick_guest_id');
+    if (!guestId) {
+      guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+      localStorage.setItem('smartcrick_guest_id', guestId);
+    }
+    return guestId;
+  };
 
   const saveMentalRoutineMutation = useMutation({
     mutationFn: async (routine) => {
-      const getGuestId = () => {
-        if (user?.email) return user.email;
-        let guestId = localStorage.getItem('smartcrick_guest_id');
-        if (!guestId) {
-          guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
-          localStorage.setItem('smartcrick_guest_id', guestId);
-        }
-        return guestId;
-      };
-      
       const guestId = getGuestId();
-      // Save with created_by so it shows under "My Routines"
       return await base44.entities.MentalRoutine.create({
         ...routine,
+        created_by: guestId,
         user_email: guestId,
-        created_by: guestId
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
-      toast.success('Saved to Mental Training! 🧠');
-      navigate(createPageUrl('MentalCoaching?tab=saved'));
+      toast.success('Saved to My Routines! 🧠');
+      navigate(createPageUrl('MentalCoaching') + '?tab=saved');
     },
+    onError: () => {
+      toast.error('Failed to save routine. Please try again.');
+    }
   });
 
-  const generatePlan = async () => {
+  const generatePlan = () => {
     if (!focusArea) {
       toast.error('Please select a focus area');
       return;
     }
 
     setIsGenerating(true);
-
-    // Simulate brief loading for better UX
     setTimeout(() => {
-      // Get pre-generated routine - NO INTEGRATION CREDITS USED!
       const routine = getPreGeneratedMentalRoutine(focusArea, sessionLength);
       setGeneratedPlan(routine);
       setIsGenerating(false);
@@ -132,7 +123,6 @@ export default function MentalTrainingCreator() {
       <div className="px-6 py-6 max-w-2xl mx-auto space-y-6">
         {!generatedPlan ? (
           <>
-            {/* Intro */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -143,7 +133,6 @@ export default function MentalTrainingCreator() {
               <p className="text-purple-100">Personalized mental training from our pre-made library</p>
             </motion.div>
 
-            {/* Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -195,70 +184,59 @@ export default function MentalTrainingCreator() {
                 className="w-full h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg font-bold"
               >
                 {isGenerating ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Creating Your Plan...
-                  </>
+                  <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Creating Your Plan...</>
                 ) : (
-                  <>
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Generate Mental Plan
-                  </>
+                  <><Sparkles className="w-5 h-5 mr-2" /> Generate Mental Plan</>
                 )}
               </Button>
             </motion.div>
           </>
         ) : (
-          <>
-            {/* Generated Plan */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-3xl shadow-2xl p-6"
-            >
-              <div className="text-center mb-6">
-                <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
-                <h3 className="text-2xl font-bold text-slate-800 mb-2">{generatedPlan.title}</h3>
-                <p className="text-slate-600">{generatedPlan.description}</p>
-              </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl shadow-2xl p-6"
+          >
+            <div className="text-center mb-6">
+              <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">{generatedPlan.title}</h3>
+              <p className="text-slate-600">{generatedPlan.description}</p>
+            </div>
 
-              <div className="space-y-4 mb-6">
-                <h4 className="font-bold text-slate-800 dark:text-slate-100">Steps:</h4>
-                {generatedPlan.steps.map((step, index) => (
-                  <div key={index} className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-slate-800 dark:text-slate-100 leading-relaxed">{step.instruction}</p>
-                        <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1">
-                          {step.duration_seconds} seconds
-                        </p>
-                      </div>
+            <div className="space-y-4 mb-6">
+              <h4 className="font-bold text-slate-800">Steps:</h4>
+              {generatedPlan.steps.map((step, index) => (
+                <div key={index} className="bg-purple-50 rounded-2xl p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-slate-800 leading-relaxed">{step.instruction}</p>
+                      <p className="text-xs text-purple-600 font-medium mt-1">
+                        {step.duration_seconds} seconds
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleDiscard}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Discard
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={saveMentalRoutineMutation.isPending}
-                  className="flex-1 bg-emerald-500 hover:bg-emerald-600"
-                >
-                  {saveMentalRoutineMutation.isPending ? 'Saving...' : 'Save & Use'}
-                </Button>
-              </div>
-            </motion.div>
-          </>
+            <div className="flex gap-3">
+              <Button onClick={handleDiscard} variant="outline" className="flex-1">
+                Discard
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={saveMentalRoutineMutation.isPending}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+              >
+                {saveMentalRoutineMutation.isPending ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                ) : 'Save & Use'}
+              </Button>
+            </div>
+          </motion.div>
         )}
       </div>
     </div>

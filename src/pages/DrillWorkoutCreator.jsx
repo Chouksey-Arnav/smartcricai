@@ -42,35 +42,40 @@ export default function DrillWorkoutCreator() {
   const [isSearching, setIsSearching] = useState(false);
   const [workoutGenerated, setWorkoutGenerated] = useState(false);
 
+  const getGuestEmail = () => {
+    let guestId = localStorage.getItem('smartcrick_guest_id');
+    if (!guestId) {
+      guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+      localStorage.setItem('smartcrick_guest_id', guestId);
+    }
+    return guestId;
+  };
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
-      try {
-        return await base44.auth.me();
-      } catch {
-        return null;
-      }
+      try { return await base44.auth.me(); } catch { return null; }
     },
   });
 
-  const { data: allDrills } = useQuery({
+  const { data: allDrills = [] } = useQuery({
     queryKey: ['drills'],
     queryFn: () => base44.entities.Drill.list(),
-    initialData: [],
   });
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async (workout) => {
-      return await base44.entities.CustomDrillWorkout.create({
-        ...workout,
-        saved: true
-      });
+      return await base44.entities.CustomDrillWorkout.create(workout);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
-      toast.success('Workout saved forever! 🎯');
-      navigate(createPageUrl('Drills?tab=saved'));
+      queryClient.invalidateQueries({ queryKey: ['customDrillWorkouts'] });
+      toast.success('Workout saved! 🎯');
+      navigate(createPageUrl('Drills') + '?tab=saved');
+    },
+    onError: (error) => {
+      toast.error('Failed to save workout. Please try again.');
+      console.error('Save error:', error);
     },
   });
 
@@ -87,7 +92,6 @@ export default function DrillWorkoutCreator() {
       const matchesCategory = drill.category === category;
       const matchesSkillLevel = drill.skill_level === skillLevel;
       const matchesDuration = drill.duration_minutes <= parseInt(duration);
-      
       return matchesCategory && matchesSkillLevel && matchesDuration;
     });
 
@@ -96,17 +100,19 @@ export default function DrillWorkoutCreator() {
     setIsSearching(false);
 
     if (filtered.length === 0) {
-      toast.error('No drills found for these criteria');
+      toast.error('No drills found for these criteria. Try different options!');
+    } else {
+      toast.success(`Found ${filtered.length} drills!`);
     }
   };
 
   const handleSave = () => {
     if (matchingDrills.length === 0) return;
 
-    const guestEmail = user?.email || 'guest@smartcrick.app';
+    const guestEmail = user?.email || getGuestEmail();
     const workout = {
       user_email: guestEmail,
-      workout_name: `${category.charAt(0).toUpperCase() + category.slice(1)} - ${skillLevel}`,
+      workout_name: `${category.charAt(0).toUpperCase() + category.slice(1)} - ${skillLevel.charAt(0).toUpperCase() + skillLevel.slice(1)}`,
       num_drills: matchingDrills.length,
       skill_level: skillLevel,
       drills: matchingDrills.map(d => ({
@@ -114,22 +120,22 @@ export default function DrillWorkoutCreator() {
         drill_title: d.title,
         is_existing: true
       })),
+      saved: true,
+      completed_drill_ids: [],
+      status: 'not_started',
+      target_skills: []
     };
 
     saveWorkoutMutation.mutate(workout);
   };
 
   const handleDiscard = () => {
-    resetForm();
-    toast('Workout discarded', { icon: '🗑️' });
-  };
-
-  const resetForm = () => {
     setCategory('');
     setSkillLevel('');
     setDuration('');
     setMatchingDrills([]);
     setWorkoutGenerated(false);
+    toast('Workout discarded', { icon: '🗑️' });
   };
 
   return (
@@ -218,15 +224,9 @@ export default function DrillWorkoutCreator() {
                 className="w-full h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg font-bold"
               >
                 {isSearching ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Finding Drills...
-                  </>
+                  <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Finding Drills...</>
                 ) : (
-                  <>
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Generate Workout
-                  </>
+                  <><Sparkles className="w-5 h-5 mr-2" /> Generate Workout</>
                 )}
               </Button>
             </motion.div>
@@ -245,43 +245,39 @@ export default function DrillWorkoutCreator() {
               </p>
             </div>
 
-            <div className="space-y-4 mb-6">
-              {matchingDrills.map((drill, index) => (
-                <Link key={drill.id} to={createPageUrl(`DrillDetail?id=${drill.id}`)}>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl p-4 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-slate-800 dark:text-white">{drill.title}</h4>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">
-                          {drill.duration_minutes} min • {drill.target_skill}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
-            </div>
-
-            {matchingDrills.length === 0 && (
-              <div className="text-center py-8">
+            {matchingDrills.length === 0 ? (
+              <div className="text-center py-8 mb-4">
                 <p className="text-slate-600 dark:text-slate-400">No drills found for these criteria. Try different options!</p>
+              </div>
+            ) : (
+              <div className="space-y-4 mb-6">
+                {matchingDrills.map((drill, index) => (
+                  <Link key={drill.id} to={createPageUrl(`DrillDetail?id=${drill.id}`)}>
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl p-4 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all cursor-pointer mb-2"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-slate-800 dark:text-white">{drill.title}</h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            {drill.duration_minutes} min • {drill.target_skill}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Link>
+                ))}
               </div>
             )}
 
             <div className="flex gap-3">
-              <Button
-                onClick={handleDiscard}
-                variant="outline"
-                className="flex-1"
-              >
+              <Button onClick={handleDiscard} variant="outline" className="flex-1">
                 Discard
               </Button>
               {matchingDrills.length > 0 && (
@@ -290,7 +286,9 @@ export default function DrillWorkoutCreator() {
                   disabled={saveWorkoutMutation.isPending}
                   className="flex-1 bg-emerald-500 hover:bg-emerald-600"
                 >
-                  {saveWorkoutMutation.isPending ? 'Saving...' : 'Save Workout'}
+                  {saveWorkoutMutation.isPending ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                  ) : 'Save Workout'}
                 </Button>
               )}
             </div>
