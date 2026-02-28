@@ -94,6 +94,25 @@ export default function Progress() {
         <LevelProgressBar totalXP={progress?.total_xp || 0} />
         <LevelUpNotification totalXP={progress?.total_xp || 0} />
 
+        {/* Expanded Progress View Button */}
+        <Link to={createPageUrl('ExpandedProgress')}>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.02 }}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white shadow-lg flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <BarChart2 className="w-6 h-6" />
+              <div>
+                <p className="font-bold">Open Expanded Progress View</p>
+                <p className="text-emerald-100 text-xs">Detailed charts, stats, and history</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5" />
+          </motion.div>
+        </Link>
+
         {/* Streak Header */}
         {(progress?.current_streak || 0) > 0 && (
           <motion.div
