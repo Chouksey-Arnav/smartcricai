@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Target, Heart, Trash2, Video } from 'lucide-react';
+import { Search, Target, Heart, Trash2, Video, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
@@ -19,9 +19,13 @@ export default function Drills() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   
-  const urlParams = new URLSearchParams(window.location.search);
-  const initialTab = urlParams.get('tab') || 'drills';
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState('drills');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+    if (tab) setActiveTab(tab);
+  }, []);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -66,17 +70,19 @@ export default function Drills() {
     retry: 3,
   });
 
-  const { data: savedWorkouts = [] } = useQuery({
+  const getGuestEmail = () => {
+    if (user?.email) return user.email;
+    return localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
+  };
+
+  const { data: savedWorkouts = [], refetch: refetchSaved } = useQuery({
     queryKey: ['savedDrillWorkouts', user?.email || 'guest'],
     queryFn: async () => {
-      const guestEmail = user?.email || 'guest@smartcrick.app';
-      const results = await base44.entities.CustomDrillWorkout.filter({ 
-        user_email: guestEmail,
-        saved: true 
-      });
+      const guestEmail = getGuestEmail();
+      const results = await base44.entities.CustomDrillWorkout.filter({ user_email: guestEmail });
       return results.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
-    staleTime: 60000,
+    staleTime: 30000,
   });
 
   const handleRefresh = async () => {

@@ -73,8 +73,7 @@ export default function MentalCoaching() {
     queryKey: ['mentalRoutines'],
     queryFn: async () => {
       const all = await base44.entities.MentalRoutine.list('-created_date', 200);
-      // Show only seeded/admin routines (no created_by) in "All Routines"
-      return all.filter(r => !r.created_by);
+      return all; // Show all routines
     },
   });
 
@@ -95,7 +94,8 @@ export default function MentalCoaching() {
       const guestEmail = user?.email || 'guest@smartcrick.app';
       const guestId = localStorage.getItem('smartcrick_guest_id') || guestEmail;
       const all = await base44.entities.MentalRoutine.list('-created_date', 200);
-      return all.filter(r => r.created_by === guestEmail || r.created_by === guestId);
+      // Show routines created by this user (logged in or guest)
+      return all.filter(r => r.created_by && (r.created_by === guestEmail || r.created_by === guestId));
     },
   });
 

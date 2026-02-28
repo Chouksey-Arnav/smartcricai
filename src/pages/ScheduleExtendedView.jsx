@@ -33,7 +33,12 @@ export default function ScheduleExtendedView() {
 
   const getGuestId = () => {
     if (user?.email) return user.email;
-    return localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
+    let guestId = localStorage.getItem('smartcrick_guest_id');
+    if (!guestId) {
+      guestId = `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+      localStorage.setItem('smartcrick_guest_id', guestId);
+    }
+    return guestId;
   };
 
   const { data: activities = [], refetch: refetchActivities } = useQuery({
