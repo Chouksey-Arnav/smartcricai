@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import BottomNav from '@/components/common/BottomNav';
@@ -9,6 +9,21 @@ import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
 
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 const pagesWithLightBg = ['HeadCoach', 'NinetyDayChallenge', 'ThirtyDayChallenge', 'Coach', 'DrillYouTubeFinder', 'AIDrillRecommendation'];
+
+function RelevanceAIChatbot() {
+  const ref = useRef(false);
+  useEffect(() => {
+    if (ref.current) return;
+    ref.current = true;
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://app.relevanceai.com/embed/chat-bubble.js';
+    script.setAttribute('data-relevanceai-share-id', 'bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064');
+    script.setAttribute('data-share-styles', 'hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false');
+    document.body.appendChild(script);
+  }, []);
+  return null;
+}
 
 export default function Layout({ children, currentPageName }) {
   const showNav = !pagesWithoutNav.includes(currentPageName);
