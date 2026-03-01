@@ -227,64 +227,9 @@ export default function Layout({ children, currentPageName }) {
 
 
       {showNav && <BottomNav />}
-      
+
       {/* Relevance AI Chatbot - Global */}
       <RelevanceAIChatbot />
-
-
-      <script>
-        {`(function() {
-            const premiumData = localStorage.getItem('smartcrick_premium');
-            if (premiumData) {
-                try {
-                    const data = JSON.parse(premiumData);
-                    if (!data.plan) return;
-
-                    // Add premium classes
-                    document.body.classList.add('premium-user');
-                    document.body.classList.add('plan-' + data.plan);
-
-                    // Check expiration for monthly/yearly
-                    const purchaseDate = new Date(data.purchaseDate);
-                    const now = new Date();
-                    const daysSince = (now - purchaseDate) / (1000 * 60 * 60 * 24);
-
-                    let isExpired = false;
-                    if (data.plan === 'monthly' && daysSince > 30) isExpired = true;
-                    if (data.plan === 'yearly' && daysSince > 365) isExpired = true;
-
-                    if (isExpired) {
-                        localStorage.removeItem('smartcrick_premium');
-                        return;
-                    }
-
-                    // Show premium badge
-                    const style = document.createElement('style');
-                    style.innerHTML = '.premium-badge{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;padding:10px 20px;border-radius:25px;font-weight:bold;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.15)}';
-                    document.head.appendChild(style);
-
-                    const badge = document.createElement('div');
-                    badge.className = 'premium-badge';
-                    badge.innerHTML = '⭐ PREMIUM';
-                    document.body.appendChild(badge);
-
-                    // Show welcome message once
-                    const hasShownWelcome = sessionStorage.getItem('premium_welcome_shown');
-                    if (!hasShownWelcome) {
-                        setTimeout(() => {
-                            const welcomeMessages = {
-                                monthly: 'Welcome to Premium Monthly! You now have access to Elite Builder, advanced drills, advanced mental training, and pro scenarios!',
-                                yearly: 'Welcome to Premium Yearly! You have everything in Monthly PLUS SmartCrick Head Coach!',
-                                lifetime: 'Welcome to Lifetime Premium! You have everything PLUS the 90-Day Challenge Architect. You\\'re set for life!'
-                            };
-                            alert(welcomeMessages[data.plan] || 'Welcome to Premium!');
-                            sessionStorage.setItem('premium_welcome_shown', 'true');
-                        }, 1000);
-                    }
-                } catch(e) {}
-            }
-        })();`}
-      </script>
-      </div>
-      );
-      }
+    </div>
+  );
+}
