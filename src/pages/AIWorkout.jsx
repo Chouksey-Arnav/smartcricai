@@ -163,28 +163,34 @@ export default function AIWorkout() {
     },
   });
 
+  const isLastExercise = currentExerciseIndex === exercises.length - 1;
+
   const handleCompleteSet = () => {
     const exerciseId = currentExercise.drill_id || currentExerciseIndex;
     const currentSets = completedSets[exerciseId] || 0;
     const newSets = currentSets + 1;
-    
-    setCompletedSets({ ...completedSets, [exerciseId]: newSets });
+    const totalSets = currentExercise.sets || 3;
 
-    if (newSets >= (currentExercise.sets || 3)) {
-      if (currentExerciseIndex < exercises.length - 1) {
-        toast.success(`${currentExercise.drill_title} complete! 🎯`);
+    if (newSets >= totalSets) {
+      if (!isLastExercise) {
+        toast.success(`${currentExercise.drill_title} complete!`);
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCompletedSets({ ...completedSets, [exerciseId]: 0 });
-      } else {
-        setWorkoutCompleted(true);
-        completeWorkoutMutation.mutate();
       }
+      // If last exercise last set — handled by "End Workout" button, not here
     } else {
+      setCompletedSets({ ...completedSets, [exerciseId]: newSets });
       const restSeconds = currentExercise.rest_seconds || 60;
       setRestTime(restSeconds);
       setIsResting(true);
-      toast.success(`Set ${newSets}/${currentExercise.sets || 3} complete! Take a break! 😌`);
+      toast.success(`Set ${newSets}/${totalSets} complete! Take a break!`);
     }
+  };
+
+  const handleFinishWorkout = () => {
+    if (finishLocked || activeWorkout?.status === 'completed') return;
+    setFinishLocked(true);
+    completeWorkoutMutation.mutate();
   };
 
   const skipRest = () => {
