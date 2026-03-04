@@ -117,55 +117,64 @@ export default function Quizzes() {
               <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
               <p className="text-slate-500 dark:text-slate-400">No quizzes available yet.</p>
             </motion.div>
-          ) : (
-            filteredQuizzes.map((quiz, index) => {
-              const config = categoryConfig[quiz.category] || categoryConfig.rules;
-              const Icon = config.icon;
-              
+          ) : (() => {
+            const difficultyGroups = [
+              { key: 'easy', label: 'Easy', headerClass: 'bg-green-100 text-green-800 border-green-300' },
+              { key: 'medium', label: 'Intermediate', headerClass: 'bg-amber-100 text-amber-800 border-amber-300' },
+              { key: 'hard', label: 'Advanced', headerClass: 'bg-red-100 text-red-800 border-red-300' },
+              { key: 'pro', label: 'Pro', headerClass: 'bg-purple-100 text-purple-800 border-purple-300' },
+            ];
+            let globalIndex = 0;
+            return difficultyGroups.map(group => {
+              const groupQuizzes = filteredQuizzes.filter(q => q.difficulty === group.key);
+              if (groupQuizzes.length === 0) return null;
               return (
-                <motion.div
-                  key={quiz.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate(createPageUrl(`QuizPlayer?id=${quiz.id}`))}
-                  className={cn(
-                    "p-4 rounded-2xl border-2 cursor-pointer transition-all",
-                    config.bgColor,
-                    "dark:bg-slate-800 border-transparent hover:border-slate-200 dark:hover:border-slate-600"
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center text-white",
-                      config.color
-                    )}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-slate-800 dark:text-white">{quiz.title}</h3>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="text-sm text-slate-500 dark:text-slate-400">
-                          {quiz.questions?.length || 0} questions
-                        </span>
-                        <span className={cn(
-                          "px-2 py-0.5 rounded-full text-xs font-medium capitalize",
-                          difficultyColors[quiz.difficulty]
-                        )}>
-                          {quiz.difficulty}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-600 self-center" />
+                <div key={group.key}>
+                  <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-bold text-sm mb-2 ${group.headerClass}`}>
+                    <span>{group.label}</span>
+                    <span className="ml-auto text-xs font-medium opacity-70">{groupQuizzes.length} quiz{groupQuizzes.length !== 1 ? 'zes' : ''}</span>
                   </div>
-                </motion.div>
+                  {groupQuizzes.map((quiz) => {
+                    const config = categoryConfig[quiz.category] || categoryConfig.rules;
+                    const Icon = config.icon;
+                    const idx = globalIndex++;
+                    return (
+                      <motion.div
+                        key={quiz.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.03 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => navigate(createPageUrl(`QuizPlayer?id=${quiz.id}`))}
+                        className={cn(
+                          "p-4 rounded-2xl border-2 cursor-pointer transition-all mb-2",
+                          config.bgColor,
+                          "dark:bg-slate-800 border-transparent hover:border-slate-200 dark:hover:border-slate-600"
+                        )}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white", config.color)}>
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-slate-800 dark:text-white">{quiz.title}</h3>
+                            <div className="flex items-center gap-3 mt-2">
+                              <span className="text-sm text-slate-500 dark:text-slate-400">{quiz.questions?.length || 0} questions</span>
+                              <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium capitalize", difficultyColors[quiz.difficulty])}>
+                                {quiz.difficulty}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-600 self-center" />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               );
-            })
-          )}
+            });
+          })()}
         </div>
       </div>
     </div>
