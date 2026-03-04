@@ -323,43 +323,36 @@ export default function MentalRoutinePlayer() {
               exit={{ opacity: 0, y: -20 }}
               className="text-center w-full max-w-sm"
             >
-              {/* Timer Circle */}
-              <div className="relative w-48 h-48 mx-auto mb-8">
-                <svg className="w-full h-full transform -rotate-90">
-                  <circle
-                    cx="96"
-                    cy="96"
-                    r="88"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  <motion.circle
-                    cx="96"
-                    cy="96"
-                    r="88"
-                    stroke="white"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray={553}
-                    strokeDashoffset={553 - (553 * stepTimeRemaining / (currentStep?.duration_seconds || 10))}
-                    initial={false}
-                    animate={{
-                      strokeDashoffset: 553 - (553 * stepTimeRemaining / (currentStep?.duration_seconds || 10))
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-5xl font-bold text-white">
-                    {stepTimeRemaining}
-                  </span>
+              {/* Visualizer / Timer */}
+              {routine?.title?.toLowerCase().includes('box breath') ? (
+                <div className="mb-6">
+                  <BoxBreathingVisualizer stepTimeRemaining={stepTimeRemaining} stepDuration={currentStep?.duration_seconds || 16} />
                 </div>
-              </div>
+              ) : (routine?.title?.toLowerCase().includes('4-7-8') || routine?.title?.toLowerCase().includes('478')) ? (
+                <div className="mb-6">
+                  <BreathingTriangleVisualizer stepTimeRemaining={stepTimeRemaining} stepDuration={currentStep?.duration_seconds || 19} />
+                </div>
+              ) : (
+                <div className="relative w-48 h-48 mx-auto mb-8">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle cx="96" cy="96" r="88" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none" />
+                    <motion.circle
+                      cx="96" cy="96" r="88" stroke="white" strokeWidth="8" fill="none"
+                      strokeLinecap="round" strokeDasharray={553}
+                      strokeDashoffset={553 - (553 * stepTimeRemaining / (currentStep?.duration_seconds || 10))}
+                      initial={false}
+                      animate={{ strokeDashoffset: 553 - (553 * stepTimeRemaining / (currentStep?.duration_seconds || 10)) }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-5xl font-bold text-white">{stepTimeRemaining}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Current Instruction */}
-              <p className="text-xl text-white font-medium leading-relaxed px-4">
+              <p className="text-xl text-black font-medium leading-relaxed px-4" style={{ color: '#1e293b' }}>
                 {currentStep?.instruction}
               </p>
 
