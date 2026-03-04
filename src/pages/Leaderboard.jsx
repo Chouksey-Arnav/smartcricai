@@ -58,7 +58,7 @@ export default function Leaderboard() {
   });
 
   // Sync username to leaderboard whenever profile username changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!profile?.username || !guestEmail) return;
     const myEntry = leaderboard.find(e => e.user_email === guestEmail);
     if (myEntry && myEntry.username !== profile.username) {
