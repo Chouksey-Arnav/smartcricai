@@ -176,7 +176,7 @@ export default function Sidebar() {
                   </motion.div>
                 </Link>
               ))}
-            </div>
+              </div>
             </div>
           </motion.div>
         )}
