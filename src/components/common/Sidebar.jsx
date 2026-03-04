@@ -139,8 +139,9 @@ export default function Sidebar() {
                 className="pointer-events-none absolute bottom-0 left-0 right-0 h-8 z-10"
                 style={{ background: 'linear-gradient(to top, white 0%, transparent 100%)' }}
               />
-            <div className="h-full overflow-y-auto p-4 space-y-2 pb-24 scrollbar-visible">
+              <div className="h-full overflow-y-auto p-4 space-y-2 pb-24 scrollbar-visible">
               {menuItems.map((item, index) => (
+...
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
