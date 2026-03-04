@@ -18,6 +18,7 @@ export default function AIWorkout() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutCompleted, setWorkoutCompleted] = useState(false);
+  const [finishLocked, setFinishLocked] = useState(false);
   const [restTime, setRestTime] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
