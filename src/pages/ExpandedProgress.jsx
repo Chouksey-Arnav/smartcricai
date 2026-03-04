@@ -185,10 +185,10 @@ export default function ExpandedProgress() {
             <h2 className="font-bold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-purple-500" /> Activity Breakdown
             </h2>
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={180} height={180}>
-                <PieChart>
-                  <Pie data={activityBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+            <div className="flex items-center gap-4 mt-6">
+              <ResponsiveContainer width={180} height={200}>
+                <PieChart margin={{ top: 20, right: 10, bottom: 10, left: 10 }}>
+                  <Pie data={activityBreakdown} dataKey="value" nameKey="name" cx="50%" cy="55%" outerRadius={70} label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={true}>
                     {activityBreakdown.map((entry, index) => (
                       <Cell key={index} fill={entry.color} />
                     ))}
