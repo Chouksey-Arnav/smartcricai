@@ -520,13 +520,24 @@ export default function AIWorkout() {
               </div>
             )}
 
-                <Button
-                  onClick={handleCompleteSet}
-                  className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
-                >
-                  <CheckCircle className="w-6 h-6 mr-2" />
-                  Complete Set {currentSets + 1}/{currentExercise.sets || 3}
-                </Button>
+                {isLastExercise && (completedSets[currentExercise.drill_id || currentExerciseIndex] || 0) + 1 >= (currentExercise.sets || 3) ? (
+                  <Button
+                    onClick={handleFinishWorkout}
+                    disabled={finishLocked || completeWorkoutMutation.isPending}
+                    className="w-full h-16 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-xl font-bold"
+                  >
+                    <CheckCircle className="w-6 h-6 mr-2" />
+                    {completeWorkoutMutation.isPending ? 'Finishing...' : 'End Workout'}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleCompleteSet}
+                    className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
+                  >
+                    <CheckCircle className="w-6 h-6 mr-2" />
+                    Complete Set {(completedSets[currentExercise.drill_id || currentExerciseIndex] || 0) + 1}/{currentExercise.sets || 3}
+                  </Button>
+                )}
               </>
             )}
           </motion.div>
