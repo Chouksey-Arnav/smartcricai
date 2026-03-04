@@ -46,6 +46,26 @@ export default function Leaderboard() {
   });
 
   const guestEmail = user?.email || 'guest@smartcrick.app';
+
+  // Keep leaderboard username in sync with profile username
+  const { data: profile } = useQuery({
+    queryKey: ['profile', guestEmail],
+    queryFn: async () => {
+      const profiles = await base44.entities.Profile.filter({ user_email: guestEmail });
+      return profiles[0] || null;
+    },
+    enabled: !!guestEmail,
+  });
+
+  // Sync username to leaderboard whenever profile username changes
+  React.useEffect(() => {
+    if (!profile?.username || !guestEmail) return;
+    const myEntry = leaderboard.find(e => e.user_email === guestEmail);
+    if (myEntry && myEntry.username !== profile.username) {
+      base44.entities.Leaderboard.update(myEntry.id, { username: profile.username });
+    }
+  }, [profile?.username, leaderboard, guestEmail]);
+
   const userRank = leaderboard.findIndex(entry => entry.user_email === guestEmail) + 1;
 
   const getRankMedal = (index) => {
