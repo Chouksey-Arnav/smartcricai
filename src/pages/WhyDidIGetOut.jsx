@@ -63,9 +63,9 @@ export default function WhyDidIGetOut() {
     });
 
       let result;
-      if (analyses.length > 0) {
+      if (all.length > 0) {
         // Use existing analysis from CSV database
-        const dismissal = analyses[0];
+        const dismissal = all[0];
         // Use the stored entity fields (snake_case from import)
         const tipsList = Array.isArray(dismissal.improvement_tips) ? dismissal.improvement_tips : 
           (dismissal.improvement_tips || '').split(';').map(t => t.trim()).filter(Boolean);
