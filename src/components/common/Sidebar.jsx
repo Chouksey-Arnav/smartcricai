@@ -132,12 +132,12 @@ export default function Sidebar() {
             {/* Menu Items - Scrollable */}
             <div className="flex-1 relative overflow-hidden">
               <div
-                className="pointer-events-none absolute top-0 left-0 right-0 h-8 z-10"
-                style={{ background: 'linear-gradient(to bottom, white 0%, transparent 100%)' }}
+                className="pointer-events-none absolute top-0 left-0 right-0 h-16 z-10"
+                style={{ background: 'linear-gradient(to bottom, white 0%, rgba(255,255,255,0) 100%)' }}
               />
               <div
-                className="pointer-events-none absolute bottom-0 left-0 right-0 h-8 z-10"
-                style={{ background: 'linear-gradient(to top, white 0%, transparent 100%)' }}
+                className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 z-10"
+                style={{ background: 'linear-gradient(to top, white 0%, rgba(255,255,255,0) 100%)' }}
               />
               <div className="h-full overflow-y-auto p-4 space-y-2 pb-24 scrollbar-visible">
               {menuItems.map((item, index) => (
