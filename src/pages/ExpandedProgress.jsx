@@ -35,6 +35,9 @@ export default function ExpandedProgress() {
       const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
   });
 
   const { data: leaderboard } = useQuery({
