@@ -334,7 +334,10 @@ export default function ExpandedProgress() {
 
         {/* Back Button */}
         <Button
-          onClick={() => navigate(createPageUrl('Progress'))}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => navigate(createPageUrl('Progress')), 300);
+          }}
           variant="outline"
           className="w-full h-12"
         >
