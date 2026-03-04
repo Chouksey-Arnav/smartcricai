@@ -270,16 +270,21 @@ export default function ExpandedProgress() {
               <p className="text-slate-500 dark:text-slate-400 text-sm">Complete activities to earn badges!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-3">
-              {badges.map((badge, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.15, rotate: 5 }}
-                  className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900 dark:to-orange-900 rounded-2xl flex items-center justify-center text-3xl shadow-lg border-2 border-amber-300 dark:border-amber-700 cursor-pointer"
-                >
-                  {badgeEmojis[badge] || '🏆'}
-                </motion.div>
-              ))}
+            <div className="space-y-3">
+              {badges.map((badge, i) => {
+                const info = badgeInfo[badge] || { label: badge, desc: 'Achievement unlocked', icon: '🏆' };
+                return (
+                  <div key={i} className="flex items-center gap-4 p-3 bg-white dark:bg-slate-700 rounded-2xl shadow border border-amber-100 dark:border-amber-800">
+                    <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900 dark:to-orange-900 rounded-xl flex items-center justify-center text-2xl shadow border-2 border-amber-300 dark:border-amber-700 shrink-0">
+                      {info.icon}
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-800 dark:text-white text-sm">{info.label}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{info.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </motion.div>
