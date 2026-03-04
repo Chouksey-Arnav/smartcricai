@@ -278,37 +278,7 @@ export default function Progress() {
           </div>
         </motion.div>
 
-        {/* Quiz Scores */}
-        {progress?.quiz_scores?.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6"
-          >
-            <h2 className="font-bold text-slate-800 dark:text-white mb-4">Recent Quiz Scores</h2>
-            <div className="space-y-3">
-              {progress.quiz_scores.slice(-5).reverse().map((score, index) => (
-                <div 
-                  key={index}
-                  className="flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-700 last:border-0"
-                >
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {format(new Date(score.date), 'MMM d')}
-                  </span>
-                  <span className={cn(
-                    "px-3 py-1 rounded-full text-sm font-medium",
-                    score.score >= 80 ? "bg-emerald-100 text-emerald-700" :
-                    score.score >= 50 ? "bg-amber-100 text-amber-700" :
-                    "bg-red-100 text-red-700"
-                  )}>
-                    {score.score}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
+
 
         {/* Empty State */}
         {!progress && !isLoading && (
