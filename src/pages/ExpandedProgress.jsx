@@ -210,24 +210,44 @@ export default function ExpandedProgress() {
         )}
 
         {/* Quiz Score History */}
-        {quizChartData.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl">
-            <h2 className="font-bold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-              <Brain className="w-5 h-5 text-indigo-500" /> Quiz Score History
-            </h2>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={quizChartData}>
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(val) => `${val}%`} />
-                <Bar dataKey="score" fill="#6366f1" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <p className="text-xs text-slate-500 text-center mt-2">
-              Average score: {quizChartData.length > 0 ? Math.round(quizChartData.reduce((s, d) => s + d.score, 0) / quizChartData.length) : 0}%
-            </p>
-          </motion.div>
-        )}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl">
+          <h2 className="font-bold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+            <Brain className="w-5 h-5 text-indigo-500" /> Recent Quiz Scores
+          </h2>
+          {quizScores.length === 0 ? (
+            <p className="text-slate-400 text-sm text-center py-4">No quiz scores yet. Take a quiz to see your scores here!</p>
+          ) : (
+            <>
+              <div className="space-y-2 mb-4">
+                {quizScores.slice(-10).reverse().map((s, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-xl">
+                    <div>
+                      <p className="font-medium text-slate-800 dark:text-white text-sm">{s.quiz_id ? `Quiz: ${s.quiz_id.slice(0, 8)}...` : `Quiz ${quizScores.length - i}`}</p>
+                      <p className="text-xs text-slate-500">{s.date ? format(new Date(s.date), 'MMM d, yyyy') : 'Date unknown'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-xl font-black ${s.score >= 80 ? 'text-emerald-600' : s.score >= 60 ? 'text-amber-600' : 'text-red-500'}`}>{s.score}%</p>
+                      <p className="text-xs text-slate-400">{s.score >= 80 ? '✅ Passed' : s.score >= 60 ? '⚠️ Average' : '❌ Retry'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {quizChartData.length > 0 && (
+                <ResponsiveContainer width="100%" height={160}>
+                  <BarChart data={quizChartData}>
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                    <Tooltip formatter={(val) => `${val}%`} />
+                    <Bar dataKey="score" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+              <p className="text-xs text-slate-500 text-center mt-2">
+                Average score: {Math.round(quizScores.reduce((s, d) => s + d.score, 0) / quizScores.length)}%
+              </p>
+            </>
+          )}
+        </motion.div>
 
         {/* Match Record */}
         {matchStats.total > 0 && (
