@@ -283,7 +283,7 @@ export default function MentalRoutinePlayer() {
         </button>
         
         <h1 className="text-2xl font-bold text-white mb-2">{routine.title}</h1>
-        <p className="text-white/60 text-sm">{routine.description}</p>
+        <p className="text-white/70 text-sm">{routine.description}</p>
         <div className="mt-2 inline-block px-3 py-1 rounded-full bg-amber-400 text-amber-900 text-xs font-bold">
           +{routine.xp_value || 75} XP
         </div>
