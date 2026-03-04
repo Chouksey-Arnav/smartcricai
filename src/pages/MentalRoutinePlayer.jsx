@@ -14,6 +14,113 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+// Box Breathing Visualizer - animated square
+function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
+  const totalCycleDuration = 16; // 4+4+4+4
+  const phases = ['Inhale (Right)', 'Hold (Down)', 'Exhale (Left)', 'Hold (Up)'];
+  const elapsed = stepDuration - stepTimeRemaining;
+  const cyclePos = elapsed % totalCycleDuration;
+  const phaseIndex = Math.floor(cyclePos / 4);
+  const phaseProgress = (cyclePos % 4) / 4;
+  
+  // Dot position along square: 0=top-left corner, going clockwise
+  // Top side (right): x: 0->1, y: 0
+  // Right side (down): x: 1, y: 0->1
+  // Bottom side (left): x: 1->0, y: 1
+  // Left side (up): x: 0, y: 1->0
+  const size = 160;
+  const padding = 20;
+  const dotPositions = [
+    { x: padding + (size * phaseProgress), y: padding }, // top (right)
+    { x: padding + size, y: padding + (size * phaseProgress) }, // right (down)
+    { x: padding + size - (size * phaseProgress), y: padding + size }, // bottom (left)
+    { x: padding, y: padding + size - (size * phaseProgress) }, // left (up)
+  ];
+  const dot = dotPositions[phaseIndex] || dotPositions[0];
+  
+  const phaseColors = ['#34d399', '#60a5fa', '#f472b6', '#a78bfa'];
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={size + padding * 2} height={size + padding * 2}>
+        {/* Square path */}
+        <rect x={padding} y={padding} width={size} height={size} rx={12}
+          fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={4} />
+        {/* Animated dot */}
+        <circle cx={dot.x} cy={dot.y} r={10} fill={phaseColors[phaseIndex]} />
+        {/* Corner labels */}
+        <text x={padding} y={padding - 6} fill="rgba(255,255,255,0.5)" fontSize={10} textAnchor="middle">▶</text>
+      </svg>
+      <div className="mt-2 text-center">
+        <p className="text-white text-lg font-bold">{phases[phaseIndex]}</p>
+        <p className="text-white/60 text-sm">{4 - Math.floor(cyclePos % 4)}s</p>
+      </div>
+    </div>
+  );
+}
+
+// 4-7-8 Breathing Triangle Visualizer
+function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
+  const phases = [
+    { label: 'Inhale', duration: 4, color: '#34d399' },
+    { label: 'Hold', duration: 7, color: '#60a5fa' },
+    { label: 'Exhale', duration: 8, color: '#f472b6' },
+  ];
+  const totalCycle = 19; // 4+7+8
+  const elapsed = stepDuration - stepTimeRemaining;
+  const cyclePos = elapsed % totalCycle;
+  
+  let phaseIndex = 0;
+  let phaseProgress = 0;
+  let acc = 0;
+  for (let i = 0; i < phases.length; i++) {
+    if (cyclePos < acc + phases[i].duration) {
+      phaseIndex = i;
+      phaseProgress = (cyclePos - acc) / phases[i].duration;
+      break;
+    }
+    acc += phases[i].duration;
+  }
+
+  // Triangle points (equilateral): bottom-left, bottom-right, top-center
+  const cx = 100, cy = 100, r = 75;
+  const pts = [
+    { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) }, // bottom-left
+    { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) }, // bottom-right
+    { x: cx, y: cy - r }, // top
+  ];
+
+  // Dot travels: phase0 = bottom-left to top, phase1 = top to bottom-right, phase2 = bottom-right to bottom-left
+  const edgePairs = [[0, 2], [2, 1], [1, 0]];
+  const [startIdx, endIdx] = edgePairs[phaseIndex];
+  const startPt = pts[startIdx];
+  const endPt = pts[endIdx];
+  const dotX = startPt.x + (endPt.x - startPt.x) * phaseProgress;
+  const dotY = startPt.y + (endPt.y - startPt.y) * phaseProgress;
+  const remaining = phases[phaseIndex].duration - Math.floor(cyclePos % phases[phaseIndex].duration) - (phaseProgress > 0 ? 0 : 0);
+  const secondsLeft = phases[phaseIndex].duration - Math.floor((cyclePos - acc));
+
+  const triPoints = pts.map(p => `${p.x},${p.y}`).join(' ');
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={200} height={200}>
+        <polygon points={triPoints} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={4} strokeLinejoin="round" />
+        {/* Phase labels on sides */}
+        <text x={(pts[0].x + pts[2].x) / 2 - 18} y={(pts[0].y + pts[2].y) / 2} fill="rgba(255,255,255,0.5)" fontSize={10}>Inhale</text>
+        <text x={(pts[2].x + pts[1].x) / 2 + 4} y={(pts[2].y + pts[1].y) / 2} fill="rgba(255,255,255,0.5)" fontSize={10}>Hold</text>
+        <text x={(pts[1].x + pts[0].x) / 2 - 18} y={(pts[1].y + pts[0].y) / 2 + 14} fill="rgba(255,255,255,0.5)" fontSize={10}>Exhale</text>
+        {/* Animated dot */}
+        <circle cx={dotX} cy={dotY} r={10} fill={phases[phaseIndex].color} />
+      </svg>
+      <div className="mt-2 text-center">
+        <p className="text-white text-lg font-bold">{phases[phaseIndex].label}</p>
+        <p className="text-white/60 text-sm">{Math.max(1, secondsLeft)}s</p>
+      </div>
+    </div>
+  );
+}
+
 export default function MentalRoutinePlayer() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
