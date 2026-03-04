@@ -141,7 +141,6 @@ export default function Sidebar() {
               />
               <div className="h-full overflow-y-auto p-4 space-y-2 pb-24 scrollbar-visible">
               {menuItems.map((item, index) => (
-...
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
