@@ -176,6 +176,7 @@ export default function Sidebar() {
                 </Link>
               ))}
             </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
