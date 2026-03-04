@@ -197,6 +197,25 @@ export default function DrillDetail() {
         });
       }
 
+      // Auto-check off drill in all CustomDrillWorkouts that contain it
+      try {
+        const allWorkouts = await base44.entities.CustomDrillWorkout.filter({ user_email: guestId });
+        for (const workout of allWorkouts) {
+          const drillsInWorkout = workout.drills || [];
+          const drillIds = drillsInWorkout.map(d => d.drill_id);
+          if (drillIds.includes(drill.id)) {
+            const completedIds = [...new Set([...(workout.completed_drill_ids || []), drill.id])];
+            const allDone = drillIds.length > 0 && drillIds.every(id => completedIds.includes(id));
+            await base44.entities.CustomDrillWorkout.update(workout.id, {
+              completed_drill_ids: completedIds,
+              status: allDone ? 'completed' : 'in_progress',
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Failed to update drill workouts:', e);
+      }
+
       // Update Leaderboard
       const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
       if (leaderboards.length > 0) {
