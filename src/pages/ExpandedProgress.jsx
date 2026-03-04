@@ -99,9 +99,18 @@ export default function ExpandedProgress() {
 
   const badges = progress?.badges || [];
 
-  const badgeEmojis = {
-    first_steps: '👟', rising_star: '⭐', on_fire: '🔥', drill_master: '💪',
-    quiz_expert: '🧠', week_warrior: '⏰', mental_champion: '🧘',
+  const badgeInfo = {
+    first_steps: { label: 'First Steps', desc: 'Completed your very first drill', icon: '👟' },
+    rising_star: { label: 'Rising Star', desc: 'Earned 500+ XP', icon: '⭐' },
+    on_fire: { label: 'On Fire', desc: 'Maintained a 3-day streak', icon: '🔥' },
+    drill_master: { label: 'Drill Master', desc: 'Completed 10+ drills', icon: '💪' },
+    quiz_expert: { label: 'Quiz Expert', desc: 'Aced a quiz with 100% score', icon: '🧠' },
+    week_warrior: { label: 'Week Warrior', desc: 'Practiced 7 days in a row', icon: '⏰' },
+    mental_champion: { label: 'Mental Champion', desc: 'Completed 5 mental sessions', icon: '🧘' },
+    'first-drill': { label: 'First Drill', desc: 'Started your training journey', icon: '🏏' },
+    'streak-3': { label: '3-Day Streak', desc: 'Practiced 3 days in a row', icon: '🔥' },
+    'streak-7': { label: '7-Day Streak', desc: 'A full week of practice!', icon: '💎' },
+    'drill-master': { label: 'Drill Master', desc: 'Completed 10+ drills', icon: '🏆' },
   };
 
   return (
