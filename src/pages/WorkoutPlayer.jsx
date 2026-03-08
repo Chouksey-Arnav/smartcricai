@@ -252,10 +252,17 @@ export default function WorkoutPlayer() {
 
             <Button
               onClick={handleCompleteSet}
-              className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
+              disabled={completeWorkoutMutation.isPending}
+              className={`w-full h-16 text-xl font-bold ${
+                isLastExercise && isLastSet
+                  ? 'bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600'
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
+              }`}
             >
               <CheckCircle className="w-6 h-6 mr-2" />
-              Complete Set {currentSet}/{currentDrill.sets}
+              {isLastExercise && isLastSet
+                ? (completeWorkoutMutation.isPending ? 'Finishing...' : 'Finish Workout 🏆')
+                : `Complete Set ${currentSet}/${currentDrill.sets}`}
             </Button>
           </motion.div>
         )}
