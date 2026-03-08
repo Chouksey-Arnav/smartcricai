@@ -222,8 +222,8 @@ export default function WorkoutBuilder() {
       toast.error('Please enter a workout name');
       return;
     }
-    if (selectedDrills.length === 0) {
-      toast.error('Please add at least one drill');
+    if (exercises.length === 0) {
+      toast.error('Please add at least one exercise');
       return;
     }
     saveWorkoutMutation.mutate();
