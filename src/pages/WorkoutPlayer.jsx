@@ -84,15 +84,13 @@ export default function WorkoutPlayer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       toast.success('Workout completed! Amazing job!');
+      setTimeout(() => navigate(createPageUrl('AIWorkout')), 1800);
     },
   });
 
