@@ -28,12 +28,6 @@ export default function WorkoutBuilder() {
     },
   });
 
-  const { data: drills } = useQuery({
-    queryKey: ['drills'],
-    queryFn: () => base44.entities.Drill.list(),
-    initialData: [],
-  });
-
   const { data: premiumStatus } = useQuery({
     queryKey: ['premiumStatus', user?.email || 'guest'],
     queryFn: async () => {
