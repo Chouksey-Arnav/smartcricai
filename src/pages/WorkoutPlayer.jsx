@@ -94,23 +94,23 @@ export default function WorkoutPlayer() {
     },
   });
 
+  const isLastExercise = currentDrillIndex === totalDrills - 1;
+  const isLastSet = currentDrill && currentSet >= currentDrill.sets;
+
   const handleCompleteSet = () => {
-    if (currentSet < currentDrill.sets) {
-      // Start rest period
+    if (isLastExercise && isLastSet) {
+      completeWorkoutMutation.mutate();
+      return;
+    }
+    if (currentSet < (currentDrill?.sets || 1)) {
       setCurrentSet(currentSet + 1);
       setRestTime(60);
       setIsResting(true);
-      toast.success(`Set ${currentSet}/${currentDrill.sets} complete! Take a break!`);
+      toast.success(`Set ${currentSet}/${currentDrill.sets} done! Rest up!`);
     } else {
-      // Move to next drill
-      if (currentDrillIndex < totalDrills - 1) {
-        toast.success(`${currentDrill.drill_title} complete!`);
-        setCurrentDrillIndex(currentDrillIndex + 1);
-        setCurrentSet(1);
-      } else {
-        // Workout complete
-        completeWorkoutMutation.mutate();
-      }
+      toast.success(`${currentDrill.drill_title} complete!`);
+      setCurrentDrillIndex(currentDrillIndex + 1);
+      setCurrentSet(1);
     }
   };
 
