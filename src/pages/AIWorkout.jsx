@@ -339,7 +339,7 @@ export default function AIWorkout() {
             <h2 className="text-3xl font-bold mb-3">Workout Complete!</h2>
             <p className="text-emerald-100 mb-6">Amazing job crushing that workout! You're getting stronger every day!</p>
             <Button 
-              onClick={() => { setWorkoutCompleted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+              onClick={() => { setWorkoutCompleted(false); setSelectedWorkoutId(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
               variant="secondary"
               className="bg-white text-emerald-600 hover:bg-emerald-50"
             >
