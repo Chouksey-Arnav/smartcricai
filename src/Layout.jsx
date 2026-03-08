@@ -72,10 +72,11 @@ export default function Layout({ children, currentPageName }) {
           overscroll-behavior: none;
         }
         
-        button, a, nav, .bottom-nav, .nav-item {
+        button, a, nav, .bottom-nav, .nav-item, [role="button"] {
           user-select: none;
           -webkit-user-select: none;
           -webkit-tap-highlight-color: transparent;
+          tap-highlight-color: transparent;
         }
         
         .scrollbar-hide::-webkit-scrollbar {
