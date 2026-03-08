@@ -465,6 +465,28 @@ export default function WorkoutBuilder() {
                       <Button
                         onClick={() => {
                           setWorkoutName(workout.name);
+                          // Reconstruct exercises from saved workout exercises array
+                          const reconstructed = [];
+                          const exerciseMap = {};
+                          (workout.exercises || []).forEach(drill => {
+                            if (drill.type === 'rest') return;
+                            // Group by base exercise name (strip " — Set N" suffix)
+                            const baseName = drill.drill_title?.replace(/ — Set \d+$/, '') || drill.drill_title || 'Exercise';
+                            if (!exerciseMap[baseName]) {
+                              exerciseMap[baseName] = {
+                                id: `ex_${Math.random().toString(36).substr(2, 9)}`,
+                                name: baseName,
+                                sets: 0,
+                                reps: drill.reps || 10,
+                                category: drill.category || 'fitness',
+                                expanded: false,
+                                rests: {}
+                              };
+                              reconstructed.push(exerciseMap[baseName]);
+                            }
+                            exerciseMap[baseName].sets += 1;
+                          });
+                          setExercises(reconstructed);
                           setShowSaved(false);
                           toast.success('Workout loaded for editing');
                         }}
