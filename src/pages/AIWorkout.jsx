@@ -286,7 +286,7 @@ export default function AIWorkout() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-bold text-slate-800 dark:text-white text-lg capitalize flex items-center gap-2">
                       {workout.name}
                       {workout.status === 'completed' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
@@ -296,12 +296,25 @@ export default function AIWorkout() {
                       {workout.status === 'completed' && ' • Completed'}
                     </p>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    workout.status === 'completed'
-                      ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
-                      : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                  }`}>
-                    +{workout.xp_value || 100} XP
+                  <div className="flex items-center gap-2">
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      workout.status === 'completed'
+                        ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                    }`}>
+                      +{workout.xp_value || 100} XP
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this workout?')) {
+                          deleteWorkoutMutation.mutate(workout.id);
+                        }
+                      }}
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
                   </div>
                 </div>
                 <Button
