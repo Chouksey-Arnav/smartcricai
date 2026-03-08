@@ -448,6 +448,15 @@ export default function AIWorkout() {
       <Header title="AI Workout" showSettings={false} />
       
       <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
+        {/* Back Button */}
+        <button
+          onClick={handleGoBack}
+          className="flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span className="text-sm font-medium">{currentExerciseIndex === 0 && !isResting ? 'Back to Overview' : 'Previous'}</span>
+        </button>
+
         {/* Progress */}
         <motion.div
           initial={{ opacity: 0 }}
