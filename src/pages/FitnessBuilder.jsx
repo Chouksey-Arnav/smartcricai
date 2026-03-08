@@ -374,8 +374,8 @@ export default function FitnessBuilder() {
           </motion.div>
         )}
 
-        {/* Step 3: Generated Workout */}
-        {step === 3 && generatedWorkout && (
+        {/* Step 4: Generated Workout */}
+        {step === 4 && generatedWorkout && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
