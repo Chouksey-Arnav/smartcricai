@@ -259,8 +259,8 @@ export default function FitnessBuilder() {
           </motion.div>
         )}
 
-        {/* Step 2: Level, Goal, Duration */}
-        {step === 2 && (
+        {/* Step 3: Level, Goal, Duration */}
+        {step === 3 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
