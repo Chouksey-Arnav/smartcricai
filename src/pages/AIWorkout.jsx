@@ -223,6 +223,16 @@ export default function AIWorkout() {
     },
   });
 
+  const deleteWorkoutMutation = useMutation({
+    mutationFn: async (workoutId) => {
+      await base44.entities.Workout.delete(workoutId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      toast.success('Workout deleted');
+    },
+  });
+
   if (!selectedWorkoutId && workouts && workouts.length > 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
