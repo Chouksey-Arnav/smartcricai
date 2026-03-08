@@ -449,7 +449,7 @@ export default function FitnessBuilder() {
                 {saveWorkoutMutation.isPending ? 'Saving...' : 'Save to My Workouts'}
               </Button>
               <Button
-                onClick={() => { setStep(2); setGeneratedWorkout(null); }}
+                onClick={() => { setStep(3); setGeneratedWorkout(null); }}
                 variant="outline"
                 className="w-full h-12"
               >
