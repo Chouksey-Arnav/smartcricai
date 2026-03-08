@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-// Box Breathing Visualizer - large, smooth animated square using CSS transitions
+// Box Breathing Visualizer - large, clean square, no halo
 function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const totalCycleDuration = 16;
   const phases = ['Inhale', 'Hold', 'Exhale', 'Hold'];
@@ -24,11 +24,10 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const phaseIndex = Math.floor(cyclePos / 4);
   const phaseTime = cyclePos % 4;
 
-  const size = 240;
-  const pad = 36;
-  const r = 20;
+  const size = 280;
+  const pad = 44;
+  const r = 24;
 
-  // Smooth perimeter position: 0..4 maps to full box
   const distAlongPerimeter = (cyclePos / totalCycleDuration) * (size * 4);
   const segLen = size;
 
@@ -44,10 +43,10 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   }
 
   const sideLabels = [
-    { x: pad + size / 2, y: pad - 16, label: 'Inhale' },
-    { x: pad + size + 18, y: pad + size / 2, label: 'Hold' },
-    { x: pad + size / 2, y: pad + size + 22, label: 'Exhale' },
-    { x: pad - 18, y: pad + size / 2, label: 'Hold' },
+    { x: pad + size / 2, y: pad - 18, label: 'Inhale' },
+    { x: pad + size + 26, y: pad + size / 2, label: 'Hold' },
+    { x: pad + size / 2, y: pad + size + 26, label: 'Exhale' },
+    { x: pad - 26, y: pad + size / 2, label: 'Hold' },
   ];
 
   const color = phaseColors[phaseIndex];
@@ -58,32 +57,26 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
       <svg width={size + pad * 2} height={size + pad * 2}>
         <defs>
           <radialGradient id="boxFill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={color} stopOpacity="0.05" />
+            <stop offset="0%" stopColor={color} stopOpacity="0.18" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.04" />
           </radialGradient>
-          <filter id="dotGlow">
-            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
         </defs>
         {/* Background square */}
-        <rect x={pad} y={pad} width={size} height={size} rx={r} fill="url(#boxFill)" stroke={color} strokeWidth={3} />
-        {/* Corner dots */}
+        <rect x={pad} y={pad} width={size} height={size} rx={r} fill="url(#boxFill)" stroke={color} strokeWidth={3.5} strokeOpacity={0.7} />
+        {/* Corner accent dots */}
         {[[pad,pad],[pad+size,pad],[pad+size,pad+size],[pad,pad+size]].map(([cx,cy],i) => (
-          <circle key={i} cx={cx} cy={cy} r={5} fill={color} opacity={0.5} />
+          <circle key={i} cx={cx} cy={cy} r={6} fill={color} opacity={0.6} />
         ))}
         {/* Side labels */}
         {sideLabels.map((l, i) => (
-          <text key={i} x={l.x} y={l.y} fill="rgba(255,255,255,0.7)" fontSize={13} fontWeight="600" textAnchor="middle" dominantBaseline="middle">{l.label}</text>
+          <text key={i} x={l.x} y={l.y} fill="rgba(255,255,255,0.75)" fontSize={14} fontWeight="700" textAnchor="middle" dominantBaseline="middle">{l.label}</text>
         ))}
-        {/* Glow halo */}
-        <circle cx={dotX} cy={dotY} r={22} fill={color} opacity={0.2} filter="url(#dotGlow)" />
-        {/* Moving dot with CSS transition for smoothness */}
-        <circle
-          cx={dotX} cy={dotY} r={13}
+        {/* Moving dot — clean, no halo */}
+        <motion.circle
+          cx={dotX} cy={dotY} r={15}
           fill={color}
-          style={{ transition: 'cx 1s linear, cy 1s linear' }}
-          filter="url(#dotGlow)"
+          animate={{ cx: dotX, cy: dotY }}
+          transition={{ duration: 0.8, ease: 'linear' }}
         />
       </svg>
       <div className="mt-2 text-center">
@@ -94,7 +87,7 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   );
 }
 
-// 4-7-8 Breathing Triangle Visualizer — larger, smooth, hued
+// 4-7-8 Breathing Triangle Visualizer — large, no halo
 function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const phases = [
     { label: 'Inhale', duration: 4, color: '#34d399' },
@@ -117,15 +110,14 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
     acc += phases[i].duration;
   }
 
-  // Larger triangle
-  const cx = 130, cy = 125, r = 100;
+  // Much larger triangle
+  const cx = 160, cy = 155, r = 130;
   const pts = [
     { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx, y: cy - r },
   ];
 
-  // phase0: bottom-left→top (Inhale), phase1: top→bottom-right (Hold), phase2: bottom-right→bottom-left (Exhale)
   const edgePairs = [[0, 2], [2, 1], [1, 0]];
   const [sIdx, eIdx] = edgePairs[phaseIndex];
   const dotX = pts[sIdx].x + (pts[eIdx].x - pts[sIdx].x) * phaseProgress;
@@ -133,51 +125,43 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const secondsLeft = phases[phaseIndex].duration - Math.floor(cyclePos - acc);
   const triPoints = pts.map(p => `${p.x},${p.y}`).join(' ');
 
-  // Corner labels showing the phase label at each vertex
   const vertexLabels = [
-    { pt: pts[2], text: phases[0].label, anchor: 'middle', dy: -14 }, // top = inhale start
-    { pt: pts[1], text: phases[1].label, anchor: 'start', dx: 10, dy: 5 },
-    { pt: pts[0], text: phases[2].label, anchor: 'end', dx: -10, dy: 5 },
+    { pt: pts[2], text: phases[0].label, anchor: 'middle', dy: -18 },
+    { pt: pts[1], text: phases[1].label, anchor: 'start', dx: 14, dy: 6 },
+    { pt: pts[0], text: phases[2].label, anchor: 'end', dx: -14, dy: 6 },
   ];
+
+  const color = phases[phaseIndex].color;
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={260} height={240}>
+      <svg width={320} height={310}>
         <defs>
-          <filter id="glow478">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={phases[phaseIndex].color} stopOpacity="0.2" />
-            <stop offset="100%" stopColor={phases[(phaseIndex + 1) % 3].color} stopOpacity="0.05" />
+          <linearGradient id="triGrad478" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={phases[(phaseIndex + 1) % 3].color} stopOpacity="0.06" />
           </linearGradient>
         </defs>
-        {/* Filled triangle hue */}
-        <polygon points={triPoints} fill="url(#triGrad)" stroke={phases[phaseIndex].color} strokeWidth={3} strokeLinejoin="round" opacity={0.8} />
+        {/* Triangle */}
+        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color} strokeWidth={3.5} strokeLinejoin="round" opacity={0.85} />
         {/* Vertex labels */}
         {vertexLabels.map((l, i) => (
           <text key={i} x={l.pt.x + (l.dx || 0)} y={l.pt.y + (l.dy || 0)}
-            fill="rgba(255,255,255,0.6)" fontSize={12} textAnchor={l.anchor} dominantBaseline="middle">
+            fill="rgba(255,255,255,0.8)" fontSize={14} fontWeight="700" textAnchor={l.anchor} dominantBaseline="middle">
             {l.text}
           </text>
         ))}
-        {/* Center label: current phase */}
-        <text x={cx} y={cy + 10} fill="white" fontSize={15} textAnchor="middle" fontWeight="bold">
-          {phases[phaseIndex].label}
-        </text>
-        {/* Glow */}
-        <circle cx={dotX} cy={dotY} r={18} fill={phases[phaseIndex].color} opacity={0.25} filter="url(#glow478)" />
-        {/* Smooth dot */}
+        {/* Center phase text */}
+        <text x={cx} y={cy + 12} fill="white" fontSize={17} textAnchor="middle" fontWeight="bold">{phases[phaseIndex].label}</text>
+        {/* Moving dot — clean, no halo */}
         <motion.circle
-          cx={dotX} cy={dotY} r={12}
-          fill={phases[phaseIndex].color}
+          cx={dotX} cy={dotY} r={16}
+          fill={color}
           animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 1, ease: 'linear' }}
-          filter="url(#glow478)"
+          transition={{ duration: 0.8, ease: 'linear' }}
         />
       </svg>
-      <div className="mt-2 text-center">
+      <div className="mt-1 text-center">
         <p className="text-white text-xl font-bold">{phases[phaseIndex].label}</p>
         <p className="text-white/60 text-sm">{Math.max(1, secondsLeft)}s</p>
       </div>
