@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Play, Heart, Target, RefreshCw, Sparkles, Lock } from 'lucide-react';
+import { Clock, Play, Heart, Target, RefreshCw, Sparkles, Lock, Brain, Zap, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -7,22 +7,42 @@ const categoryConfig = {
   confidence: { 
     icon: Sparkles, 
     color: 'bg-amber-500',
-    bgColor: 'bg-amber-50 border-amber-100'
+    bgColor: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800'
   },
   focus: { 
     icon: Target, 
     color: 'bg-blue-500',
-    bgColor: 'bg-blue-50 border-blue-100'
+    bgColor: 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800'
   },
   recovery: { 
     icon: RefreshCw, 
     color: 'bg-emerald-500',
-    bgColor: 'bg-emerald-50 border-emerald-100'
+    bgColor: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800'
   },
   'pre-performance': { 
     icon: Heart, 
     color: 'bg-purple-500',
-    bgColor: 'bg-purple-50 border-purple-100'
+    bgColor: 'bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800'
+  },
+  pressure: {
+    icon: Zap,
+    color: 'bg-red-500',
+    bgColor: 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800'
+  },
+  visualization: {
+    icon: Brain,
+    color: 'bg-indigo-500',
+    bgColor: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800'
+  },
+  'match-day-calm': {
+    icon: Sun,
+    color: 'bg-orange-500',
+    bgColor: 'bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-800'
+  },
+  'pro-mental': {
+    icon: Sparkles,
+    color: 'bg-purple-700',
+    bgColor: 'bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800'
   },
 };
 
@@ -55,14 +75,14 @@ export default function MentalRoutineCard({ routine, onClick, isLocked }) {
         </div>
         
         <div className="flex-1">
-          <h3 className="font-semibold text-slate-800 mb-1" style={{ color: '#1e293b' }}>{routine.title}</h3>
-          <p className="text-sm mb-2 line-clamp-2" style={{ color: '#64748b' }}>
+          <h3 className="font-semibold text-slate-800 dark:text-white mb-1">{routine.title}</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-300 mb-2 line-clamp-2">
             {routine.description}
           </p>
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="flex items-center gap-1 text-sm text-slate-500">
+              <span className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
                 <Clock className="w-4 h-4" />
                 {Math.round(routine.duration_seconds / 60)} min
               </span>
