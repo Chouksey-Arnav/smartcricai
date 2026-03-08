@@ -4,9 +4,10 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { BookOpen, Brain, Trophy, Clock, ChevronRight } from 'lucide-react';
+import { BookOpen, Brain, Trophy, Clock, ChevronRight, CheckCircle } from 'lucide-react';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
+import { base44 } from '@/api/base44Client';
 
 const categoryConfig = {
   rules: { icon: BookOpen, color: 'bg-blue-500', bgColor: 'bg-blue-50' },
@@ -28,6 +29,20 @@ export default function Quizzes() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const difficultyOrder = { easy: 1, medium: 2, hard: 3, pro: 4 };
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => { try { return await base44.auth.me(); } catch { return null; } },
+  });
+
+  const { data: userProgress } = useQuery({
+    queryKey: ['userProgress', user?.email || 'guest'],
+    queryFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
+      return results[0] || null;
+    },
+  });
 
   const { data: quizzes = [], isLoading } = useQuery({
     queryKey: ['quizzes'],
