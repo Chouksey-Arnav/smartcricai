@@ -75,10 +75,11 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Menu Button - Always Visible */}
+      {/* Menu Button - Hidden on mobile when BottomNav is active */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-4 left-4 z-50 p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-200"
+        style={{ WebkitTapHighlightColor: 'transparent' }}
+        className="fixed top-4 left-4 z-50 p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-200 hidden sm:flex"
       >
         <Menu className="w-6 h-6 text-white" />
       </button>
