@@ -85,7 +85,7 @@ export default function ViewLogMatches() {
                         <h3 className="font-bold text-slate-800 capitalize">
                           {match.match_type} Match
                         </h3>
-                        <p className="text-sm text-slate-600 capitalize">{match.result}</p>
+                        <p className="text-sm text-slate-600 capitalize">{match.result?.replace(/_/g, ' ') || 'Unknown'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
