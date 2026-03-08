@@ -142,7 +142,7 @@ export default function FitnessBuilder() {
 
       const workoutData = {
         user_email: guestEmail,
-        name: `${selectedGoal?.replace(' ', ' ').toUpperCase()} - ${selectedBodyPart?.toUpperCase()} Workout`,
+        name: `${selectedGoal ? selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1) : 'Custom'} - ${selectedBodyPart ? selectedBodyPart.charAt(0).toUpperCase() + selectedBodyPart.slice(1) : ''} Workout`,
         drills: generatedWorkout.exercises.map(ex => ({
           drill_id: ex.id || `fitness_${Math.random().toString(36).substr(2, 9)}`,
           drill_title: ex.name,
