@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { BookOpen, Brain, Trophy, Clock, ChevronRight, CheckCircle } from 'lucide-react';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
-import { base44 } from '@/api/base44Client';
 
 const categoryConfig = {
   rules: { icon: BookOpen, color: 'bg-blue-500', bgColor: 'bg-blue-50' },
