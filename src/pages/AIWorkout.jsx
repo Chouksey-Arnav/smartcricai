@@ -184,18 +184,20 @@ export default function AIWorkout() {
     const totalSets = currentExercise.sets || 3;
 
     if (newSets >= totalSets) {
-      if (!isLastExercise) {
-        toast.success(`${currentExercise.drill_title} complete!`);
+      if (isLastExercise) {
+        // Last set of last exercise — auto-finish
+        handleFinishWorkout();
+      } else {
+        toast.success(`${currentExercise.drill_title} complete! Next exercise!`);
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCompletedSets({ ...completedSets, [exerciseId]: 0 });
       }
-      // If last exercise last set — handled by "End Workout" button, not here
     } else {
       setCompletedSets({ ...completedSets, [exerciseId]: newSets });
       const restSeconds = currentExercise.rest_seconds || 60;
       setRestTime(restSeconds);
       setIsResting(true);
-      toast.success(`Set ${newSets}/${totalSets} complete! Take a break!`);
+      toast.success(`Set ${newSets}/${totalSets} complete! Rest up!`);
     }
   };
 
