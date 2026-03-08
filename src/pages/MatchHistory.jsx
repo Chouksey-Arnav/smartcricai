@@ -2,15 +2,18 @@ import React from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, Calendar, TrendingUp, Target, Trash2, TrendingDown } from 'lucide-react';
+import { Trophy, Calendar, TrendingUp, Target, Trash2, TrendingDown, ChevronRight } from 'lucide-react';
 import Header from '@/components/common/Header';
 import PullToRefresh from '@/components/common/PullToRefresh';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function MatchHistory() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
