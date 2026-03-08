@@ -559,24 +559,21 @@ export default function AIWorkout() {
               </div>
             )}
 
-                {isLastExercise && (completedSets[currentExercise.drill_id || currentExerciseIndex] || 0) + 1 >= (currentExercise.sets || 3) ? (
-                  <Button
-                    onClick={handleFinishWorkout}
-                    disabled={finishLocked || completeWorkoutMutation.isPending}
-                    className="w-full h-16 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-xl font-bold"
-                  >
-                    <CheckCircle className="w-6 h-6 mr-2" />
-                    {completeWorkoutMutation.isPending ? 'Finishing...' : 'End Workout'}
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleCompleteSet}
-                    className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
-                  >
-                    <CheckCircle className="w-6 h-6 mr-2" />
-                    Complete Set {(completedSets[currentExercise.drill_id || currentExerciseIndex] || 0) + 1}/{currentExercise.sets || 3}
-                  </Button>
-                )}
+                <Button
+                  onClick={handleCompleteSet}
+                  className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
+                >
+                  <CheckCircle className="w-6 h-6 mr-2" />
+                  Complete Set {(completedSets[currentExercise.drill_id || currentExerciseIndex] || 0) + 1}/{currentExercise.sets || 3}
+                </Button>
+                <Button
+                  onClick={handleFinishWorkout}
+                  disabled={finishLocked || completeWorkoutMutation.isPending}
+                  variant="outline"
+                  className="w-full h-12 border-2 border-red-400 text-red-600 hover:bg-red-50 font-semibold"
+                >
+                  {completeWorkoutMutation.isPending ? 'Finishing...' : '🏁 End Workout'}
+                </Button>
               </>
             )}
           </motion.div>
