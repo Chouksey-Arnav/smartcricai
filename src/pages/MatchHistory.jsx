@@ -168,7 +168,7 @@ export default function MatchHistory() {
                         match.result === 'lost' ? 'bg-red-100 text-red-700' :
                         'bg-slate-100 text-slate-700'
                       }`}>
-                        {match.result}
+                        {match.result?.replace(/_/g, ' ') || 'Unknown'}
                       </span>
                       <button
                         onClick={(e) => {

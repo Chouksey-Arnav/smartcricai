@@ -256,6 +256,65 @@ export default function Profile() {
         </motion.div>
 
 
+        {/* Delete Account Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-white rounded-3xl shadow-xl p-6 border-2 border-red-100"
+        >
+          <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-red-500" />
+            Danger Zone
+          </h3>
+          <p className="text-sm text-slate-500 mb-4">
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full bg-red-500 hover:bg-red-600">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you absolutely sure? This will permanently delete your account, all your progress, drills, quizzes, matches, and personal data. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 hover:bg-red-600"
+                  onClick={async () => {
+                    try {
+                      const guestEmail = user?.email || 'guest@smartcrick.app';
+                      // Delete all user data
+                      const [progressList, profileList, leaderboardList] = await Promise.all([
+                        base44.entities.UserProgress.filter({ user_email: guestEmail }),
+                        base44.entities.Profile.filter({ user_email: guestEmail }),
+                        base44.entities.Leaderboard.filter({ user_email: guestEmail }),
+                      ]);
+                      await Promise.all([
+                        ...progressList.map(r => base44.entities.UserProgress.delete(r.id)),
+                        ...profileList.map(r => base44.entities.Profile.delete(r.id)),
+                        ...leaderboardList.map(r => base44.entities.Leaderboard.delete(r.id)),
+                      ]);
+                      toast.success('Account data deleted. Logging out...');
+                      setTimeout(() => base44.auth.logout(), 1500);
+                    } catch {
+                      toast.error('Failed to delete account. Please contact support.');
+                    }
+                  }}
+                >
+                  Yes, Delete Everything
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </motion.div>
       </div>
     </div>
   );

@@ -63,7 +63,7 @@ export default function MatchDetail() {
             </div>
             <div>
               <h2 className="font-bold text-lg capitalize">{match.match_type} Match</h2>
-              <p className="text-white/80 text-sm capitalize">Result: {match.result}</p>
+              <p className="text-white/80 text-sm capitalize">Result: {match.result?.replace(/_/g, ' ') || 'Unknown'}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-sm">
