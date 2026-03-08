@@ -161,6 +161,22 @@ export default function AIWorkout() {
 
   const isLastExercise = currentExerciseIndex === exercises.length - 1;
 
+  const handleGoBack = () => {
+    if (isResting) {
+      setIsResting(false);
+      setRestTime(0);
+      return;
+    }
+    if (currentExerciseIndex > 0) {
+      const prevIdx = currentExerciseIndex - 1;
+      setCurrentExerciseIndex(prevIdx);
+      const prevEx = exercises[prevIdx];
+      setCompletedSets(prev => ({ ...prev, [prevEx?.drill_id]: 0 }));
+    } else {
+      setWorkoutStarted(false);
+    }
+  };
+
   const handleCompleteSet = () => {
     const exerciseId = currentExercise.drill_id || currentExerciseIndex;
     const currentSets = completedSets[exerciseId] || 0;
