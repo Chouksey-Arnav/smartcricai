@@ -174,6 +174,7 @@ export default function WorkoutBuilder() {
       toast.success('Workout saved! 💪');
       setWorkoutName('');
       setExercises([]);
+      navigate(createPageUrl('AIWorkout'));
     },
   });
 

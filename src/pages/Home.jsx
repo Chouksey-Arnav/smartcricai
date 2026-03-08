@@ -127,6 +127,16 @@ const cricketJokes = [
   "What do you call a cricket match with no boundaries? Very limited overs!",
   "Why did the batsman bring a spoon to the game? He heard there would be a googly!",
   "What do you call a fast bowler who can cook? A microwave \u2014 always heating things up!",
+  "Why did the cricket team hire an electrician? They needed someone to handle the power play!",
+  "What do you call a cricketer who loses every toss? A coin flipper with no luck!",
+  "Why don't cricketers ever trust stairs? Because they're always up to something!",
+  "What do you call a cricket ball that sings? A pitch-perfect delivery!",
+  "Why was the cricket coach always relaxed? He knew how to pace himself!",
+  "What do you call a cricket match between chefs? A batter bowl-off!",
+  "Why did the cricket team visit the museum? To see the ancient Test match records!",
+  "What's a cricketer's least favorite magic trick? When the ball disappears over the boundary!",
+  "Why did the fielder study mathematics? To calculate the best catching angles!",
+  "What do you call a bowler who always tells the truth? Someone with a very straight delivery!",
 ];
 
 const cricketFacts = [
@@ -191,6 +201,16 @@ const cricketFacts = [
   "A cricket ground can legally have different shaped boundaries on different sides.",
   "The Duckworth-Lewis-Stern method adjusts targets in rain-affected matches mathematically.",
   "Sir Garfield Sobers hit six sixes off one over — the first man ever to do so!",
+  "The ICC (International Cricket Council) was founded in 1909 as the Imperial Cricket Conference!",
+  "A cricket pitch is exactly 22 yards (20.12 m) long — a unit called a 'chain'!",
+  "Sachin Tendulkar scored his 100th international century against Bangladesh in 2012!",
+  "MS Dhoni invented the 'helicopter shot' — a unique scoop-sweep innovation!",
+  "A red cricket ball swings more than a white one due to lacquer and construction differences!",
+  "Jonty Rhodes revolutionized fielding standards in the 1990s with his athletic diving stops!",
+  "The first day-night Test match was played in Adelaide, Australia in November 2015!",
+  "Kevin Pietersen's 158 at The Oval in 2005 is considered one of cricket's greatest Ashes innings!",
+  "Glenn McGrath was famous for accurately predicting match scorecard results before Tests!",
+  "The highest T20 team total is 278/3 scored by Afghanistan against Ireland in 2019!",
 ];
 
 function getCricketJoke() {

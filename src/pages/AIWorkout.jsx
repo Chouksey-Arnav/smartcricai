@@ -22,6 +22,7 @@ export default function AIWorkout() {
   const [restTime, setRestTime] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [completedSets, setCompletedSets] = useState({});
+  const [restBlockTime, setRestBlockTime] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
