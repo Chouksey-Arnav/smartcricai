@@ -251,11 +251,11 @@ export default function AIWorkout() {
 
           <div className="space-y-4 mb-4">
             <Button
-              onClick={() => navigate(createPageUrl('FitnessBuilder'))}
+              onClick={() => navigate(createPageUrl('WorkoutBuilder'))}
               variant="outline"
               className="w-full border-2 border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30"
             >
-              Back to Fitness Builder
+              + Create New Workout
             </Button>
             {workouts.length > 0 && (
               <Button
