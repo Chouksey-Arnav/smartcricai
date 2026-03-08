@@ -116,7 +116,7 @@ export default function FitnessBuilder() {
       coachNote: workoutData.coachNote
     });
     
-    setStep(3);
+    setStep(4);
     setIsGenerating(false);
     toast.success('Workout generated! 💪');
   };
