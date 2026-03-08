@@ -153,19 +153,20 @@ export default function WorkoutBuilder() {
   const saveWorkoutMutation = useMutation({
     mutationFn: async () => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
+      const drillsArray = buildDrillsArray();
       
       const savedWorkout = await base44.entities.SavedWorkout.create({
         user_email: guestEmail,
         name: workoutName,
-        exercises: selectedDrills,
-        total_exercises: selectedDrills.length,
-        estimated_duration: selectedDrills.length * 3
+        exercises: drillsArray,
+        total_exercises: exercises.length,
+        estimated_duration: exercises.reduce((acc, ex) => acc + ex.sets * 2, 0)
       });
       
       const workout = await base44.entities.Workout.create({
         user_email: guestEmail,
         name: workoutName,
-        drills: selectedDrills,
+        drills: drillsArray,
         status: 'not_started',
         xp_value: 120
       });
@@ -175,9 +176,10 @@ export default function WorkoutBuilder() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       queryClient.invalidateQueries({ queryKey: ['savedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
       toast.success('Workout saved! 💪');
       setWorkoutName('');
-      setSelectedDrills([]);
+      setExercises([]);
     },
   });
 
