@@ -146,7 +146,8 @@ export default function MatchHistory() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-lg border-2 border-slate-100 dark:border-slate-700"
+                  onClick={() => navigate(createPageUrl(`MatchDetail?id=${match.id}`))}
+                  className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-lg border-2 border-slate-100 dark:border-slate-700 cursor-pointer hover:shadow-xl transition-all"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
