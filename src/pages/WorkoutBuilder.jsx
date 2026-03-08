@@ -54,83 +54,100 @@ export default function WorkoutBuilder() {
   });
 
   const [workoutName, setWorkoutName] = useState('');
-  const [selectedDrills, setSelectedDrills] = useState([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [exercises, setExercises] = useState([]); // array of {id, name, sets, reps, category, expanded}
   const [exerciseDialogOpen, setExerciseDialogOpen] = useState(false);
-  const [filteredDrills, setFilteredDrills] = useState(null);
   const [showSaved, setShowSaved] = useState(false);
 
-  const addDrill = (drill) => {
-    // Check if drill is pro and user doesn't have premium
-    if (drill.skill_level === 'pro' && !isPremium) {
-      toast('This is a Pro drill! Requires Premium subscription. 🔓', {
-        icon: '💎',
-        duration: 3000,
-      });
-      return;
-    }
+  // Build flat drag list from exercises: each exercise expands into set sub-items + rest slots between them
+  // We store exercises directly; rest blocks are stored within exercise.rests = {afterSet1: true, ...}
 
-    setSelectedDrills([
-      ...selectedDrills,
-      {
-        drill_id: drill.id,
-        drill_title: drill.title,
-        sets: 3,
-        reps: 10,
-        completed_sets: 0,
-        type: 'drill'
-      }
-    ]);
-    setDialogOpen(false);
-  };
-
-  const addRestBlock = () => {
-    setSelectedDrills([
-      ...selectedDrills,
-      {
-        drill_id: `rest_${Math.random().toString(36).substr(2, 9)}`,
-        drill_title: 'Rest Period',
-        sets: 1,
-        reps: 60,
-        completed_sets: 0,
-        type: 'rest',
-        rest_seconds: 60
-      }
-    ]);
+  const addRestToExercise = (exerciseIdx, afterSetNum) => {
+    const updated = [...exercises];
+    if (!updated[exerciseIdx].rests) updated[exerciseIdx].rests = {};
+    updated[exerciseIdx].rests[afterSetNum] = updated[exerciseIdx].rests[afterSetNum]
+      ? null
+      : { duration: 60 };
+    setExercises(updated);
   };
 
   const addExercise = (exercise) => {
-    setSelectedDrills([
-      ...selectedDrills,
+    setExercises([
+      ...exercises,
       {
-        drill_id: exercise.id,
-        drill_title: exercise.name,
+        id: `ex_${Math.random().toString(36).substr(2, 9)}`,
+        name: exercise.name,
         sets: 3,
         reps: 10,
-        completed_sets: 0,
-        type: 'exercise',
-        category: exercise.category
+        category: exercise.category,
+        expanded: true,
+        rests: {}
       }
     ]);
     setExerciseDialogOpen(false);
   };
 
-  const removeDrill = (index) => {
-    setSelectedDrills(selectedDrills.filter((_, i) => i !== index));
+  const removeExercise = (idx) => {
+    setExercises(exercises.filter((_, i) => i !== idx));
   };
 
-  const updateDrill = (index, field, value) => {
-    const updated = [...selectedDrills];
-    updated[index][field] = parseInt(value) || 0;
-    setSelectedDrills(updated);
+  const updateExercise = (idx, field, value) => {
+    const updated = [...exercises];
+    updated[idx][field] = field === 'name' ? value : (parseInt(value) || 1);
+    // If sets changes, prune rests that are beyond new set count
+    if (field === 'sets') {
+      const newSets = parseInt(value) || 1;
+      const rests = { ...updated[idx].rests };
+      Object.keys(rests).forEach(k => {
+        if (parseInt(k) >= newSets) delete rests[k];
+      });
+      updated[idx].rests = rests;
+    }
+    setExercises(updated);
+  };
+
+  const toggleExpanded = (idx) => {
+    const updated = [...exercises];
+    updated[idx].expanded = !updated[idx].expanded;
+    setExercises(updated);
   };
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
-    const items = Array.from(selectedDrills);
+    const items = Array.from(exercises);
     const [reordered] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reordered);
-    setSelectedDrills(items);
+    setExercises(items);
+  };
+
+  // Flatten exercises to drills array for saving
+  const buildDrillsArray = () => {
+    const drills = [];
+    exercises.forEach(ex => {
+      for (let s = 1; s <= ex.sets; s++) {
+        drills.push({
+          drill_id: `${ex.id}_set${s}`,
+          drill_title: `${ex.name} — Set ${s}`,
+          sets: 1,
+          reps: ex.reps,
+          completed_sets: 0,
+          type: 'exercise',
+          category: ex.category
+        });
+        const rest = ex.rests?.[s];
+        if (rest && s < ex.sets) {
+          drills.push({
+            drill_id: `rest_${ex.id}_${s}`,
+            drill_title: 'Rest Period',
+            sets: 1,
+            reps: rest.duration || 60,
+            completed_sets: 0,
+            type: 'rest',
+            rest_seconds: rest.duration || 60
+          });
+        }
+      }
+    });
+    return drills;
   };
 
   const saveWorkoutMutation = useMutation({
