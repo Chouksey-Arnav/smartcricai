@@ -186,6 +186,9 @@ export default function WorkoutBuilder() {
   const loadSavedWorkoutMutation = useMutation({
     mutationFn: async (savedWorkout) => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
+      // Check if there's already an active workout with this name
+      const existing = await base44.entities.Workout.filter({ user_email: guestEmail, name: savedWorkout.name });
+      if (existing.length > 0) return existing[0];
       return await base44.entities.Workout.create({
         user_email: guestEmail,
         name: savedWorkout.name,
@@ -197,10 +200,10 @@ export default function WorkoutBuilder() {
     onMutate: () => {
       toast.success('Starting workout now!');
     },
-    onSuccess: (newWorkout) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
-      navigate(createPageUrl(`AIWorkout`));
+      navigate(createPageUrl('AIWorkout'));
     },
   });
 
