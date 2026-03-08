@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Play, CheckCircle, Clock, Zap, RotateCcw, Trash2 } from 'lucide-react';
+import { Sparkles, Play, CheckCircle, Clock, Zap, RotateCcw, Trash2, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
