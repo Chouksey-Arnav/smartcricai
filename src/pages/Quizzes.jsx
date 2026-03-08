@@ -169,19 +169,32 @@ export default function Quizzes() {
                         )}
                       >
                         <div className="flex items-start gap-3">
-                          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white", config.color)}>
-                            <Icon className="w-6 h-6" />
+                        <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white", config.color)}>
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-slate-800 dark:text-white">{quiz.title}</h3>
+                          <div className="flex items-center gap-3 mt-2 flex-wrap">
+                            <span className="text-sm text-slate-500 dark:text-slate-400">{quiz.questions?.length || 0} questions</span>
+                            <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium capitalize", difficultyColors[quiz.difficulty])}>
+                              {quiz.difficulty}
+                            </span>
+                            {(() => {
+                              const completedScores = userProgress?.quiz_scores?.filter(s => s.quiz_id === quiz.id) || [];
+                              if (completedScores.length === 0) return null;
+                              const best = Math.max(...completedScores.map(s => s.score));
+                              return (
+                                <span className={cn("px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1",
+                                  best >= 80 ? "bg-emerald-100 text-emerald-700" : best >= 50 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
+                                )}>
+                                  <CheckCircle className="w-3 h-3" />
+                                  Best: {best}%
+                                </span>
+                              );
+                            })()}
                           </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-slate-800 dark:text-white">{quiz.title}</h3>
-                            <div className="flex items-center gap-3 mt-2">
-                              <span className="text-sm text-slate-500 dark:text-slate-400">{quiz.questions?.length || 0} questions</span>
-                              <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium capitalize", difficultyColors[quiz.difficulty])}>
-                                {quiz.difficulty}
-                              </span>
-                            </div>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-600 self-center" />
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-600 self-center" />
                         </div>
                       </motion.div>
                     );
