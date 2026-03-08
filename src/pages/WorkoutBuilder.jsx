@@ -212,6 +212,21 @@ export default function WorkoutBuilder() {
     },
   });
 
+  const deleteAllWorkoutsMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(savedWorkouts.map(w => base44.entities.SavedWorkout.delete(w.id)));
+      // Also delete from Workout entity
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const activeWorkouts = await base44.entities.Workout.filter({ user_email: guestEmail });
+      await Promise.all(activeWorkouts.map(w => base44.entities.Workout.delete(w.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      toast.success('All workouts deleted');
+    },
+  });
+
   const handleSave = () => {
     if (!workoutName.trim()) {
       toast.error('Please enter a workout name');

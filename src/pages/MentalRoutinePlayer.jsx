@@ -208,33 +208,63 @@ export default function MentalRoutinePlayer() {
 
   const completeMutation = useMutation({
     mutationFn: async () => {
-      if (user?.email && routine) {
-        const xpEarned = routine.xp_value || 75;
-        
-        // Update user progress with XP
-        if (userProgress?.id) {
-          await base44.entities.UserProgress.update(userProgress.id, {
-            total_xp: (userProgress.total_xp || 0) + xpEarned
-          });
-        }
+      if (!routine) return;
+      const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
+      const xpEarned = routine.xp_value || 75;
+      const today = new Date().toISOString().split('T')[0];
 
-        // Update Leaderboard
-        const leaderboards = await base44.entities.Leaderboard.filter({ user_email: user.email });
-        if (leaderboards.length > 0) {
-          await base44.entities.Leaderboard.update(leaderboards[0].id, {
-            total_xp: (leaderboards[0].total_xp || 0) + xpEarned
-          });
-        }
-        
-        // Create notification
-        await base44.entities.Notification.create({
-          user_email: user.email,
-          type: 'mental',
-          title: `Mental Training Completed! 🧠 +${xpEarned} XP`,
-          message: `"${routine.title}" completed! Your mind is getting stronger!`,
-          related_id: routine.id
+      // Update UserProgress - XP, streak, completed_mental_routines
+      const progressList = await base44.entities.UserProgress.filter({ user_email: guestId });
+      const currentProgress = progressList[0] || null;
+      const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      let newStreak = currentProgress?.current_streak || 0;
+      if (currentProgress?.last_practice_date !== today) {
+        newStreak = currentProgress?.last_practice_date === yesterdayStr ? newStreak + 1 : 1;
+      }
+      const longestStreak = Math.max(newStreak, currentProgress?.longest_streak || 0);
+      const completedRoutines = [...new Set([...(currentProgress?.completed_mental_routines || []), routine.id])];
+
+      if (currentProgress?.id) {
+        await base44.entities.UserProgress.update(currentProgress.id, {
+          total_xp: (currentProgress.total_xp || 0) + xpEarned,
+          current_streak: newStreak,
+          longest_streak: longestStreak,
+          last_practice_date: today,
+          completed_mental_routines: completedRoutines,
+          total_practice_minutes: (currentProgress.total_practice_minutes || 0) + Math.ceil((routine.duration_seconds || 300) / 60),
+        });
+      } else {
+        await base44.entities.UserProgress.create({
+          user_email: guestId,
+          total_xp: xpEarned,
+          current_streak: 1,
+          longest_streak: 1,
+          last_practice_date: today,
+          completed_mental_routines: [routine.id],
         });
       }
+
+      // Update Leaderboard - XP, streak, mental_sessions
+      const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
+      if (leaderboards.length > 0) {
+        await base44.entities.Leaderboard.update(leaderboards[0].id, {
+          total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
+          current_streak: newStreak,
+          highest_streak: Math.max(newStreak, leaderboards[0].highest_streak || 0),
+          mental_sessions_completed: (leaderboards[0].mental_sessions_completed || 0) + 1,
+          weekly_minutes: (leaderboards[0].weekly_minutes || 0) + Math.ceil((routine.duration_seconds || 300) / 60),
+        });
+      }
+
+      // Notification
+      await base44.entities.Notification.create({
+        user_email: guestId,
+        type: 'mental',
+        title: `Mental Training Done! +${xpEarned} XP`,
+        message: `"${routine.title}" completed! Your mind is getting stronger!`,
+        related_id: routine.id
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
