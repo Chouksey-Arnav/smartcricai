@@ -342,27 +342,41 @@ export default function AIWorkout() {
   }
 
   if (workoutCompleted) {
+    const xpEarned = activeWorkout?.xp_value || 90;
     return (
-      <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
-        <Header title="AI Workout" showSettings={false} />
-        <div className="px-6 py-12 max-w-lg mx-auto text-center">
+      <div className="min-h-screen bg-gradient-to-b from-emerald-900 to-teal-900 pb-24 flex flex-col items-center justify-center px-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', bounce: 0.4 }}
+          className="w-full max-w-lg text-center"
+        >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl shadow-2xl p-8 text-white"
+            initial={{ scale: 0 }}
+            animate={{ scale: [0, 1.3, 1] }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="w-32 h-32 bg-white/20 rounded-full mx-auto mb-6 flex items-center justify-center"
           >
-            <CheckCircle className="w-20 h-20 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-3">Workout Complete!</h2>
-            <p className="text-emerald-100 mb-6">Amazing job crushing that workout! You're getting stronger every day!</p>
+            <CheckCircle className="w-20 h-20 text-white" />
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <h2 className="text-4xl font-bold text-white mb-2">🏆 Crushed It!</h2>
+            <p className="text-emerald-200 text-lg mb-4">You're an absolute beast. Keep it up!</p>
+            <div className="bg-amber-400 rounded-2xl px-8 py-4 inline-block mb-6 shadow-xl">
+              <p className="text-amber-900 font-black text-2xl">+{xpEarned} XP Earned! ⚡</p>
+            </div>
+            <div className="bg-white/10 rounded-2xl p-4 mb-8 text-left">
+              <p className="text-white font-semibold mb-1">🔥 Workout Complete</p>
+              <p className="text-emerald-200 text-sm">Streak updated • Leaderboard synced • Keep going tomorrow!</p>
+            </div>
             <Button 
               onClick={() => { setWorkoutCompleted(false); setSelectedWorkoutId(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              variant="secondary"
-              className="bg-white text-emerald-600 hover:bg-emerald-50"
+              className="w-full h-14 bg-white text-emerald-700 hover:bg-emerald-50 text-lg font-bold"
             >
               Back to My Workouts
             </Button>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     );
   }
