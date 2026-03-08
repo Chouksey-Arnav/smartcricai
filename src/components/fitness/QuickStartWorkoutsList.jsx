@@ -36,11 +36,11 @@ export default function QuickStartWorkoutsList({ user, isPremium, searchQuery = 
       };
       return await base44.entities.Workout.create(workoutData);
     },
-    onSuccess: (newWorkout) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
-      toast.success('Workout ready! Starting now!');
-      navigate(createPageUrl(`WorkoutPlayer?id=${newWorkout.id}`));
+      toast.success('Workout saved! Head to AI Workout to start!');
+      navigate(createPageUrl('AIWorkout'));
     },
   });
 
