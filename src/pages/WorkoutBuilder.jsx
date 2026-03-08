@@ -441,6 +441,16 @@ export default function WorkoutBuilder() {
           <>
             {/* Saved Workouts List */}
             <div className="space-y-4">
+              {savedWorkouts.length > 0 && (
+                <Button
+                  onClick={() => { if (confirm('Delete ALL saved workouts permanently?')) deleteAllWorkoutsMutation.mutate(); }}
+                  disabled={deleteAllWorkoutsMutation.isPending}
+                  variant="destructive"
+                  className="w-full bg-red-500 hover:bg-red-600"
+                >
+                  {deleteAllWorkoutsMutation.isPending ? 'Deleting...' : 'Delete All Workouts'}
+                </Button>
+              )}
               {savedWorkouts.length === 0 ? (
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-12 text-center">
                   <Dumbbell className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
