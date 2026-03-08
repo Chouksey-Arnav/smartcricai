@@ -281,171 +281,128 @@ export default function WorkoutBuilder() {
               />
             </div>
 
-            {/* Add Buttons */}
-            <div className="grid grid-cols-3 gap-3">
-          <Button 
-            onClick={addRestBlock}
-            className="h-12 bg-blue-500 hover:bg-blue-600"
-          >
-            <Clock className="w-5 h-5 mr-2" />
-            Add Rest
-          </Button>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="h-12 bg-emerald-500 hover:bg-emerald-600">
-                <Target className="w-5 h-5 mr-2" />
-                Add Drill
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80vh] flex flex-col p-0">
-              <DialogHeader className="p-4 pb-0">
-                <DialogTitle>Select a Drill</DialogTitle>
-              </DialogHeader>
-              <div className="px-4 pt-2 pb-3">
-                <Input
-                  placeholder="Search drills..."
-                  onChange={(e) => {
-                    const query = e.target.value.toLowerCase();
-                    const filtered = drills.filter(d => 
-                      d.title.toLowerCase().includes(query) || 
-                      d.category.toLowerCase().includes(query)
-                    );
-                    setFilteredDrills(filtered);
-                  }}
-                  className="h-10"
-                />
-              </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-visible">
-                {(filteredDrills || drills).map(drill => {
-                  const isProLocked = drill.skill_level === 'pro' && !isPremium;
-                  return (
-                    <button
-                      key={drill.id}
-                      onClick={() => addDrill(drill)}
-                      className={`w-full text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors relative ${isProLocked ? 'opacity-60' : ''}`}
-                    >
-                      {isProLocked && (
-                        <div className="absolute top-2 right-2">
-                          <span className="text-xs bg-gradient-to-r from-amber-400 to-orange-500 text-white px-2 py-1 rounded-full">🔒 Pro</span>
-                        </div>
-                      )}
-                      <h4 className="font-semibold text-slate-800">{drill.title}</h4>
-                      <p className="text-sm text-slate-600">{drill.category} • {drill.skill_level}</p>
-                    </button>
-                  );
-                })}
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={exerciseDialogOpen} onOpenChange={setExerciseDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="h-12 bg-purple-500 hover:bg-purple-600">
-                <Dumbbell className="w-5 h-5 mr-2" />
-                Add Exercise
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80vh] p-0">
-              <DialogHeader className="p-4 pb-0">
-                <DialogTitle>Select an Exercise</DialogTitle>
-              </DialogHeader>
-              <ExerciseSelector 
-                onSelect={addExercise} 
-                onClose={() => setExerciseDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
+            {/* Add Exercise Button */}
+            <div className="flex gap-3">
+              <Dialog open={exerciseDialogOpen} onOpenChange={setExerciseDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="flex-1 h-12 bg-purple-500 hover:bg-purple-600">
+                    <Dumbbell className="w-5 h-5 mr-2" />
+                    Add Exercise
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-h-[80vh] p-0">
+                  <DialogHeader className="p-4 pb-0">
+                    <DialogTitle>Select an Exercise</DialogTitle>
+                  </DialogHeader>
+                  <ExerciseSelector 
+                    onSelect={addExercise} 
+                    onClose={() => setExerciseDialogOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
 
-            {/* Drill List */}
-            {selectedDrills.length > 0 && (
+            {/* Exercise List with Sets Sub-blocks */}
+            {exercises.length > 0 && (
               <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6">
-                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-4">Your Drills ({selectedDrills.length})</h3>
+                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-4">Your Exercises ({exercises.length})</h3>
             
             <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="drills">
+              <Droppable droppableId="exercises">
                 {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
-                    {selectedDrills.map((drill, index) => (
-                      <Draggable key={index} draggableId={`drill-${index}`} index={index}>
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
+                    {exercises.map((ex, index) => (
+                      <Draggable key={ex.id} draggableId={ex.id} index={index}>
                         {(provided) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4"
+                            className="bg-slate-50 dark:bg-slate-700 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-600"
                           >
-                            <div className="flex items-start gap-3">
-                              <div {...provided.dragHandleProps} className="mt-2">
+                            {/* Exercise Header */}
+                            <div className="flex items-center gap-3 p-4">
+                              <div {...provided.dragHandleProps}>
                                 <GripVertical className="w-5 h-5 text-slate-400" />
                               </div>
-                              
                               <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <h4 className="font-semibold text-slate-800 dark:text-slate-100">{drill.drill_title}</h4>
-                                  {drill.type === 'exercise' && (
-                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                      drill.category === 'bodyweight' 
-                                        ? 'bg-blue-100 text-blue-700'
-                                        : 'bg-orange-100 text-orange-700'
-                                    }`}>
-                                      {drill.category === 'bodyweight' ? 'Bodyweight' : 'Weighted'}
-                                    </span>
-                                  )}
-                                  {drill.type === 'rest' && (
-                                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                                      Rest Block
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                {drill.type === 'rest' ? (
+                                <h4 className="font-semibold text-slate-800 dark:text-slate-100">{ex.name}</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{ex.sets} sets × {ex.reps} reps</p>
+                              </div>
+                              <button onClick={() => toggleExpanded(index)} className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600">
+                                {ex.expanded ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+                              </button>
+                              <button onClick={() => removeExercise(index)} className="p-1 hover:bg-red-100 rounded-lg transition-colors">
+                                <X className="w-4 h-4 text-red-500" />
+                              </button>
+                            </div>
+
+                            {/* Expanded: Sets/Reps config + set sub-blocks with rest slots */}
+                            {ex.expanded && (
+                              <div className="px-4 pb-4 space-y-3">
+                                <div className="grid grid-cols-2 gap-3">
                                   <div>
-                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Duration (seconds)</label>
-                                    <Input
-                                      type="text"
-                                      inputMode="numeric"
-                                      pattern="[0-9]*"
-                                      value={drill.reps}
-                                      onChange={(e) => {
-                                        const val = e.target.value.replace(/[^0-9]/g, '');
-                                        updateDrill(index, 'reps', val || '10');
-                                      }}
-                                      className="h-9"
-                                    />
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Sets</label>
+                                    <Input type="number" min="1" max="20" value={ex.sets}
+                                      onChange={(e) => updateExercise(index, 'sets', e.target.value)}
+                                      className="h-9" />
                                   </div>
-                                ) : (
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div>
-                                      <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Sets</label>
-                                      <Input
-                                        type="number"
-                                        min="1"
-                                        value={drill.sets}
-                                        onChange={(e) => updateDrill(index, 'sets', e.target.value)}
-                                        className="h-9"
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Reps</label>
-                                      <Input
-                                        type="number"
-                                        min="1"
-                                        value={drill.reps}
-                                        onChange={(e) => updateDrill(index, 'reps', e.target.value)}
-                                        className="h-9"
-                                      />
-                                    </div>
+                                  <div>
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1">Reps</label>
+                                    <Input type="number" min="1" value={ex.reps}
+                                      onChange={(e) => updateExercise(index, 'reps', e.target.value)}
+                                      className="h-9" />
+                                  </div>
+                                </div>
+
+                                {ex.sets > 1 && (
+                                  <div className="space-y-1 mt-2">
+                                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Sets (tap between sets to add/remove rest):</p>
+                                    {Array.from({ length: ex.sets }, (_, si) => {
+                                      const setNum = si + 1;
+                                      const hasRest = ex.rests?.[setNum];
+                                      return (
+                                        <div key={setNum}>
+                                          <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg px-3 py-2">
+                                            <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">{setNum}</div>
+                                            <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{ex.name} — Set {setNum} × {ex.reps} reps</span>
+                                          </div>
+                                          {setNum < ex.sets && (
+                                            <div className="flex items-center gap-2 my-1 px-2">
+                                              <div className="flex-1 border-t border-dashed border-slate-300 dark:border-slate-600" />
+                                              <button
+                                                onClick={() => addRestToExercise(index, setNum)}
+                                                className={`text-xs px-3 py-1 rounded-full border transition-all flex items-center gap-1 ${
+                                                  hasRest
+                                                    ? 'bg-blue-100 border-blue-400 text-blue-700'
+                                                    : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-500 text-slate-500 dark:text-slate-400 hover:bg-blue-50 hover:border-blue-300'
+                                                }`}
+                                              >
+                                                <Clock className="w-3 h-3" />
+                                                {hasRest ? `Rest ${hasRest.duration}s ✓ (remove)` : 'Add Rest'}
+                                              </button>
+                                              {hasRest && (
+                                                <Input
+                                                  type="number" min="10" max="300"
+                                                  value={hasRest.duration}
+                                                  onClick={(e) => e.stopPropagation()}
+                                                  onChange={(e) => {
+                                                    const updated = [...exercises];
+                                                    updated[index].rests[setNum] = { duration: parseInt(e.target.value) || 60 };
+                                                    setExercises(updated);
+                                                  }}
+                                                  className="h-7 w-20 text-xs"
+                                                />
+                                              )}
+                                              <div className="flex-1 border-t border-dashed border-slate-300 dark:border-slate-600" />
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 )}
                               </div>
-
-                              <button
-                                onClick={() => removeDrill(index)}
-                                className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                              >
-                                <X className="w-5 h-5 text-red-500" />
-                              </button>
-                            </div>
+                            )}
                           </div>
                         )}
                       </Draggable>
@@ -459,7 +416,7 @@ export default function WorkoutBuilder() {
             )}
 
             {/* Save Button */}
-            {selectedDrills.length > 0 && (
+            {exercises.length > 0 && (
               <Button
                 onClick={handleSave}
                 disabled={saveWorkoutMutation.isPending}
