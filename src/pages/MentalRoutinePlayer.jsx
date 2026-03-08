@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-// Box Breathing Visualizer - large, smooth animated square
+// Box Breathing Visualizer - large, smooth animated square using CSS transitions
 function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const totalCycleDuration = 16;
   const phases = ['Inhale', 'Hold', 'Exhale', 'Hold'];
@@ -22,17 +22,15 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const elapsed = stepDuration - stepTimeRemaining;
   const cyclePos = elapsed % totalCycleDuration;
   const phaseIndex = Math.floor(cyclePos / 4);
-  const phaseProgress = (cyclePos % 4) / 4;
+  const phaseTime = cyclePos % 4;
 
-  const size = 220;
-  const pad = 30;
-  const r = 16;
-  // Perimeter path length for smooth motion
-  const perimeter = size * 4;
-  // Distance along perimeter: top-left -> top-right -> bottom-right -> bottom-left -> top-left
+  const size = 240;
+  const pad = 36;
+  const r = 20;
+
+  // Smooth perimeter position: 0..4 maps to full box
+  const distAlongPerimeter = (cyclePos / totalCycleDuration) * (size * 4);
   const segLen = size;
-  const totalElapsed = cyclePos;
-  const distAlongPerimeter = totalElapsed / totalCycleDuration * perimeter;
 
   let dotX, dotY;
   if (distAlongPerimeter <= segLen) {
@@ -46,43 +44,51 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   }
 
   const sideLabels = [
-    { x: pad + size / 2, y: pad - 12, label: 'Inhale' },
-    { x: pad + size + 14, y: pad + size / 2, label: 'Hold' },
-    { x: pad + size / 2, y: pad + size + 18, label: 'Exhale' },
-    { x: pad - 14, y: pad + size / 2, label: 'Hold' },
+    { x: pad + size / 2, y: pad - 16, label: 'Inhale' },
+    { x: pad + size + 18, y: pad + size / 2, label: 'Hold' },
+    { x: pad + size / 2, y: pad + size + 22, label: 'Exhale' },
+    { x: pad - 18, y: pad + size / 2, label: 'Hold' },
   ];
 
-  const gradientId = `boxGrad${phaseIndex}`;
+  const color = phaseColors[phaseIndex];
+  const secondsLeft = Math.max(1, 4 - Math.floor(phaseTime));
 
   return (
     <div className="flex flex-col items-center">
       <svg width={size + pad * 2} height={size + pad * 2}>
         <defs>
-          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={phaseColors[phaseIndex]} stopOpacity="0.3" />
-            <stop offset="100%" stopColor={phaseColors[(phaseIndex + 2) % 4]} stopOpacity="0.1" />
-          </linearGradient>
+          <radialGradient id="boxFill" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.05" />
+          </radialGradient>
+          <filter id="dotGlow">
+            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
         </defs>
-        {/* Filled square with hue */}
-        <rect x={pad} y={pad} width={size} height={size} rx={r}
-          fill={`url(#${gradientId})`} stroke={phaseColors[phaseIndex]} strokeWidth={3} opacity={0.7} />
+        {/* Background square */}
+        <rect x={pad} y={pad} width={size} height={size} rx={r} fill="url(#boxFill)" stroke={color} strokeWidth={3} />
+        {/* Corner dots */}
+        {[[pad,pad],[pad+size,pad],[pad+size,pad+size],[pad,pad+size]].map(([cx,cy],i) => (
+          <circle key={i} cx={cx} cy={cy} r={5} fill={color} opacity={0.5} />
+        ))}
         {/* Side labels */}
         {sideLabels.map((l, i) => (
-          <text key={i} x={l.x} y={l.y} fill="rgba(255,255,255,0.5)" fontSize={11} textAnchor="middle" dominantBaseline="middle">{l.label}</text>
+          <text key={i} x={l.x} y={l.y} fill="rgba(255,255,255,0.7)" fontSize={13} fontWeight="600" textAnchor="middle" dominantBaseline="middle">{l.label}</text>
         ))}
-        {/* Glow */}
-        <circle cx={dotX} cy={dotY} r={18} fill={phaseColors[phaseIndex]} opacity={0.25} />
-        {/* Dot */}
-        <motion.circle
-          cx={dotX} cy={dotY} r={11}
-          fill={phaseColors[phaseIndex]}
-          animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 1, ease: 'linear' }}
+        {/* Glow halo */}
+        <circle cx={dotX} cy={dotY} r={22} fill={color} opacity={0.2} filter="url(#dotGlow)" />
+        {/* Moving dot with CSS transition for smoothness */}
+        <circle
+          cx={dotX} cy={dotY} r={13}
+          fill={color}
+          style={{ transition: 'cx 1s linear, cy 1s linear' }}
+          filter="url(#dotGlow)"
         />
       </svg>
-      <div className="mt-3 text-center">
-        <p className="text-white text-xl font-bold">{phases[phaseIndex]}</p>
-        <p className="text-white/60 text-sm">{Math.max(1, 4 - Math.floor(cyclePos % 4))}s</p>
+      <div className="mt-2 text-center">
+        <p className="text-white text-2xl font-bold">{phases[phaseIndex]}</p>
+        <p className="text-white/60 text-sm">{secondsLeft}s</p>
       </div>
     </div>
   );

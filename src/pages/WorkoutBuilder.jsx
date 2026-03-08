@@ -464,7 +464,6 @@ export default function WorkoutBuilder() {
                       </Button>
                       <Button
                         onClick={() => {
-                          setSelectedDrills(workout.exercises);
                           setWorkoutName(workout.name);
                           setShowSaved(false);
                           toast.success('Workout loaded for editing');
