@@ -1,6 +1,7 @@
+import { EXTRA_MENTAL_ROUTINES } from './MentalRoutinesExtra';
+
 // 90 Universal Mental Training Sessions
 // Designed for any person seeking self-improvement — with cricket subtly in mind
-import { EXTRA_MENTAL_ROUTINES } from './MentalRoutinesExtra';
 
 const BASE_MENTAL_ROUTINES = [
   // ===== FOCUS (1-10) =====
