@@ -350,7 +350,7 @@ export default function FitnessBuilder() {
 
             <div className="flex gap-3">
               <Button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 variant="outline"
                 className="flex-1"
               >
