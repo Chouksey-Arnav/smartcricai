@@ -186,41 +186,41 @@ export default function FitnessBuilder() {
           <p className="text-orange-100 text-sm">Curated training programs for you</p>
         </motion.div>
 
-        {/* Featured Workouts - Quick Start */}
+        {/* Step 1: Featured Workouts */}
         {step === 1 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl p-5 shadow-lg min-h-[70vh]"
+            className="space-y-4"
           >
-            <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-              <Flame className="w-5 h-5 text-orange-500" />
-              Featured Workouts
-            </h3>
-            
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <Input
-                placeholder="Search workouts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 text-base"
-              />
+            <div className="bg-white rounded-2xl p-5 shadow-lg min-h-[60vh]">
+              <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <Flame className="w-5 h-5 text-orange-500" />
+                Featured Workouts
+              </h3>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  placeholder="Search workouts..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-12 text-base"
+                />
+              </div>
+              <QuickStartWorkoutsList user={user} isPremium={isPremium} searchQuery={searchQuery} />
             </div>
-            
-            <QuickStartWorkoutsList user={user} isPremium={isPremium} searchQuery={searchQuery} />
             <Button
               onClick={() => setStep(2)}
               variant="outline"
-              className="w-full mt-4 h-12 border-2 border-purple-300 text-purple-600 hover:bg-purple-50"
+              className="w-full h-14 border-2 border-purple-400 text-purple-600 hover:bg-purple-50 text-base font-semibold"
             >
-              Or Create Custom Workout
+              + Create Custom Workout
             </Button>
           </motion.div>
         )}
 
-        {/* Step 1: Body Part */}
-        {step === 1 && (
+        {/* Step 2: Select Target Area (Custom) */}
+        {step === 2 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -246,14 +246,16 @@ export default function FitnessBuilder() {
                 ))}
               </div>
             </div>
-
-            <Button
-              onClick={() => setStep(2)}
-              disabled={!selectedBodyPart}
-              className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg"
-            >
-              Next: Choose Level & Goal
-            </Button>
+            <div className="flex gap-3">
+              <Button onClick={() => setStep(1)} variant="outline" className="flex-1">Back</Button>
+              <Button
+                onClick={() => setStep(3)}
+                disabled={!selectedBodyPart}
+                className="flex-1 h-12 bg-orange-500 hover:bg-orange-600"
+              >
+                Next: Level & Goal
+              </Button>
+            </div>
           </motion.div>
         )}
 
