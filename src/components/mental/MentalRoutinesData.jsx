@@ -1,7 +1,8 @@
 // 90 Universal Mental Training Sessions
 // Designed for any person seeking self-improvement — with cricket subtly in mind
+import { EXTRA_MENTAL_ROUTINES } from './MentalRoutinesExtra';
 
-export const ALL_MENTAL_ROUTINES = [
+const BASE_MENTAL_ROUTINES = [
   // ===== FOCUS (1-10) =====
   {
     title: "5-4-3-2-1 Grounding",
