@@ -345,7 +345,7 @@ export default function QuizPlayer() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={Object.keys(answers).length < questions.length || saveProgressMutation.isPending}
+                  disabled={userAnswer === undefined || saveProgressMutation.isPending}
                   className="flex-1 bg-emerald-500 hover:bg-emerald-600"
                 >
                   {saveProgressMutation.isPending ? 'Submitting...' : 'Submit Quiz'}
