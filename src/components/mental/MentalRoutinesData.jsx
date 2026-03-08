@@ -1396,7 +1396,7 @@ export const ALL_MENTAL_ROUTINES = [
     ]
   },
 
-  // ===== ADDITIONAL UNIVERSAL (71-90) =====
+  // ===== ADDITIONAL UNIVERSAL PART 1 (71-90) =====
   {
     title: "Morning Mindset Ritual",
     category: "focus",
