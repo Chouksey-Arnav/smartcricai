@@ -274,11 +274,19 @@ export default function QuizPlayer() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
       <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-6 text-white">
-        <button onClick={() => navigate(createPageUrl('Quizzes'))} className="mb-4">
+        <button onClick={() => navigate(createPageUrl('Quizzes'))} className="mb-4 flex items-center gap-1" style={{ WebkitTapHighlightColor: 'transparent' }}>
           <ChevronLeft className="w-6 h-6" />
+          <span className="text-sm">Quizzes</span>
         </button>
         <h1 className="text-xl font-bold text-white">{quiz.title}</h1>
-        <p className="text-amber-100 text-sm mt-1">Question {currentQuestionIndex + 1} of {questions.length}</p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-amber-100 text-sm">Question {currentQuestionIndex + 1} of {questions.length}</p>
+          <div className="flex gap-1">
+            {questions.map((_, i) => (
+              <div key={i} className={`w-2 h-2 rounded-full ${answers[i] !== undefined ? 'bg-white' : 'bg-white/30'}`} />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="px-6 py-6 max-w-lg mx-auto">
