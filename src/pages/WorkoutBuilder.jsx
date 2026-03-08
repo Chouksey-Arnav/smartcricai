@@ -261,7 +261,7 @@ export default function WorkoutBuilder() {
               className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl p-6 text-white"
             >
               <h2 className="font-bold text-xl mb-2">Create Your Workout</h2>
-              <p className="text-purple-100 text-sm">Add drills or exercises, set reps, and build your training plan</p>
+              <p className="text-purple-100 text-sm">Add exercises, set sets & reps, add rest blocks between sets</p>
             </motion.div>
 
             {/* Workout Name */}
