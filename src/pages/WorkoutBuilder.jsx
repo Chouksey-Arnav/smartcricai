@@ -3,14 +3,14 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { motion } from 'framer-motion';
-import { Plus, X, Save, GripVertical, Dumbbell, Target, Clock } from 'lucide-react';
+import { X, Save, GripVertical, Dumbbell, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import ExerciseSelector from '@/components/workout/ExerciseSelector';
 
 export default function WorkoutBuilder() {
