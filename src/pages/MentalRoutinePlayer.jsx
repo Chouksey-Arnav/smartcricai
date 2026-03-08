@@ -88,17 +88,17 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   );
 }
 
-// 4-7-8 Breathing Triangle Visualizer
+// 4-7-8 Breathing Triangle Visualizer — larger, smooth, hued
 function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const phases = [
     { label: 'Inhale', duration: 4, color: '#34d399' },
     { label: 'Hold', duration: 7, color: '#60a5fa' },
     { label: 'Exhale', duration: 8, color: '#f472b6' },
   ];
-  const totalCycle = 19; // 4+7+8
+  const totalCycle = 19;
   const elapsed = stepDuration - stepTimeRemaining;
   const cyclePos = elapsed % totalCycle;
-  
+
   let phaseIndex = 0;
   let phaseProgress = 0;
   let acc = 0;
@@ -111,39 +111,68 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
     acc += phases[i].duration;
   }
 
-  // Triangle points (equilateral): bottom-left, bottom-right, top-center
-  const cx = 100, cy = 100, r = 75;
+  // Larger triangle
+  const cx = 130, cy = 125, r = 100;
   const pts = [
-    { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) }, // bottom-left
-    { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) }, // bottom-right
-    { x: cx, y: cy - r }, // top
+    { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
+    { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
+    { x: cx, y: cy - r },
   ];
 
-  // Dot travels: phase0 = bottom-left to top, phase1 = top to bottom-right, phase2 = bottom-right to bottom-left
+  // phase0: bottom-left→top (Inhale), phase1: top→bottom-right (Hold), phase2: bottom-right→bottom-left (Exhale)
   const edgePairs = [[0, 2], [2, 1], [1, 0]];
-  const [startIdx, endIdx] = edgePairs[phaseIndex];
-  const startPt = pts[startIdx];
-  const endPt = pts[endIdx];
-  const dotX = startPt.x + (endPt.x - startPt.x) * phaseProgress;
-  const dotY = startPt.y + (endPt.y - startPt.y) * phaseProgress;
-  const remaining = phases[phaseIndex].duration - Math.floor(cyclePos % phases[phaseIndex].duration) - (phaseProgress > 0 ? 0 : 0);
-  const secondsLeft = phases[phaseIndex].duration - Math.floor((cyclePos - acc));
-
+  const [sIdx, eIdx] = edgePairs[phaseIndex];
+  const dotX = pts[sIdx].x + (pts[eIdx].x - pts[sIdx].x) * phaseProgress;
+  const dotY = pts[sIdx].y + (pts[eIdx].y - pts[sIdx].y) * phaseProgress;
+  const secondsLeft = phases[phaseIndex].duration - Math.floor(cyclePos - acc);
   const triPoints = pts.map(p => `${p.x},${p.y}`).join(' ');
+
+  // Corner labels showing the phase label at each vertex
+  const vertexLabels = [
+    { pt: pts[2], text: phases[0].label, anchor: 'middle', dy: -14 }, // top = inhale start
+    { pt: pts[1], text: phases[1].label, anchor: 'start', dx: 10, dy: 5 },
+    { pt: pts[0], text: phases[2].label, anchor: 'end', dx: -10, dy: 5 },
+  ];
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={200} height={200}>
-        <polygon points={triPoints} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={4} strokeLinejoin="round" />
-        {/* Phase labels on sides */}
-        <text x={(pts[0].x + pts[2].x) / 2 - 18} y={(pts[0].y + pts[2].y) / 2} fill="rgba(255,255,255,0.5)" fontSize={10}>Inhale</text>
-        <text x={(pts[2].x + pts[1].x) / 2 + 4} y={(pts[2].y + pts[1].y) / 2} fill="rgba(255,255,255,0.5)" fontSize={10}>Hold</text>
-        <text x={(pts[1].x + pts[0].x) / 2 - 18} y={(pts[1].y + pts[0].y) / 2 + 14} fill="rgba(255,255,255,0.5)" fontSize={10}>Exhale</text>
-        {/* Animated dot */}
-        <circle cx={dotX} cy={dotY} r={10} fill={phases[phaseIndex].color} />
+      <svg width={260} height={240}>
+        <defs>
+          <filter id="glow478">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={phases[phaseIndex].color} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={phases[(phaseIndex + 1) % 3].color} stopOpacity="0.05" />
+          </linearGradient>
+        </defs>
+        {/* Filled triangle hue */}
+        <polygon points={triPoints} fill="url(#triGrad)" stroke={phases[phaseIndex].color} strokeWidth={3} strokeLinejoin="round" opacity={0.8} />
+        {/* Vertex labels */}
+        {vertexLabels.map((l, i) => (
+          <text key={i} x={l.pt.x + (l.dx || 0)} y={l.pt.y + (l.dy || 0)}
+            fill="rgba(255,255,255,0.6)" fontSize={12} textAnchor={l.anchor} dominantBaseline="middle">
+            {l.text}
+          </text>
+        ))}
+        {/* Center label: current phase */}
+        <text x={cx} y={cy + 10} fill="white" fontSize={15} textAnchor="middle" fontWeight="bold">
+          {phases[phaseIndex].label}
+        </text>
+        {/* Glow */}
+        <circle cx={dotX} cy={dotY} r={18} fill={phases[phaseIndex].color} opacity={0.25} filter="url(#glow478)" />
+        {/* Smooth dot */}
+        <motion.circle
+          cx={dotX} cy={dotY} r={12}
+          fill={phases[phaseIndex].color}
+          animate={{ cx: dotX, cy: dotY }}
+          transition={{ duration: 1, ease: 'linear' }}
+          filter="url(#glow478)"
+        />
       </svg>
       <div className="mt-2 text-center">
-        <p className="text-white text-lg font-bold">{phases[phaseIndex].label}</p>
+        <p className="text-white text-xl font-bold">{phases[phaseIndex].label}</p>
         <p className="text-white/60 text-sm">{Math.max(1, secondsLeft)}s</p>
       </div>
     </div>
