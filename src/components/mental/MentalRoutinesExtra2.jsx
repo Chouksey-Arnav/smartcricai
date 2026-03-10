@@ -1,24 +1,5 @@
-// 15 Additional Universal Mental Training Routines
+// 11 Unique Additional Mental Training Routines (duplicates removed from previous version)
 export const EXTRA_MENTAL_ROUTINES_2 = [
-  {
-    title: "Morning Energy Ignition",
-    category: "focus",
-    duration_seconds: 360,
-    description: "A powerful morning activation to generate peak mental and physical energy for the day.",
-    difficulty: "beginner",
-    is_premium: false,
-    xp_value: 55,
-    calming_sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3",
-    steps: [
-      { instruction: "Stand tall. Roll your shoulders back three times. Shake your hands loose.", duration_seconds: 30 },
-      { instruction: "Take 5 deep power breaths — inhale hard through the nose, exhale sharply through the mouth.", duration_seconds: 60 },
-      { instruction: "State today's single most important focus out loud. One thing only.", duration_seconds: 30 },
-      { instruction: "Do 10 slow neck rolls. Release every knot of tension.", duration_seconds: 60 },
-      { instruction: "Visualise yourself completing the most important task of the day with ease.", duration_seconds: 90 },
-      { instruction: "Say: 'I am awake. I am ready. Today I show up fully.'", duration_seconds: 50 },
-      { instruction: "Move. Your energy is live. Use it.", duration_seconds: 40 },
-    ]
-  },
   {
     title: "The Accountability Mirror",
     category: "confidence",
@@ -38,61 +19,22 @@ export const EXTRA_MENTAL_ROUTINES_2 = [
     ]
   },
   {
-    title: "Handling Setbacks with Strength",
-    category: "pressure",
-    duration_seconds: 420,
-    description: "Build the mindset to absorb any setback and come back stronger every single time.",
-    difficulty: "beginner",
-    is_premium: false,
-    xp_value: 60,
-    calming_sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3",
-    steps: [
-      { instruction: "Name the setback clearly. Do not dramatise it — just state what happened.", duration_seconds: 50 },
-      { instruction: "Take 3 slow breaths. You are still standing. That already means something.", duration_seconds: 40 },
-      { instruction: "Ask: Is this permanent? Almost certainly not. Everything passes.", duration_seconds: 60 },
-      { instruction: "Ask: What is the one strongest action I can take from this position?", duration_seconds: 70 },
-      { instruction: "Recall a previous setback you overcame. You have done this before.", duration_seconds: 70 },
-      { instruction: "Say: 'I do not stay down. Every setback fuels my comeback.'", duration_seconds: 60 },
-      { instruction: "Rise. Start the comeback now.", duration_seconds: 30 },
-      { instruction: "Strength is not avoiding the fall. It is the speed of your return.", duration_seconds: 40 },
-    ]
-  },
-  {
     title: "Deep Breathing for Anxiety",
     category: "match-day-calm",
     duration_seconds: 300,
-    description: "A proven breathing technique to reduce anxiety and restore calm within minutes.",
+    description: "Diaphragmatic belly breathing to reduce anxiety at the physiological level within minutes.",
     difficulty: "beginner",
     is_premium: false,
     xp_value: 50,
     calming_sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3",
     steps: [
       { instruction: "Sit or lie down. Place one hand on your chest, one on your belly.", duration_seconds: 20 },
-      { instruction: "Breathe in slowly through the nose for 4 counts. Feel your belly rise.", duration_seconds: 40 },
+      { instruction: "Breathe in slowly through the nose for 4 counts. Feel your belly rise, not your chest.", duration_seconds: 40 },
       { instruction: "Hold gently for 2 counts.", duration_seconds: 20 },
       { instruction: "Exhale slowly through the mouth for 6 counts. Belly falls.", duration_seconds: 50 },
-      { instruction: "Repeat this cycle 6 times. Let each exhale be a release.", duration_seconds: 100 },
+      { instruction: "Repeat this cycle 6 times. Let each exhale be a deliberate release.", duration_seconds: 100 },
       { instruction: "Notice the anxiety reducing with each breath. This is physiology, not willpower.", duration_seconds: 40 },
       { instruction: "You control your nervous system. Use this tool anytime.", duration_seconds: 30 },
-    ]
-  },
-  {
-    title: "Champion Pre-Sleep Ritual",
-    category: "recovery",
-    duration_seconds: 480,
-    description: "The mental preparation routine elite performers use before sleep for peak next-day performance.",
-    difficulty: "beginner",
-    is_premium: false,
-    xp_value: 65,
-    calming_sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3",
-    steps: [
-      { instruction: "Lie down. Phone away. This 8 minutes will improve your performance tomorrow.", duration_seconds: 30 },
-      { instruction: "Review today: 3 things you did well. Acknowledge them fully.", duration_seconds: 80 },
-      { instruction: "Name one thing to improve tomorrow. Just one. No more.", duration_seconds: 50 },
-      { instruction: "Visualise tomorrow's most important task going perfectly.", duration_seconds: 90 },
-      { instruction: "Do 5 slow 4-7-8 breaths. Your body is preparing for deep recovery.", duration_seconds: 100 },
-      { instruction: "Say slowly: 'I rest now. My mind and body restore. Tomorrow I perform.'", duration_seconds: 60 },
-      { instruction: "Let go of everything. The night belongs to recovery.", duration_seconds: 70 },
     ]
   },
   {
@@ -136,25 +78,6 @@ export const EXTRA_MENTAL_ROUTINES_2 = [
     ]
   },
   {
-    title: "Purpose-Driven Performance",
-    category: "confidence",
-    duration_seconds: 420,
-    description: "Reconnect with your deepest reason for performing to generate unshakeable motivation.",
-    difficulty: "beginner",
-    is_premium: false,
-    xp_value: 60,
-    calming_sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3",
-    steps: [
-      { instruction: "Ask: Why do I truly do this? Go three layers deep. Past the obvious answer.", duration_seconds: 90 },
-      { instruction: "Find the real why. The one that gives you genuine drive when you say it.", duration_seconds: 90 },
-      { instruction: "Connect today's effort to that deep purpose. Every action matters.", duration_seconds: 70 },
-      { instruction: "When you have a clear why, the how becomes easier.", duration_seconds: 60 },
-      { instruction: "Say: 'I perform with purpose. Every session, every game means something.'", duration_seconds: 50 },
-      { instruction: "Open your eyes. Carry your why with you today.", duration_seconds: 40 },
-      { instruction: "Purpose is the most sustainable fuel there is.", duration_seconds: 30 },
-    ]
-  },
-  {
     title: "Cold Pressure Simulation",
     category: "pressure",
     duration_seconds: 360,
@@ -176,7 +99,7 @@ export const EXTRA_MENTAL_ROUTINES_2 = [
     title: "Full Body Relaxation",
     category: "recovery",
     duration_seconds: 540,
-    description: "A progressive muscle relaxation technique to deeply recharge between sessions.",
+    description: "Progressive muscle relaxation — systematically tense and release every muscle group for deep restoration.",
     difficulty: "beginner",
     is_premium: false,
     xp_value: 65,
@@ -197,7 +120,7 @@ export const EXTRA_MENTAL_ROUTINES_2 = [
     title: "Pre-Match Ritual Builder",
     category: "match-day-calm",
     duration_seconds: 480,
-    description: "Build a consistent pre-match mental ritual that primes your best performance every time.",
+    description: "Build a consistent, personalised pre-match mental ritual that primes your best performance every single time.",
     difficulty: "intermediate",
     is_premium: false,
     xp_value: 70,
@@ -217,7 +140,7 @@ export const EXTRA_MENTAL_ROUTINES_2 = [
     title: "Visualization for Skill Building",
     category: "visualization",
     duration_seconds: 540,
-    description: "Use science-backed mental rehearsal to accelerate skill development between physical sessions.",
+    description: "Use science-backed mental rehearsal to accelerate technical skill development between physical sessions.",
     difficulty: "intermediate",
     is_premium: false,
     xp_value: 75,
@@ -274,7 +197,7 @@ export const EXTRA_MENTAL_ROUTINES_2 = [
     title: "The 1% Better Mindset",
     category: "focus",
     duration_seconds: 360,
-    description: "Adopt the compound growth mindset that turns small daily improvements into exceptional results.",
+    description: "Adopt the compound growth mindset that turns small daily improvements into exceptional results over time.",
     difficulty: "beginner",
     is_premium: false,
     xp_value: 55,
