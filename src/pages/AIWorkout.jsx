@@ -570,24 +570,8 @@ export default function AIWorkout() {
             className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8"
           >
             {currentExercise.type === 'rest' ? (
-              <div className="text-center">
-                <Clock className="w-20 h-20 text-blue-500 mx-auto mb-4" />
-                <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-4">Rest Period</h2>
-                <div className="text-6xl font-bold text-blue-600 mb-6">{currentExercise.reps}s</div>
-                <Button
-                  onClick={() => {
-                    if (currentExerciseIndex < exercises.length - 1) {
-                      setCurrentExerciseIndex(currentExerciseIndex + 1);
-                      toast.success('Rest complete! Next exercise!');
-                    } else {
-                      completeWorkoutMutation.mutate();
-                    }
-                  }}
-                  className="w-full h-16 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-xl font-bold"
-                >
-                  Skip Rest
-                </Button>
-              </div>
+              // Rest blocks are handled by the isResting state / countdown above — show nothing here
+              null
             ) : (
               <>
                 <div className="text-center mb-6">
