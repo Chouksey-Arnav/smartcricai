@@ -567,6 +567,7 @@ export default function WorkoutBuilder() {
                       <Button
                         onClick={() => {
                           setWorkoutName(workout.name);
+                          setEditingSavedWorkout(workout);
                           // Reconstruct exercises from saved workout exercises array
                           const reconstructed = [];
                           const exerciseMap = {};
