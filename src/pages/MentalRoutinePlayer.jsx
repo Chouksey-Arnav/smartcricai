@@ -206,6 +206,8 @@ export default function MentalRoutinePlayer() {
   const completeMutation = useMutation({
     mutationFn: async () => {
       if (!routine) return;
+      // For local routines still track XP/progress using a synthetic ID
+      const effectiveId = isLocalRoutine ? `mental_${routine.title.replace(/\s+/g, '_')}` : routine.id;
       const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
       const xpEarned = routine.xp_value || 75;
       const today = new Date().toISOString().split('T')[0];
@@ -220,7 +222,7 @@ export default function MentalRoutinePlayer() {
         newStreak = currentProgress?.last_practice_date === yesterdayStr ? newStreak + 1 : 1;
       }
       const longestStreak = Math.max(newStreak, currentProgress?.longest_streak || 0);
-      const completedRoutines = [...new Set([...(currentProgress?.completed_mental_routines || []), routine.id])];
+      const completedRoutines = [...new Set([...(currentProgress?.completed_mental_routines || []), effectiveId])];
 
       if (currentProgress?.id) {
         await base44.entities.UserProgress.update(currentProgress.id, {
