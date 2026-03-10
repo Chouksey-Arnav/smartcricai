@@ -53,6 +53,8 @@ export default function WorkoutBuilder() {
   const [exercises, setExercises] = useState([]); // array of {id, name, sets, reps, category, expanded}
   const [exerciseDialogOpen, setExerciseDialogOpen] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
+  const [editingSavedWorkout, setEditingSavedWorkout] = useState(null); // tracks which saved workout is being edited
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   // Build flat drag list from exercises: each exercise expands into set sub-items + rest slots between them
   // We store exercises directly; rest blocks are stored within exercise.rests = {afterSet1: true, ...}
