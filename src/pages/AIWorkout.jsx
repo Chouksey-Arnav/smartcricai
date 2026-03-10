@@ -78,9 +78,11 @@ export default function AIWorkout() {
 
   // Auto-start countdown when landing on a rest-block exercise item
   React.useEffect(() => {
-    if (!workoutStarted || !currentExercise) return;
-    if (currentExercise.type === 'rest' && !isResting) {
-      const duration = currentExercise.rest_seconds || currentExercise.reps || 60;
+    if (!workoutStarted) return;
+    const ex = exercises[currentExerciseIndex];
+    if (!ex) return;
+    if (ex.type === 'rest' && !isResting) {
+      const duration = ex.rest_seconds || ex.reps || 60;
       setRestTime(duration);
       setIsResting(true);
     }
@@ -90,15 +92,17 @@ export default function AIWorkout() {
     if (!isResting) return;
     if (restTime <= 0) {
       setIsResting(false);
+      const ex = exercises[currentExerciseIndex];
       // Only auto-advance if this was a dedicated rest-block exercise
-      if (currentExercise?.type === 'rest') {
+      if (ex?.type === 'rest') {
         if (currentExerciseIndex < exercises.length - 1) {
           setCurrentExerciseIndex(prev => prev + 1);
           setCompletedSets({});
         }
         toast.success('Rest complete — keep going!');
+      } else {
+        toast.success('Rest done! Complete your next set!');
       }
-      // Between-sets rest: stay on same exercise, user continues with next set
       return;
     }
     const timer = setTimeout(() => {
