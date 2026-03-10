@@ -12,17 +12,17 @@ import { createPageUrl } from '@/utils';
 import { getPreGeneratedMentalRoutine } from '@/components/mental/PreGeneratedMentalRoutines';
 
 const focusAreas = [
-  { value: 'match_anxiety', label: 'Match Day Anxiety', emoji: '😰' },
-  { value: 'confidence', label: 'Building Confidence', emoji: '💪' },
-  { value: 'pressure', label: 'Handling Pressure', emoji: '🎯' },
-  { value: 'focus', label: 'Improving Focus', emoji: '🧘' },
-  { value: 'recovery', label: 'Mental Recovery', emoji: '🌿' },
-  { value: 'visualization', label: 'Visualization Practice', emoji: '👁️' },
-  { value: 'concentration', label: 'Deep Concentration', emoji: '🎯' },
-  { value: 'motivation', label: 'Boosting Motivation', emoji: '🔥' },
-  { value: 'dealing_with_failure', label: 'Dealing with Failure', emoji: '💔' },
-  { value: 'staying_calm', label: 'Staying Calm', emoji: '😌' },
-  { value: 'positive_mindset', label: 'Positive Mindset', emoji: '✨' },
+  { value: 'match_anxiety', label: 'Match Day Anxiety' },
+  { value: 'confidence', label: 'Building Confidence' },
+  { value: 'pressure', label: 'Handling Pressure' },
+  { value: 'focus', label: 'Improving Focus' },
+  { value: 'recovery', label: 'Mental Recovery' },
+  { value: 'visualization', label: 'Visualization Practice' },
+  { value: 'concentration', label: 'Deep Concentration' },
+  { value: 'motivation', label: 'Boosting Motivation' },
+  { value: 'dealing_with_failure', label: 'Dealing with Failure' },
+  { value: 'staying_calm', label: 'Staying Calm' },
+  { value: 'positive_mindset', label: 'Positive Mindset' },
 ];
 
 const sessionLengths = [
@@ -73,7 +73,7 @@ export default function MentalTrainingCreator() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
-      toast.success('Saved to My Routines! 🧠');
+      toast.success('Saved to My Routines!');
       navigate(createPageUrl('MentalCoaching') + '?tab=saved');
     },
     onError: (err) => {
@@ -93,7 +93,7 @@ export default function MentalTrainingCreator() {
       const routine = getPreGeneratedMentalRoutine(focusArea, sessionLength);
       setGeneratedPlan(routine);
       setIsGenerating(false);
-      toast.success('Mental routine generated! 🧠');
+      toast.success('Mental routine generated!');
     }, 800);
   };
 
@@ -131,7 +131,7 @@ export default function MentalTrainingCreator() {
 
   const handleDiscard = () => {
     setGeneratedPlan(null);
-    toast('Routine discarded', { icon: '🗑️' });
+    toast('Routine discarded');
   };
 
   return (
@@ -168,10 +168,7 @@ export default function MentalTrainingCreator() {
                   <SelectContent>
                     {focusAreas.map(area => (
                       <SelectItem key={area.value} value={area.value}>
-                        <span className="flex items-center gap-2">
-                          <span>{area.emoji}</span>
-                          <span>{area.label}</span>
-                        </span>
+                        {area.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
