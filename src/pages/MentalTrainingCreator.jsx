@@ -95,17 +95,33 @@ export default function MentalTrainingCreator() {
     }, 800);
   };
 
+  // Map focus area values to valid MentalRoutine category enum values
+  const categoryMap = {
+    match_anxiety: 'match-day-calm',
+    confidence: 'confidence',
+    pressure: 'pressure',
+    focus: 'focus',
+    recovery: 'recovery',
+    visualization: 'visualization',
+    concentration: 'focus',
+    motivation: 'confidence',
+    dealing_with_failure: 'recovery',
+    staying_calm: 'match-day-calm',
+    positive_mindset: 'confidence',
+  };
+
   const handleSave = () => {
     if (!generatedPlan) return;
 
     const routine = {
       title: generatedPlan.title,
-      category: focusArea,
+      category: categoryMap[focusArea] || 'focus',
       description: generatedPlan.description,
       duration_seconds: sessionLength,
       steps: generatedPlan.steps,
       difficulty: 'beginner',
       calming_sound: 'https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3',
+      xp_value: 75,
     };
 
     saveMentalRoutineMutation.mutate(routine);

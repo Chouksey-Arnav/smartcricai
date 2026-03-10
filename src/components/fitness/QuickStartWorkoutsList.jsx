@@ -39,7 +39,7 @@ export default function QuickStartWorkoutsList({ user, isPremium, searchQuery = 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
-      toast.success('Workout saved! Head to AI Workout to start!');
+      toast.success('Saved to AI Workout! Tap it whenever you\'re ready 💪');
       navigate(createPageUrl('AIWorkout'));
     },
   });
@@ -135,7 +135,7 @@ export default function QuickStartWorkoutsList({ user, isPremium, searchQuery = 
               )}
             >
               <Play className="w-4 h-4 mr-2" />
-              {isLocked ? 'Premium Only' : 'Start Workout'}
+              {isLocked ? 'Premium Only' : 'Save to My Workouts'}
             </Button>
           </motion.div>
         );

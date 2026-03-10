@@ -76,6 +76,16 @@ export default function AIWorkout() {
     }
   }, [workouts]);
 
+  // Auto-start countdown when landing on a rest-block exercise item
+  React.useEffect(() => {
+    if (!workoutStarted || !currentExercise) return;
+    if (currentExercise.type === 'rest' && !isResting) {
+      const duration = currentExercise.rest_seconds || currentExercise.reps || 60;
+      setRestTime(duration);
+      setIsResting(true);
+    }
+  }, [currentExerciseIndex, workoutStarted]);
+
   React.useEffect(() => {
     if (!isResting) return;
     if (restTime <= 0) {
