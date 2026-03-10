@@ -265,7 +265,7 @@ export default function Drills() {
               <Link to={createPageUrl('DrillWorkoutCreator')}>
                 <Button className="w-full h-14 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold text-base">
                   <Plus className="w-5 h-5 mr-2" />
-                  Access Your Drill Workouts
+                  Create a New Drill Workout
                 </Button>
               </Link>
               {savedWorkouts.length > 0 && (

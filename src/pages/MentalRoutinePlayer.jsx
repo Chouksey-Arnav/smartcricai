@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-// Box Breathing Visualizer - large, clean square, no halo
+// Box Breathing Visualizer - large, clean square, fading top label
 function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const totalCycleDuration = 16;
   const phases = ['Inhale', 'Hold', 'Exhale', 'Hold'];
@@ -24,9 +24,9 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const phaseIndex = Math.floor(cyclePos / 4);
   const phaseTime = cyclePos % 4;
 
-  const size = 280;
-  const pad = 44;
-  const r = 24;
+  const size = 300;
+  const pad = 36;
+  const r = 28;
 
   const distAlongPerimeter = (cyclePos / totalCycleDuration) * (size * 4);
   const segLen = size;
@@ -42,18 +42,24 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
     dotX = pad; dotY = pad + size - (distAlongPerimeter - segLen * 3);
   }
 
-  const sideLabels = [
-    { x: pad + size / 2, y: pad - 18, label: 'Inhale' },
-    { x: pad + size + 26, y: pad + size / 2, label: 'Hold' },
-    { x: pad + size / 2, y: pad + size + 26, label: 'Exhale' },
-    { x: pad - 26, y: pad + size / 2, label: 'Hold' },
-  ];
-
   const color = phaseColors[phaseIndex];
   const secondsLeft = Math.max(1, 4 - Math.floor(phaseTime));
 
   return (
     <div className="flex flex-col items-center">
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={phases[phaseIndex]}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.35 }}
+          className="text-3xl font-bold mb-3"
+          style={{ color }}
+        >
+          {phases[phaseIndex]}
+        </motion.p>
+      </AnimatePresence>
       <svg width={size + pad * 2} height={size + pad * 2}>
         <defs>
           <radialGradient id="boxFill" cx="50%" cy="50%" r="50%">
@@ -61,33 +67,23 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
             <stop offset="100%" stopColor={color} stopOpacity="0.04" />
           </radialGradient>
         </defs>
-        {/* Background square */}
-        <rect x={pad} y={pad} width={size} height={size} rx={r} fill="url(#boxFill)" stroke={color} strokeWidth={3.5} strokeOpacity={0.7} />
-        {/* Corner accent dots */}
+        <rect x={pad} y={pad} width={size} height={size} rx={r} fill="url(#boxFill)" stroke={color} strokeWidth={4} strokeOpacity={0.8} />
         {[[pad,pad],[pad+size,pad],[pad+size,pad+size],[pad,pad+size]].map(([cx,cy],i) => (
-          <circle key={i} cx={cx} cy={cy} r={6} fill={color} opacity={0.6} />
+          <circle key={i} cx={cx} cy={cy} r={7} fill={color} opacity={0.7} />
         ))}
-        {/* Side labels */}
-        {sideLabels.map((l, i) => (
-          <text key={i} x={l.x} y={l.y} fill="rgba(255,255,255,0.75)" fontSize={14} fontWeight="700" textAnchor="middle" dominantBaseline="middle">{l.label}</text>
-        ))}
-        {/* Moving dot — clean, no halo */}
         <motion.circle
-          cx={dotX} cy={dotY} r={15}
+          cx={dotX} cy={dotY} r={16}
           fill={color}
           animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 0.8, ease: 'linear' }}
+          transition={{ duration: 0.9, ease: 'linear' }}
         />
       </svg>
-      <div className="mt-2 text-center">
-        <p className="text-white text-2xl font-bold">{phases[phaseIndex]}</p>
-        <p className="text-white/60 text-sm">{secondsLeft}s</p>
-      </div>
+      <p className="text-white/60 text-sm mt-1">{secondsLeft}s</p>
     </div>
   );
 }
 
-// 4-7-8 Breathing Triangle Visualizer — large, no halo
+// 4-7-8 Breathing Triangle Visualizer — large, fading top label, no vertex labels
 function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const phases = [
     { label: 'Inhale', duration: 4, color: '#34d399' },
@@ -110,8 +106,7 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
     acc += phases[i].duration;
   }
 
-  // Much larger triangle
-  const cx = 160, cy = 155, r = 130;
+  const cx = 165, cy = 160, r = 140;
   const pts = [
     { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
@@ -124,47 +119,42 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const dotY = pts[sIdx].y + (pts[eIdx].y - pts[sIdx].y) * phaseProgress;
   const secondsLeft = phases[phaseIndex].duration - Math.floor(cyclePos - acc);
   const triPoints = pts.map(p => `${p.x},${p.y}`).join(' ');
-
-  const vertexLabels = [
-    { pt: pts[2], text: phases[0].label, anchor: 'middle', dy: -18 },
-    { pt: pts[1], text: phases[1].label, anchor: 'start', dx: 14, dy: 6 },
-    { pt: pts[0], text: phases[2].label, anchor: 'end', dx: -14, dy: 6 },
-  ];
-
   const color = phases[phaseIndex].color;
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={320} height={310}>
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={phases[phaseIndex].label}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.35 }}
+          className="text-3xl font-bold mb-3"
+          style={{ color }}
+        >
+          {phases[phaseIndex].label}
+        </motion.p>
+      </AnimatePresence>
+      <svg width={330} height={325}>
         <defs>
           <linearGradient id="triGrad478" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+            <stop offset="0%" stopColor={color} stopOpacity="0.22" />
             <stop offset="100%" stopColor={phases[(phaseIndex + 1) % 3].color} stopOpacity="0.06" />
           </linearGradient>
         </defs>
-        {/* Triangle */}
-        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color} strokeWidth={3.5} strokeLinejoin="round" opacity={0.85} />
-        {/* Vertex labels */}
-        {vertexLabels.map((l, i) => (
-          <text key={i} x={l.pt.x + (l.dx || 0)} y={l.pt.y + (l.dy || 0)}
-            fill="rgba(255,255,255,0.8)" fontSize={14} fontWeight="700" textAnchor={l.anchor} dominantBaseline="middle">
-            {l.text}
-          </text>
+        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color} strokeWidth={4} strokeLinejoin="round" opacity={0.9} />
+        {pts.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r={7} fill={color} opacity={0.7} />
         ))}
-        {/* Center phase text */}
-        <text x={cx} y={cy + 12} fill="white" fontSize={17} textAnchor="middle" fontWeight="bold">{phases[phaseIndex].label}</text>
-        {/* Moving dot — clean, no halo */}
         <motion.circle
-          cx={dotX} cy={dotY} r={16}
+          cx={dotX} cy={dotY} r={17}
           fill={color}
           animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 0.8, ease: 'linear' }}
+          transition={{ duration: 0.9, ease: 'linear' }}
         />
       </svg>
-      <div className="mt-1 text-center">
-        <p className="text-white text-xl font-bold">{phases[phaseIndex].label}</p>
-        <p className="text-white/60 text-sm">{Math.max(1, secondsLeft)}s</p>
-      </div>
+      <p className="text-white/60 text-sm mt-1">{Math.max(1, secondsLeft)}s</p>
     </div>
   );
 }

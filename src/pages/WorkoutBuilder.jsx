@@ -43,7 +43,8 @@ export default function WorkoutBuilder() {
     queryKey: ['savedWorkouts', user?.email || 'guest'],
     queryFn: async () => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
-      return await base44.entities.SavedWorkout.filter({ user_email: guestEmail });
+      const results = await base44.entities.SavedWorkout.filter({ user_email: guestEmail });
+      return results.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
   });
 
@@ -174,7 +175,7 @@ export default function WorkoutBuilder() {
       toast.success('Workout saved! 💪');
       setWorkoutName('');
       setExercises([]);
-      navigate(createPageUrl('AIWorkout'));
+      setShowSaved(true);
     },
   });
 

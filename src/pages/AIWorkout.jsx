@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Play, CheckCircle, Clock, Zap, RotateCcw, Trash2, ChevronLeft } from 'lucide-react';
+import { Sparkles, Play, CheckCircle, Clock, Zap, RotateCcw, Trash2, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/common/Header';
 import { cn } from '@/lib/utils';
@@ -243,6 +243,20 @@ export default function AIWorkout() {
     },
   });
 
+  const likeWorkoutMutation = useMutation({
+    mutationFn: async ({ workoutId, liked }) => {
+      return await base44.entities.Workout.update(workoutId, { liked });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      if (variables.liked) {
+        toast.success(`❤️ You liked "${variables.workoutName}"!`);
+      } else {
+        toast(`Removed like from "${variables.workoutName}"`, { icon: '🤍' });
+      }
+    },
+  });
+
   if (!selectedWorkoutId && workouts && workouts.length > 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
@@ -314,6 +328,15 @@ export default function AIWorkout() {
                     }`}>
                       +{workout.xp_value || 100} XP
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        likeWorkoutMutation.mutate({ workoutId: workout.id, liked: !workout.liked, workoutName: workout.name });
+                      }}
+                      className="p-2 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-colors"
+                    >
+                      <Heart className={`w-5 h-5 transition-colors ${workout.liked ? 'text-pink-500 fill-pink-500' : 'text-slate-400'}`} />
+                    </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
