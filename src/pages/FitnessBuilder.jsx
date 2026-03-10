@@ -143,7 +143,7 @@ export default function FitnessBuilder() {
           rest_seconds: ex.rest_seconds || 60
         })),
         status: 'not_started',
-        xp_value: preGenData.xp_value
+        xp_value: xpValue
       };
 
       return await base44.entities.Workout.create(workoutData);
@@ -151,7 +151,7 @@ export default function FitnessBuilder() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
-      toast.success('Workout saved! 💪');
+      toast.success('Workout saved to AI Workouts! 💪');
       navigate(createPageUrl('AIWorkout'));
     },
     onError: (error) => {

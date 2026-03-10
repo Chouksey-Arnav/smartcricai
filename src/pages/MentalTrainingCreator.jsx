@@ -117,7 +117,7 @@ export default function MentalTrainingCreator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-orange-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-orange-50 dark:from-slate-900 dark:via-slate-950 dark:to-black pb-24">
       <Header title="Mental Training Creator" />
 
       <div className="px-6 py-6 max-w-2xl mx-auto space-y-6">

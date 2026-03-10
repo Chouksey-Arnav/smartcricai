@@ -20,6 +20,11 @@ export default function ExpandedProgress() {
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState('all');
 
+  // Always scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
