@@ -77,22 +77,21 @@ export default function AIWorkout() {
   }, [workouts]);
 
   React.useEffect(() => {
-    if (!isResting || restTime <= 0) {
-      if (isResting && restTime === 0) {
-        setIsResting(false);
-        // auto-advance to next exercise
-        if (currentExerciseIndex < exercises.length - 1) {
-          setCurrentExerciseIndex(prev => prev + 1);
-          setCompletedSets({});
-        }
-        toast.success('Rest complete! Next exercise! 💪');
+    if (!isResting) return;
+    if (restTime <= 0) {
+      setIsResting(false);
+      // auto-advance to next exercise
+      if (currentExerciseIndex < exercises.length - 1) {
+        setCurrentExerciseIndex(prev => prev + 1);
+        setCompletedSets({});
       }
+      toast.success('Rest complete! Next exercise! 💪');
       return;
     }
-    const timer = setInterval(() => {
+    const timer = setTimeout(() => {
       setRestTime(prev => prev - 1);
     }, 1000);
-    return () => clearInterval(timer);
+    return () => clearTimeout(timer);
   }, [isResting, restTime]);
 
   const completeWorkoutMutation = useMutation({
