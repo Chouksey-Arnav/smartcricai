@@ -75,7 +75,7 @@ export default function SmartStart({ isDarkMode }) {
     const today = new Date().toDateString();
     const dayHash = today.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
 
-    // Daily-stable random pick (changes each day)
+    // Daily-stable random pick
     const stablePick = (arr, count) => {
       if (arr.length === 0) return [];
       const shuffled = [...arr];
@@ -90,8 +90,17 @@ export default function SmartStart({ isDarkMode }) {
     const availableRoutines = mentalRoutines.filter(m => !m.is_premium || isPremium);
     const availableWorkouts = quickStartWorkouts.filter(w => !w.is_premium || isPremium);
 
-    const randomDrills = stablePick(availableDrills, 2);
-    const randomMental = stablePick(availableRoutines, 1);
+    // Randomly pick 3, 4, or 5 items (daily-stable)
+    const countOptions = [3, 4, 5];
+    const totalItems = countOptions[dayHash % 3];
+    // 3 = 1 mental + 1 drill + 1 workout
+    // 4 = 1 mental + 2 drills + 1 workout
+    // 5 = 2 mental + 2 drills + 1 workout
+    const mentalCount = totalItems === 5 ? 2 : 1;
+    const drillCount = totalItems === 3 ? 1 : 2;
+
+    const randomDrills = stablePick(availableDrills, drillCount);
+    const randomMental = stablePick(availableRoutines, mentalCount);
     const randomWorkout = availableWorkouts.length > 0
       ? availableWorkouts[dayHash % availableWorkouts.length]
       : null;
@@ -120,7 +129,21 @@ export default function SmartStart({ isDarkMode }) {
     }
 
     setRecommendations(recs);
-  }, [drills, mentalRoutines, isPremium]);
+
+    // Daily Smart Start notification (once per day)
+    const notifKey = `smartstart_notif_${today}`;
+    if (!localStorage.getItem(notifKey) && recs.length > 0) {
+      localStorage.setItem(notifKey, '1');
+      const guestEmail = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
+      const itemList = recs.map(r => r.title).join(', ');
+      base44.entities.Notification.create({
+        user_email: guestEmail,
+        type: 'schedule',
+        title: '🌟 Smart Start: New Personalised Picks!',
+        message: `Today's personalised set: ${itemList}`,
+      }).catch(() => {});
+    }
+  }, [drills, mentalRoutines, isPremium, user]);
 
   const handleClick = (item) => {
     if (item.type === 'drill') {
@@ -166,7 +189,7 @@ export default function SmartStart({ isDarkMode }) {
         <span>Smart Start</span>
       </h2>
       <p className="text-xs mb-4 text-orange-100">
-        1 mental session · 2 drills · 1 featured workout — just for today
+        Personalised picks just for today — updated daily
       </p>
       <div className="space-y-2">
         {recommendations.map((rec, index) => (
