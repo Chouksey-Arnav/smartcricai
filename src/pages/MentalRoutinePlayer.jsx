@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ALL_MENTAL_ROUTINES } from '@/components/mental/MentalRoutinesData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, 
@@ -177,9 +178,15 @@ export default function MentalRoutinePlayer() {
     queryFn: () => base44.auth.me(),
   });
 
+  const isLocalRoutine = routineId?.startsWith('local_');
+
   const { data: routine, isLoading } = useQuery({
     queryKey: ['mentalRoutine', routineId],
     queryFn: async () => {
+      if (isLocalRoutine) {
+        const index = parseInt(routineId.replace('local_', ''), 10);
+        return ALL_MENTAL_ROUTINES[index] ? { ...ALL_MENTAL_ROUTINES[index], id: routineId } : null;
+      }
       const routines = await base44.entities.MentalRoutine.filter({ id: routineId });
       return routines[0];
     },
