@@ -137,10 +137,10 @@ export default function MentalTrainingCreator() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-3xl shadow-xl p-6 space-y-5"
+              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-6 space-y-5"
             >
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   What do you want to work on?
                 </label>
                 <Select value={focusArea} onValueChange={setFocusArea}>
@@ -161,7 +161,7 @@ export default function MentalTrainingCreator() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Session Length
                 </label>
                 <Select value={sessionLength.toString()} onValueChange={(v) => setSessionLength(parseInt(v))}>
@@ -195,25 +195,25 @@ export default function MentalTrainingCreator() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl shadow-2xl p-6"
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6"
           >
             <div className="text-center mb-6">
               <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">{generatedPlan.title}</h3>
-              <p className="text-slate-600">{generatedPlan.description}</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">{generatedPlan.title}</h3>
+              <p className="text-slate-600 dark:text-slate-300">{generatedPlan.description}</p>
             </div>
 
             <div className="space-y-4 mb-6">
-              <h4 className="font-bold text-slate-800">Steps:</h4>
+              <h4 className="font-bold text-slate-800 dark:text-white">Steps:</h4>
               {generatedPlan.steps.map((step, index) => (
-                <div key={index} className="bg-purple-50 rounded-2xl p-4">
+                <div key={index} className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-4">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
                       {index + 1}
                     </div>
                     <div className="flex-1">
-                      <p className="text-slate-800 leading-relaxed">{step.instruction}</p>
-                      <p className="text-xs text-purple-600 font-medium mt-1">
+                      <p className="text-slate-800 dark:text-slate-100 leading-relaxed">{step.instruction}</p>
+                      <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1">
                         {step.duration_seconds} seconds
                       </p>
                     </div>
