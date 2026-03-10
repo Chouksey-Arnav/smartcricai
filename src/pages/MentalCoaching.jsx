@@ -249,8 +249,7 @@ export default function MentalCoaching() {
                       routine={routine}
                       onClick={() => {
                         if (isLocked) {
-                          toast('Unlock with Premium! 🔓', {
-                            icon: '💎',
+                          toast('Premium content — upgrade to unlock', {
                             duration: 3000,
                           });
                         } else {

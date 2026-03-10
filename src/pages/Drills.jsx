@@ -156,8 +156,7 @@ export default function Drills() {
                 drill={drill}
                 onClick={() => {
                   if (isLocked) {
-                    toast('Unlock with Premium! 🔓', {
-                      icon: '💎',
+                    toast('Premium content — upgrade to unlock', {
                       duration: 3000,
                     });
                   } else {
@@ -182,18 +181,18 @@ export default function Drills() {
         <div className="px-4 py-4 max-w-lg mx-auto space-y-6">
           {/* YouTube Drill Finder Redirect */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            onClick={() => navigate(createPageUrl('DrillYouTubeFinder'))}
-            className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white shadow-lg cursor-pointer hover:scale-105 transition-transform"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate(createPageUrl('DrillYouTubeFinder'))}
+          className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white shadow-lg cursor-pointer hover:scale-105 transition-transform"
           >
-            <div className="flex items-center gap-3">
-              <Video className="w-5 h-5 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold mb-1">🎯 Need drill videos?</p>
-                <p className="text-xs text-purple-100">Tap here to find YouTube videos for any cricket drill!</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+          <Video className="w-5 h-5 shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold mb-1">Find Drill Videos</p>
+            <p className="text-xs text-purple-100">Tap here to find YouTube videos for any cricket drill</p>
+          </div>
+          </div>
           </motion.div>
 
           {/* Tab Switcher */}
