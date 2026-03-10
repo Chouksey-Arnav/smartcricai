@@ -231,6 +231,39 @@ export default function WorkoutBuilder() {
     },
   });
 
+  const overwriteWorkoutMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingSavedWorkout) return;
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const drillsArray = buildDrillsArray();
+      await base44.entities.SavedWorkout.update(editingSavedWorkout.id, {
+        name: workoutName,
+        exercises: drillsArray,
+        total_exercises: exercises.length,
+        estimated_duration: exercises.reduce((acc, ex) => acc + ex.sets * 2, 0)
+      });
+      // Also update the Workout entity if it exists
+      const existing = await base44.entities.Workout.filter({ user_email: guestEmail, name: editingSavedWorkout.name });
+      if (existing.length > 0) {
+        await base44.entities.Workout.update(existing[0].id, {
+          name: workoutName,
+          drills: drillsArray,
+          status: 'not_started'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+      toast.success('Workout updated! 💪');
+      setWorkoutName('');
+      setExercises([]);
+      setEditingSavedWorkout(null);
+      setShowSaved(true);
+      setShowSaveDialog(false);
+    },
+  });
+
   const handleSave = () => {
     if (!workoutName.trim()) {
       toast.error('Please enter a workout name');
@@ -238,6 +271,11 @@ export default function WorkoutBuilder() {
     }
     if (exercises.length === 0) {
       toast.error('Please add at least one exercise');
+      return;
+    }
+    // If editing an existing workout, ask overwrite or new
+    if (editingSavedWorkout) {
+      setShowSaveDialog(true);
       return;
     }
     saveWorkoutMutation.mutate();
