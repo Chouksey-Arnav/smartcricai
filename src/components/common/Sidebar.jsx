@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -72,8 +72,8 @@ const menuItems = [
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const scrollRef = React.useRef(null);
-  const scrollPosRef = React.useRef(0);
+  const scrollRef = useRef(null);
+  const scrollPosRef = useRef(0);
 
   return (
     <>
