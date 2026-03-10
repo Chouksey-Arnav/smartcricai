@@ -7,6 +7,7 @@ import { X, Save, GripVertical, Dumbbell, Clock, ChevronDown, ChevronUp } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import Header from '@/components/common/Header';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
