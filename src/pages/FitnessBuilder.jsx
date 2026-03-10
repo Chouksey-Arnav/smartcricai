@@ -128,18 +128,6 @@ export default function FitnessBuilder() {
       const levelMultiplier = { beginner: 1, intermediate: 1.5, advanced: 2, pro: 3 };
       const xpValue = Math.round(baseXP * (levelMultiplier[selectedLevel] || 1));
 
-      const preGenData = {
-        user_email: guestEmail,
-        body_part: selectedBodyPart,
-        level: selectedLevel,
-        goal: selectedGoal,
-        duration: 30,
-        exercises: generatedWorkout.exercises,
-        xp_value: xpValue
-      };
-      
-      await base44.entities.PreGeneratedWorkout.create(preGenData);
-
       const workoutData = {
         user_email: guestEmail,
         name: `${selectedGoal ? selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1) : 'Custom'} - ${selectedBodyPart ? selectedBodyPart.charAt(0).toUpperCase() + selectedBodyPart.slice(1) : ''} Workout`,
