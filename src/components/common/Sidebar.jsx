@@ -72,6 +72,8 @@ const menuItems = [
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const scrollRef = React.useRef(null);
+  const scrollPosRef = React.useRef(0);
 
   return (
     <>
@@ -106,9 +108,15 @@ export default function Sidebar() {
             exit={{ x: -300 }}
             transition={{ type: 'spring', damping: 25 }}
             className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 flex flex-col"
+            onAnimationComplete={() => {
+              // Restore scroll position when sidebar opens
+              if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollPosRef.current;
+              }
+            }}
           >
             {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-emerald-500 to-teal-500 p-6 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 flex items-center justify-between" style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}>
               <div className="flex-1">
                 <h2 className="text-xl font-bold text-white">Smart Cricket</h2>
                 <p className="text-emerald-100 text-sm">Train Like a Pro</p>
@@ -133,14 +141,11 @@ export default function Sidebar() {
             {/* Menu Items - Scrollable */}
             <div className="flex-1 relative overflow-hidden">
               <div
-                className="pointer-events-none absolute top-0 left-0 right-0 h-16 z-10"
-                style={{ background: 'linear-gradient(to bottom, white 0%, rgba(255,255,255,0) 100%)' }}
-              />
-              <div
-                className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 z-10"
-                style={{ background: 'linear-gradient(to top, white 0%, rgba(255,255,255,0) 100%)' }}
-              />
-              <div className="h-full overflow-y-auto p-4 space-y-2 pb-24 scrollbar-visible">
+                className="h-full overflow-y-auto p-4 space-y-2 pb-24 scrollbar-visible"
+                ref={scrollRef}
+                onScroll={() => { scrollPosRef.current = scrollRef.current?.scrollTop || 0; }}
+                style={{ paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))' }}
+              >
               {menuItems.map((item, index) => (
                 <Link
                   key={item.page}
@@ -170,7 +175,7 @@ export default function Sidebar() {
                     </span>
                     {item.premium && (
                       <div className="text-xs font-bold px-2 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full">
-                        {item.premium === 'lifetime' ? '💎' : '👑'}
+                        {item.premium === 'lifetime' ? 'Elite' : 'Pro'}
                       </div>
                     )}
                   </motion.div>
