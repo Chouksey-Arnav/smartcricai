@@ -90,12 +90,15 @@ export default function AIWorkout() {
     if (!isResting) return;
     if (restTime <= 0) {
       setIsResting(false);
-      // auto-advance to next exercise
-      if (currentExerciseIndex < exercises.length - 1) {
-        setCurrentExerciseIndex(prev => prev + 1);
-        setCompletedSets({});
+      // Only auto-advance if this was a dedicated rest-block exercise
+      if (currentExercise?.type === 'rest') {
+        if (currentExerciseIndex < exercises.length - 1) {
+          setCurrentExerciseIndex(prev => prev + 1);
+          setCompletedSets({});
+        }
+        toast.success('Rest complete — keep going!');
       }
-      toast.success('Rest complete! Next exercise! 💪');
+      // Between-sets rest: stay on same exercise, user continues with next set
       return;
     }
     const timer = setTimeout(() => {

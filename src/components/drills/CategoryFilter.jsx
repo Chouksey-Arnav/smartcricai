@@ -3,11 +3,11 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const categories = [
-  { id: 'all', label: 'All', emoji: '🏏' },
-  { id: 'batting', label: 'Batting', emoji: '🏏' },
-  { id: 'bowling', label: 'Bowling', emoji: '🎯' },
-  { id: 'fielding', label: 'Fielding', emoji: '🧤' },
-  { id: 'fitness', label: 'Fitness', emoji: '💪' },
+  { id: 'all', label: 'All' },
+  { id: 'batting', label: 'Batting' },
+  { id: 'bowling', label: 'Bowling' },
+  { id: 'fielding', label: 'Fielding' },
+  { id: 'fitness', label: 'Fitness' },
 ];
 
 export default function CategoryFilter({ selected, onChange }) {
@@ -76,14 +76,13 @@ export default function CategoryFilter({ selected, onChange }) {
           whileTap={{ scale: 0.95 }}
           onClick={() => onChange(cat.id)}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all duration-300 shrink-0",
+            "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all duration-300 shrink-0 font-medium text-sm",
             selected === cat.id
               ? "bg-emerald-500 text-white shadow-lg shadow-emerald-200"
               : "bg-slate-100 text-slate-600 hover:bg-slate-200"
           )}
         >
-          <span>{cat.emoji}</span>
-          <span className="text-sm font-medium">{cat.label}</span>
+          {cat.label}
         </motion.button>
       ))}
     </div>

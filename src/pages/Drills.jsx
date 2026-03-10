@@ -235,12 +235,10 @@ export default function Drills() {
                 />
               </div>
 
-              {/* Categories - Horizontal Scroll */}
-              <div className="relative">
-                <div className="overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#10b981 #f1f5f9' }}>
-                  <div className="flex gap-2 min-w-max dark:bg-slate-900 rounded-2xl p-2">
-                    <CategoryFilter selected={category} onChange={setCategory} />
-                  </div>
+              {/* Categories - Always Visible Sticky Bar */}
+              <div className="sticky top-0 z-10 bg-gradient-to-b from-blue-50 to-transparent dark:from-slate-900 pt-1 pb-2">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl p-2 shadow-md overflow-x-auto scrollbar-hide">
+                  <CategoryFilter selected={category} onChange={setCategory} />
                 </div>
               </div>
 
