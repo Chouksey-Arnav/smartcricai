@@ -57,14 +57,41 @@ export default function Leaderboard() {
     enabled: !!guestEmail,
   });
 
-  // Sync username to leaderboard whenever profile username changes
+  const { data: userProgress } = useQuery({
+    queryKey: ['userProgress', guestEmail],
+    queryFn: async () => {
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
+      return results[0] || null;
+    },
+    enabled: !!guestEmail,
+    staleTime: 60000,
+  });
+
+  // Sync username AND stats to leaderboard whenever profile or progress changes
   useEffect(() => {
-    if (!profile?.username || !guestEmail) return;
+    if (!guestEmail) return;
     const myEntry = leaderboard.find(e => e.user_email === guestEmail);
-    if (myEntry && myEntry.username !== profile.username) {
-      base44.entities.Leaderboard.update(myEntry.id, { username: profile.username });
+    if (!myEntry) return;
+
+    const updates = {};
+    if (profile?.username && myEntry.username !== profile.username) {
+      updates.username = profile.username;
     }
-  }, [profile?.username, leaderboard, guestEmail]);
+    if (userProgress) {
+      if ((userProgress.current_streak || 0) !== (myEntry.current_streak || 0)) {
+        updates.current_streak = userProgress.current_streak || 0;
+      }
+      if ((userProgress.longest_streak || 0) > (myEntry.highest_streak || 0)) {
+        updates.highest_streak = userProgress.longest_streak || 0;
+      }
+      if ((userProgress.total_xp || 0) !== (myEntry.total_xp || 0)) {
+        updates.total_xp = userProgress.total_xp || 0;
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      base44.entities.Leaderboard.update(myEntry.id, updates);
+    }
+  }, [profile?.username, userProgress, leaderboard, guestEmail]);
 
   const userRank = leaderboard.findIndex(entry => entry.user_email === guestEmail) + 1;
 
