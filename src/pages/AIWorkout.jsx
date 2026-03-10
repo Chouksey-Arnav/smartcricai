@@ -513,14 +513,30 @@ export default function AIWorkout() {
       <Header title="AI Workout" showSettings={false} />
       
       <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
-        {/* Back Button */}
-        <button
-          onClick={handleGoBack}
-          className="flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">{currentExerciseIndex === 0 && !isResting ? 'Back to Overview' : 'Previous'}</span>
-        </button>
+        {/* Back / Next navigation */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={handleGoBack}
+            className="flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">{currentExerciseIndex === 0 && !isResting ? 'Back to Overview' : 'Previous'}</span>
+          </button>
+          {currentExerciseIndex < exercises.length - 1 && (
+            <button
+              onClick={() => {
+                setIsResting(false);
+                setRestTime(0);
+                setCurrentExerciseIndex(prev => prev + 1);
+                setCompletedSets({});
+              }}
+              className="flex items-center gap-1 text-purple-500 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors text-sm font-medium"
+            >
+              <span>Skip Exercise</span>
+              <ChevronLeft className="w-5 h-5 rotate-180" />
+            </button>
+          )}
+        </div>
 
         {/* Progress */}
         <motion.div

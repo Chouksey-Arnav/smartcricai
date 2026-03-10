@@ -94,8 +94,11 @@ export default function MentalCoaching() {
       const guestEmail = user?.email || 'guest@smartcrick.app';
       const guestId = localStorage.getItem('smartcrick_guest_id') || guestEmail;
       const all = await base44.entities.MentalRoutine.list('-created_date', 200);
-      // Show routines created by this user (logged in or guest)
-      return all.filter(r => r.created_by && (r.created_by === guestEmail || r.created_by === guestId));
+      // Match by user_email (explicitly set) OR created_by (set by platform for auth users)
+      return all.filter(r =>
+        (r.user_email && (r.user_email === guestEmail || r.user_email === guestId)) ||
+        (r.created_by && (r.created_by === guestEmail || r.created_by === guestId))
+      );
     },
   });
 

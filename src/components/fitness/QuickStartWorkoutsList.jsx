@@ -61,7 +61,19 @@ export default function QuickStartWorkoutsList({ user, isPremium, searchQuery = 
     'core': Dumbbell
   };
 
-  const filteredWorkouts = quickStartWorkouts.filter(workout =>
+  // Daily-stable shuffle
+  const dailyShuffled = React.useMemo(() => {
+    const today = new Date().toDateString();
+    const seed = today.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const arr = [...quickStartWorkouts];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = (seed * (i + 7)) % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, []);
+
+  const filteredWorkouts = dailyShuffled.filter(workout =>
     workout.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     workout.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
     workout.level.toLowerCase().includes(searchQuery.toLowerCase()) ||
