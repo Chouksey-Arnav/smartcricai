@@ -285,6 +285,40 @@ export default function WorkoutBuilder() {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-800 pb-24">
       <Header title="Workout Builder" showSettings={false} />
 
+      {/* Save or Overwrite Dialog */}
+      <AlertDialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Save Workout</AlertDialogTitle>
+            <AlertDialogDescription>
+              You're editing "{editingSavedWorkout?.name}". Would you like to overwrite it or save as a brand new workout?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <Button
+              variant="outline"
+              className="border-purple-500 text-purple-600"
+              onClick={() => {
+                setShowSaveDialog(false);
+                setEditingSavedWorkout(null);
+                saveWorkoutMutation.mutate();
+              }}
+              disabled={saveWorkoutMutation.isPending}
+            >
+              Save as New
+            </Button>
+            <Button
+              className="bg-purple-500 hover:bg-purple-600"
+              onClick={() => overwriteWorkoutMutation.mutate()}
+              disabled={overwriteWorkoutMutation.isPending}
+            >
+              {overwriteWorkoutMutation.isPending ? 'Saving...' : 'Overwrite Existing'}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="px-6 py-4 max-w-lg mx-auto space-y-6">
         {/* Toggle Buttons */}
         <div className="grid grid-cols-2 gap-3">
