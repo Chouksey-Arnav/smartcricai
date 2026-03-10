@@ -157,6 +157,12 @@ const cricketJokes = [
   "What do you call a cricket match that goes on forever? A real Test of patience!",
   "Why was the umpire always exhausted? Too many close calls!",
   "What do you call a cricketer who never stops running? The Energiser bunny — still going!",
+  // 5 new jokes
+  "Why did the cricket coach bring scissors to training? To cut short the bad overs!",
+  "What do you call a cricketer who works in IT? A bug fixer — always dealing with glitches at the crease!",
+  "Why do cricket bowlers make great musicians? They always find the perfect pitch!",
+  "What did the cricket bat say at the end of the season? 'I'm absolutely stumped!'",
+  "Why did the fielder bring a compass to the match? He kept losing his position at square leg!",
 ];
 
 const cricketFacts = [
