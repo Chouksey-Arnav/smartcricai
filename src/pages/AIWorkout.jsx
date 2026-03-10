@@ -532,8 +532,8 @@ export default function AIWorkout() {
               }}
               className="flex items-center gap-1 text-purple-500 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors text-sm font-medium"
             >
-              <span>Skip Exercise</span>
-              <ChevronLeft className="w-5 h-5 rotate-180" />
+              <span>Next Exercise</span>
+              <ChevronLeft className="w-5 h-5" style={{ transform: 'rotate(180deg)' }} />
             </button>
           )}
         </div>
