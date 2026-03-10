@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -10,6 +10,7 @@ import MentalRoutineCard from '@/components/mental/MentalRoutineCard';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { ALL_MENTAL_ROUTINES } from '@/components/mental/MentalRoutinesData';
 
 const mindfulnessQuotes = [
   "The mind is everything. What you think, you become.",
@@ -69,14 +70,12 @@ export default function MentalCoaching() {
     },
   });
 
-  const { data: allRoutines = [], isLoading } = useQuery({
-    queryKey: ['mentalRoutines'],
-    queryFn: async () => {
-      const all = await base44.entities.MentalRoutine.list('-created_date', 500);
-      // Only show system/seeded routines (no user_email = not user-created)
-      return all.filter(r => !r.user_email);
-    },
-  });
+  // Use local JS data for All Routines — no database seeding needed
+  const allRoutines = useMemo(() =>
+    ALL_MENTAL_ROUTINES.map((r, i) => ({ ...r, id: `local_${i}` })),
+    []
+  );
+  const isLoading = false;
 
   const { data: premiumStatus } = useQuery({
     queryKey: ['premiumStatus', user?.email || 'guest'],
