@@ -1,4 +1,5 @@
 import { EXTRA_MENTAL_ROUTINES } from './MentalRoutinesExtra';
+import { EXTRA_MENTAL_ROUTINES_2 } from './MentalRoutinesExtra2';
 
 // 90 Universal Mental Training Sessions
 // Designed for any person seeking self-improvement — with cricket subtly in mind
@@ -1598,6 +1599,6 @@ const BASE_MENTAL_ROUTINES = [
   },
 ];
 
-export const ALL_MENTAL_ROUTINES = [...BASE_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES];
+export const ALL_MENTAL_ROUTINES = [...BASE_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES_2];
 
 export default ALL_MENTAL_ROUTINES;
