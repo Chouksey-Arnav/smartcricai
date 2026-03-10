@@ -75,7 +75,7 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
           cx={dotX} cy={dotY} r={16}
           fill={color}
           animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 0.9, ease: 'linear' }}
+          transition={{ duration: 1.0, ease: 'linear' }}
         />
       </svg>
       <p className="text-white/60 text-sm mt-1">{secondsLeft}s</p>
@@ -151,7 +151,7 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
           cx={dotX} cy={dotY} r={17}
           fill={color}
           animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 0.9, ease: 'linear' }}
+          transition={{ duration: 1.0, ease: 'linear' }}
         />
       </svg>
       <p className="text-white/60 text-sm mt-1">{Math.max(1, secondsLeft)}s</p>
