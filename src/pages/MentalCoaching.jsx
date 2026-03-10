@@ -99,6 +99,15 @@ export default function MentalCoaching() {
     },
   });
 
+  const likeRoutineMutation = useMutation({
+    mutationFn: async ({ routineId, liked }) => {
+      return await base44.entities.MentalRoutine.update(routineId, { liked });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
+    },
+  });
+
   const deleteRoutineMutation = useMutation({
     mutationFn: async (routineId) => {
       await base44.entities.MentalRoutine.delete(routineId);
@@ -304,7 +313,15 @@ export default function MentalCoaching() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Heart className="w-6 h-6 text-purple-500 fill-purple-500" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          likeRoutineMutation.mutate({ routineId: routine.id, liked: !routine.liked });
+                        }}
+                        className="p-1 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
+                      >
+                        <Heart className={`w-6 h-6 transition-colors ${routine.liked ? 'text-purple-500 fill-purple-500' : 'text-slate-300'}`} />
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
