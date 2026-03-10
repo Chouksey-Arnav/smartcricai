@@ -257,6 +257,12 @@ const cricketFacts = [
   "Ricky Ponting is one of only two players to captain a World Cup winning side twice!",
   "The highest partnership in all international cricket is 624 runs by Jayawardene and Sangakkara!",
   "Shoaib Akhtar's 161.3 km/h delivery against England in 2003 remains the fastest ever recorded!",
+  // 5 new facts
+  "The term 'hat-trick' in cricket means three wickets in three consecutive balls — first coined in 1858!",
+  "Ben Stokes's 135* at Headingley in 2019 against Australia is considered one of the greatest ever Test innings!",
+  "The cricket World Cup trophy has 'The Spirit of Cricket' engraved on its base.",
+  "A cricket pitch's grass is cut to exactly 8mm before a Test match for consistent play.",
+  "MS Dhoni is the only captain to have won all three ICC trophies: T20 WC, ODI WC, and Champions Trophy!",
 ];
 
 function getCricketJoke() {
