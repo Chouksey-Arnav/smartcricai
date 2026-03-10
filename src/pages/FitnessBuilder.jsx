@@ -127,26 +127,47 @@ export default function FitnessBuilder() {
       const baseXP = 100;
       const levelMultiplier = { beginner: 1, intermediate: 1.5, advanced: 2, pro: 3 };
       const xpValue = Math.round(baseXP * (levelMultiplier[selectedLevel] || 1));
+      const workoutName = `${selectedGoal ? selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1) : 'Custom'} - ${selectedBodyPart ? selectedBodyPart.charAt(0).toUpperCase() + selectedBodyPart.slice(1) : ''} Workout`;
 
-      const workoutData = {
+      // Build drills array with rest blocks interleaved between sets
+      const drills = [];
+      generatedWorkout.exercises.forEach(ex => {
+        const sets = typeof ex.sets === 'number' ? ex.sets : 3;
+        const restSec = ex.rest_seconds || 60;
+        for (let s = 1; s <= sets; s++) {
+          drills.push({
+            drill_id: `${ex.id || Math.random().toString(36).substr(2,9)}_set${s}`,
+            drill_title: `${ex.name} — Set ${s}`,
+            sets: 1,
+            reps: ex.reps || 10,
+            completed_sets: 0,
+            type: 'exercise',
+            category: 'fitness',
+            instructions: ex.instructions || '',
+            rest_seconds: restSec,
+          });
+          // Add rest block between sets (not after last set)
+          if (s < sets) {
+            drills.push({
+              drill_id: `rest_${ex.id || Math.random().toString(36).substr(2,9)}_${s}`,
+              drill_title: 'Rest Period',
+              sets: 1,
+              reps: restSec,
+              completed_sets: 0,
+              type: 'rest',
+              rest_seconds: restSec,
+            });
+          }
+        }
+      });
+
+      return await base44.entities.Workout.create({
         user_email: guestEmail,
-        name: `${selectedGoal ? selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1) : 'Custom'} - ${selectedBodyPart ? selectedBodyPart.charAt(0).toUpperCase() + selectedBodyPart.slice(1) : ''} Workout`,
-        drills: generatedWorkout.exercises.map(ex => ({
-          drill_id: ex.id || `fitness_${Math.random().toString(36).substr(2, 9)}`,
-          drill_title: ex.name,
-          sets: typeof ex.sets === 'number' ? ex.sets : 3,
-          reps: ex.reps || 10,
-          completed_sets: 0,
-          type: 'exercise',
-          category: 'fitness',
-          instructions: ex.instructions || '',
-          rest_seconds: ex.rest_seconds || 60
-        })),
+        name: workoutName,
+        drills,
         status: 'not_started',
         xp_value: xpValue
-      };
-
-      return await base44.entities.Workout.create(workoutData);
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
