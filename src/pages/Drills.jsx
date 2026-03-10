@@ -103,6 +103,15 @@ export default function Drills() {
 
   const completedDrillIds = progress?.completed_drills || [];
 
+  const likeWorkoutMutation = useMutation({
+    mutationFn: async ({ workoutId, liked }) => {
+      return await base44.entities.CustomDrillWorkout.update(workoutId, { liked });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedDrillWorkouts'] });
+    },
+  });
+
   const deleteWorkoutMutation = useMutation({
     mutationFn: async (workoutId) => {
       await base44.entities.CustomDrillWorkout.delete(workoutId);
@@ -325,7 +334,15 @@ export default function Drills() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Heart className="w-6 h-6 text-red-500 fill-red-500" />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            likeWorkoutMutation.mutate({ workoutId: workout.id, liked: !workout.liked });
+                          }}
+                          className="p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                        >
+                          <Heart className={`w-6 h-6 transition-colors ${workout.liked ? 'text-red-500 fill-red-500' : 'text-slate-300'}`} />
+                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -362,7 +379,7 @@ export default function Drills() {
                       }}
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                     >
-                      Start Workout
+                      {workout.status === 'in_progress' ? 'Continue Workout' : workout.status === 'completed' ? 'Start Again' : 'Start Workout'}
                     </Button>
                   </motion.div>
                 ))
