@@ -103,6 +103,11 @@ export default function Drills() {
 
   const completedDrillIds = progress?.completed_drills || [];
 
+  // XP earned from drills — each completed drill xp_value or default 50
+  const drillsXP = drills
+    .filter(d => completedDrillIds.includes(d.id))
+    .reduce((sum, d) => sum + (d.xp_value || 50), 0);
+
   const likeWorkoutMutation = useMutation({
     mutationFn: async ({ workoutId, liked }) => {
       return await base44.entities.CustomDrillWorkout.update(workoutId, { liked });
@@ -179,6 +184,22 @@ export default function Drills() {
 
       <PullToRefresh onRefresh={handleRefresh}>
         <div className="px-4 py-4 max-w-lg mx-auto space-y-6">
+          {/* XP Tracker */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl p-4 text-white flex items-center justify-between"
+          >
+            <div>
+              <p className="text-xs text-blue-100">Your Drill XP Earned</p>
+              <p className="text-3xl font-bold">{drillsXP.toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-blue-100">Drills Completed</p>
+              <p className="text-2xl font-bold">{completedDrillIds.length}</p>
+            </div>
+          </motion.div>
+
           {/* YouTube Drill Finder Redirect */}
           <motion.div
           initial={{ opacity: 0, y: -10 }}
