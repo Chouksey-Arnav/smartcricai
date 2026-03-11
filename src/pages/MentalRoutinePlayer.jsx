@@ -268,6 +268,9 @@ export default function MentalRoutinePlayer() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      queryClient.invalidateQueries({ queryKey: ['completedWorkouts'] });
+      queryClient.invalidateQueries({ queryKey: ['homeStats'] });
     },
   });
 
