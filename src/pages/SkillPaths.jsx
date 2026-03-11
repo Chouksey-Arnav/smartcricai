@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, CheckCircle, Lock, Zap, X, ChevronLeft, Dumbbell, Brain, Target } from 'lucide-react';
+import { Trophy, CheckCircle, Lock, Zap, X, ChevronLeft, Dumbbell, Brain, Target, ExternalLink, Crosshair, Activity, Swords } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { skillPathsData, getPathData, getPathProgress, getNextLevel } from '@/components/skillPaths/SkillPathsDatabase';
 import Header from '@/components/common/Header';
 
 const CATEGORY_CONFIG = {
-  batting:       { label: 'Batting Path',       icon: '🏏', bg: 'from-blue-500 to-cyan-500',    btn: 'bg-blue-600 hover:bg-blue-700'   },
-  bowling:       { label: 'Bowling Path',        icon: '🎳', bg: 'from-green-500 to-emerald-500', btn: 'bg-green-600 hover:bg-green-700' },
-  wicket_keeping:{ label: 'Wicket Keeping Path', icon: '🧤', bg: 'from-purple-500 to-indigo-500', btn: 'bg-purple-600 hover:bg-purple-700' },
+  batting:        { label: 'Batting Path',       Icon: Swords,   bg: 'from-blue-500 to-cyan-500',     btn: 'bg-blue-600 hover:bg-blue-700'    },
+  bowling:        { label: 'Bowling Path',        Icon: Activity, bg: 'from-green-500 to-emerald-500',  btn: 'bg-green-600 hover:bg-green-700'  },
+  wicket_keeping: { label: 'Wicket Keeping Path', Icon: Target,   bg: 'from-purple-500 to-indigo-500',  btn: 'bg-purple-600 hover:bg-purple-700' },
 };
 
 const LEVEL_CONFIG = {
@@ -177,7 +179,9 @@ export default function SkillPaths() {
                     className={`w-full bg-gradient-to-r ${conf.bg} rounded-2xl p-6 text-white text-left shadow-lg hover:scale-105 transition-transform`}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-4xl">{conf.icon}</span>
+                      <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <conf.Icon className="w-8 h-8 text-white" />
+                      </div>
                       <div>
                         <h3 className="text-xl font-bold">{conf.label}</h3>
                         <p className="text-white/70 text-sm">4 levels • 5 weeks each • 8 activities/week</p>
@@ -197,8 +201,10 @@ export default function SkillPaths() {
                 <span className="font-medium">Back to Categories</span>
               </button>
               <div className={`bg-gradient-to-r ${catConfig.bg} rounded-2xl p-5 text-white mb-6`}>
-                <span className="text-3xl">{catConfig.icon}</span>
-                <h2 className="text-xl font-bold mt-2">{catConfig.label}</h2>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                  <catConfig.Icon className="w-7 h-7 text-white" />
+                </div>
+                <h2 className="text-xl font-bold">{catConfig.label}</h2>
                 <p className="text-white/70 text-sm">Choose your level to get started</p>
               </div>
               <div className="space-y-3">
@@ -287,7 +293,9 @@ export default function SkillPaths() {
               <p className="text-sm text-white/70">{catConf.label}</p>
               <h2 className="text-2xl font-bold capitalize">{currentLevel}</h2>
             </div>
-            <span className="text-4xl">{catConf.icon}</span>
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+              <catConf.Icon className="w-8 h-8 text-white" />
+            </div>
           </div>
           <div className="bg-white/20 rounded-full h-2.5 overflow-hidden">
             <div className="bg-white h-full transition-all duration-500" style={{ width: `${progress}%` }} />
@@ -304,7 +312,10 @@ export default function SkillPaths() {
             <X className="w-4 h-4" />
             Exit Path
           </button>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{currentPathData?.badge.emoji} {currentPathData?.badge.name}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+            <Trophy className="w-4 h-4 text-amber-500" />
+            {currentPathData?.badge.name}
+          </p>
         </div>
 
         {/* Week Tabs */}
@@ -358,9 +369,27 @@ export default function SkillPaths() {
                             <Zap className="w-3 h-3" />+{item.xp} XP
                           </span>
                         </div>
-                        <h4 className={`font-semibold text-sm ${isDone ? 'text-emerald-700 dark:text-emerald-300 line-through' : 'text-slate-800 dark:text-white'}`}>
-                          {item.name}
-                        </h4>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h4 className={`font-semibold text-sm ${isDone ? 'text-emerald-700 dark:text-emerald-300 line-through' : 'text-slate-800 dark:text-white'}`}>
+                            {item.name}
+                          </h4>
+                          {/* Deep link to the actual activity */}
+                          {item.type === 'drill' && (
+                            <Link to={createPageUrl('Drills')} className="text-blue-500 hover:text-blue-700">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                          )}
+                          {item.type === 'mental' && (
+                            <Link to={createPageUrl('MentalCoaching')} className="text-purple-500 hover:text-purple-700">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                          )}
+                          {item.type === 'workout' && (
+                            <Link to={createPageUrl('FitnessBuilder')} className="text-orange-500 hover:text-orange-700">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                          )}
+                        </div>
                       </div>
                       <Button
                         onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name })}
@@ -387,7 +416,7 @@ export default function SkillPaths() {
           >
             <Trophy className="w-12 h-12 mx-auto mb-3" />
             <h3 className="text-xl font-bold mb-2">Path Complete!</h3>
-            <p className="text-white/80 mb-4">You earned {currentPathData?.badge.emoji} {currentPathData?.badge.name}!</p>
+            <p className="text-white/80 mb-4">You earned the <strong>{currentPathData?.badge.name}</strong> badge!</p>
             {skillPathsData[currentCategory]?.levels[nextLevel]?.isPremium && !isPremium ? (
               <div className="bg-white/20 rounded-xl p-4">
                 <Lock className="w-8 h-8 mx-auto mb-2" />
