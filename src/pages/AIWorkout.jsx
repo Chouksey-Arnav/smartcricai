@@ -422,19 +422,36 @@ export default function AIWorkout() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
-        <div className="px-6 py-12 max-w-lg mx-auto text-center">
+        <div className="px-6 py-6 max-w-lg mx-auto">
+          {/* XP Tracker always visible */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white flex items-center justify-between mb-6"
           >
-            <Sparkles className="w-16 h-16 text-purple-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">No Saved Workouts</h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">Create a workout from the Fitness Builder to get started!</p>
-            <Button onClick={() => navigate(createPageUrl('FitnessBuilder'))} className="bg-purple-500 hover:bg-purple-600">
-              Go to Fitness Builder
-            </Button>
+            <div>
+              <p className="text-xs text-emerald-100">AI Workout XP Earned</p>
+              <p className="text-3xl font-bold">{(aiProgress?.total_xp || 0).toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-emerald-100">Completed Workouts</p>
+              <p className="text-2xl font-bold">0</p>
+            </div>
           </motion.div>
+          <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8"
+            >
+              <Sparkles className="w-16 h-16 text-purple-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">No Saved Workouts</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">Create a workout from the Fitness Builder to get started!</p>
+              <Button onClick={() => navigate(createPageUrl('FitnessBuilder'))} className="bg-purple-500 hover:bg-purple-600">
+                Go to Fitness Builder
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </div>
     );
