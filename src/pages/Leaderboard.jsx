@@ -82,11 +82,15 @@ export default function Leaderboard() {
     }
 
     if (userProgress) {
-      const newStreak = userProgress.current_streak || 0;
+      const currentStreak = userProgress.current_streak || 0;
       const longestStreak = userProgress.longest_streak || 0;
-      if (newStreak !== (myEntry.current_streak || 0)) updates.current_streak = newStreak;
-      if (longestStreak > (myEntry.highest_streak || 0)) updates.highest_streak = longestStreak;
-      if ((userProgress.total_xp || 0) !== (myEntry.total_xp || 0)) updates.total_xp = userProgress.total_xp || 0;
+      const totalXp = userProgress.total_xp || 0;
+      // Always sync current_streak
+      if (currentStreak !== (myEntry.current_streak || 0)) updates.current_streak = currentStreak;
+      // highest_streak = max of longest_streak and current_streak
+      const bestStreak = Math.max(longestStreak, currentStreak);
+      if (bestStreak > (myEntry.highest_streak || 0)) updates.highest_streak = bestStreak;
+      if (totalXp !== (myEntry.total_xp || 0)) updates.total_xp = totalXp;
     }
 
     if (Object.keys(updates).length > 0) {

@@ -175,7 +175,7 @@ export default function Sidebar() {
                     </span>
                     {item.premium && (
                       <div className="text-xs font-bold px-2 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full">
-                        {item.premium === 'lifetime' ? 'Elite' : 'Pro'}
+                        {item.premium === 'yearly' ? 'Yearly' : 'Lifetime'}
                       </div>
                     )}
                   </motion.div>
