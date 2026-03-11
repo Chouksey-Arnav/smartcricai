@@ -117,35 +117,19 @@ export default function WorkoutBuilder() {
     setExercises(items);
   };
 
-  // Flatten exercises to drills array for saving
+  // Build drills array for saving — each exercise stored with full set count
+  // so AIWorkout can correctly show "Set 1 of 3", "Set 2 of 3" etc.
   const buildDrillsArray = () => {
-    const drills = [];
-    exercises.forEach(ex => {
-      for (let s = 1; s <= ex.sets; s++) {
-        drills.push({
-          drill_id: `${ex.id}_set${s}`,
-          drill_title: `${ex.name} — Set ${s}`,
-          sets: 1,
-          reps: ex.reps,
-          completed_sets: 0,
-          type: 'exercise',
-          category: ex.category
-        });
-        const rest = ex.rests?.[s];
-        if (rest && s < ex.sets) {
-          drills.push({
-            drill_id: `rest_${ex.id}_${s}`,
-            drill_title: 'Rest Period',
-            sets: 1,
-            reps: rest.duration || 60,
-            completed_sets: 0,
-            type: 'rest',
-            rest_seconds: rest.duration || 60
-          });
-        }
-      }
-    });
-    return drills;
+    return exercises.map(ex => ({
+      drill_id: ex.id,
+      drill_title: ex.name,
+      sets: ex.sets,
+      reps: ex.reps,
+      completed_sets: 0,
+      type: 'exercise',
+      category: ex.category || 'fitness',
+      rest_seconds: 60,
+    }));
   };
 
   const saveWorkoutMutation = useMutation({

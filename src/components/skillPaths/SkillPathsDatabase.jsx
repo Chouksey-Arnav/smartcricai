@@ -1,18 +1,19 @@
 // Complete Skill Paths Database - Batting, Bowling, Wicket Keeping
 // Each category has 4 levels × 5 weeks × 8 items (2 workouts + 3 mental + 3 drills)
 
+// XP values match actual activity defaults: Drill=50, Mental=75, Workout=100
 const XP = {
-  beginner:     { workout: 75,  mental: 50,  drill: 75  },
-  intermediate: { workout: 100, mental: 75,  drill: 100 },
-  advanced:     { workout: 125, mental: 100, drill: 125 },
-  pro:          { workout: 150, mental: 125, drill: 150 },
+  beginner:     { workout: 100, mental: 75, drill: 50 },
+  intermediate: { workout: 100, mental: 75, drill: 50 },
+  advanced:     { workout: 100, mental: 75, drill: 50 },
+  pro:          { workout: 100, mental: 75, drill: 50 },
 };
 
 const TOTAL_XP = {
-  beginner: 5 * (2*75  + 3*50  + 3*75),   // 2625
-  intermediate: 5 * (2*100 + 3*75  + 3*100), // 3625
-  advanced: 5 * (2*125 + 3*100 + 3*125),  // 4625
-  pro: 5 * (2*150 + 3*125 + 3*150),       // 5625
+  beginner:     5 * (2*100 + 3*75 + 3*50), // 2875
+  intermediate: 5 * (2*100 + 3*75 + 3*50), // 2875
+  advanced:     5 * (2*100 + 3*75 + 3*50), // 2875
+  pro:          5 * (2*100 + 3*75 + 3*50), // 2875
 };
 
 function buildLevelWeeks(catKey, levelKey, weeksData) {
