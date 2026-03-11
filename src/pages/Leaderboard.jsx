@@ -42,7 +42,7 @@ export default function Leaderboard() {
       
       return all.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0)).slice(0, 50);
     },
-    staleTime: 60000,
+    staleTime: 30000,
   });
 
   const guestEmail = user?.email || 'guest@smartcrick.app';
@@ -64,7 +64,7 @@ export default function Leaderboard() {
       return results[0] || null;
     },
     enabled: !!guestEmail,
-    staleTime: 60000,
+    staleTime: 15000,
   });
 
   // Sync username AND stats to leaderboard whenever profile or progress changes
