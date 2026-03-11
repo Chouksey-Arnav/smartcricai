@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { Home, MessageCircle, Target, Crown, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Leaderboard is temporarily disabled — will be re-enabled later
 const navItems = [
   { name: 'Home', icon: Home, page: 'Home' },
   { name: 'Coach', icon: MessageCircle, page: 'Coach' },
