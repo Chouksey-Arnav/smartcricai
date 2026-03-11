@@ -64,7 +64,8 @@ const menuItems = [
   { name: 'Schedule', icon: Calendar, page: 'Schedule', color: 'text-violet-500' },
   { name: 'Why Did I Get Out?', icon: TrendingDown, page: 'WhyDidIGetOut', color: 'text-red-600' },
   { name: 'Progress', icon: Trophy, page: 'Progress', color: 'text-pink-500' },
-  { name: 'Leaderboard', icon: Trophy, page: 'Leaderboard', color: 'text-amber-500' },
+  // Leaderboard temporarily disabled — will be re-enabled later
+  // { name: 'Leaderboard', icon: Trophy, page: 'Leaderboard', color: 'text-amber-500' },
   
   // Resources & Profile - Always at Bottom
   { name: 'My Profile', icon: User, page: 'Profile', color: 'text-indigo-600' },
