@@ -88,6 +88,19 @@ export default function MentalCoaching() {
 
   const isPremium = premiumStatus?.is_premium || false;
 
+  const { data: userProgress } = useQuery({
+    queryKey: ['userProgress', user?.email || 'guest'],
+    queryFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
+      return results[0] || null;
+    },
+    staleTime: 10000,
+    refetchOnWindowFocus: true,
+  });
+
+  const mentalXP = (userProgress?.completed_mental_routines?.length || 0) * 75;
+
   const { data: savedRoutines = [] } = useQuery({
     queryKey: ['savedMentalRoutines', user?.email || 'guest'],
     queryFn: async () => {
@@ -155,6 +168,22 @@ export default function MentalCoaching() {
           />
           <Brain className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
         </div>
+
+        {/* XP Tracker */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white flex items-center justify-between mb-4"
+        >
+          <div>
+            <p className="text-xs text-purple-100">Mental Training XP Earned</p>
+            <p className="text-3xl font-bold">{mentalXP.toLocaleString()}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-purple-100">Sessions Completed</p>
+            <p className="text-2xl font-bold">{userProgress?.completed_mental_routines?.length || 0}</p>
+          </div>
+        </motion.div>
 
         {/* Mindfulness Quote of the Day */}
         <motion.div
