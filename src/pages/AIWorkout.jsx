@@ -35,6 +35,17 @@ export default function AIWorkout() {
     },
   });
 
+  const { data: aiProgress } = useQuery({
+    queryKey: ['userProgress', user?.email || 'guest'],
+    queryFn: async () => {
+      const guestId = user?.email || 'guest@smartcrick.app';
+      const results = await base44.entities.UserProgress.filter({ user_email: guestId });
+      return results[0] || null;
+    },
+    staleTime: 10000,
+    refetchOnWindowFocus: true,
+  });
+
   const { data: workouts } = useQuery({
     queryKey: ['userGeneratedWorkouts', user?.email || 'guest'],
     queryFn: async () => {
@@ -281,10 +292,26 @@ export default function AIWorkout() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white mb-6"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white mb-4"
           >
             <h2 className="font-bold text-2xl mb-2">Your Saved Workouts</h2>
             <p className="text-purple-100">Choose a workout to begin</p>
+          </motion.div>
+
+          {/* XP Tracker */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white flex items-center justify-between mb-4"
+          >
+            <div>
+              <p className="text-xs text-emerald-100">AI Workout XP Earned</p>
+              <p className="text-3xl font-bold">{(aiProgress?.total_xp || 0).toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-emerald-100">Completed Workouts</p>
+              <p className="text-2xl font-bold">{workouts?.filter(w => w.status === 'completed').length || 0}</p>
+            </div>
           </motion.div>
 
           <div className="space-y-4 mb-4">
