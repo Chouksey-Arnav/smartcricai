@@ -27,7 +27,9 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
 
   const checkInMutation = useMutation({
     mutationFn: async (mood) => {
-      const today = new Date().toISOString().split('T')[0];
+      // Always use local date so check-in logs to the user's actual day
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
       if (!user?.email) {
         localStorage.setItem('smartcrick_guest_id', guestId);

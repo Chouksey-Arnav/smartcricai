@@ -108,11 +108,13 @@ export default function Sidebar() {
             exit={{ x: -300 }}
             transition={{ type: 'spring', damping: 25 }}
             className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 flex flex-col"
-            onAnimationComplete={() => {
-              // Restore scroll position when sidebar opens
-              if (scrollRef.current) {
-                scrollRef.current.scrollTop = scrollPosRef.current;
-              }
+            onAnimationStart={() => {
+              // Restore scroll position immediately when sidebar starts opening
+              requestAnimationFrame(() => {
+                if (scrollRef.current) {
+                  scrollRef.current.scrollTop = scrollPosRef.current;
+                }
+              });
             }}
           >
             {/* Header */}
