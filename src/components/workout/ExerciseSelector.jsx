@@ -37,6 +37,15 @@ export default function ExerciseSelector({ onSelect, onClose }) {
       }
     });
 
+    // Add CSV exercises
+    CSV_EXERCISES.forEach(ex => exercises.push({
+      name: ex.name,
+      category: ex.category,
+      subCategory: ex.subCategory,
+      difficulty: ex.difficulty,
+      id: `csv-${ex.name}`,
+    }));
+
     // Remove duplicates and sort
     const unique = Array.from(new Map(exercises.map(e => [e.name, e])).values());
     return unique.sort((a, b) => a.name.localeCompare(b.name));
