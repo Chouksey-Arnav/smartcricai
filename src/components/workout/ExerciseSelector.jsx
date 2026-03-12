@@ -3,6 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { BODYWEIGHT_EXERCISES, WEIGHTED_EXERCISES } from '@/components/fitness/exercisePools';
 import { CSV_EXERCISES } from '@/components/fitness/csvExercisePool';
+import { CSV_EXERCISES_BATCH3 } from '@/components/fitness/csvExercisePoolBatch3';
+import { CSV_EXERCISES_BATCH4 } from '@/components/fitness/csvExercisePoolBatch4';
 
 export default function ExerciseSelector({ onSelect, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
