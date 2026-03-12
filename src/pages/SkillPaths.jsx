@@ -128,7 +128,7 @@ export default function SkillPaths() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
-      toast.success('Skill Path started! 🎯');
+      toast.success('Skill Path started!');
       setSelectedCategory(null);
     },
   });
