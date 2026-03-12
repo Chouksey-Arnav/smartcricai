@@ -74,8 +74,42 @@ export default function AIWorkout() {
   }, [workoutStarted, currentExerciseIndex, completedSets, activeWorkout]);
 
   React.useEffect(() => {
+    if (!workouts) return;
+    // Check if coming from SkillPaths with a pending workout
+    const pendingRaw = localStorage.getItem('skillpath_pending_workout');
+    if (pendingRaw) {
+      try {
+        const pending = JSON.parse(pendingRaw);
+        localStorage.removeItem('skillpath_pending_workout');
+        const guestId = user?.email || 'guest@smartcrick.app';
+        base44.entities.Workout.create({
+          user_email: guestId,
+          name: pending.name,
+          drills: (pending.exercises || []).map(ex => ({
+            drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}`,
+            drill_title: ex.name,
+            sets: ex.sets || 3,
+            reps: ex.reps || '12 reps',
+            completed_sets: 0,
+            type: 'exercise',
+            category: 'fitness',
+            instructions: '',
+            rest_seconds: ex.rest_seconds || 60,
+          })),
+          status: 'not_started',
+          xp_value: pending.xp_value || 100,
+          skill_path_id: pending.skillPathId || null,
+          skill_path_item_id: pending.skillPathItemId || null,
+        }).then(newWorkout => {
+          queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
+          setSelectedWorkoutId(newWorkout.id);
+          setWorkoutStarted(false);
+        }).catch(console.error);
+      } catch (e) { console.error(e); }
+      return;
+    }
     const savedProgress = localStorage.getItem('workoutProgress');
-    if (savedProgress && workouts) {
+    if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       const workout = workouts.find(w => w.id === progress.workoutId);
       if (workout) {
