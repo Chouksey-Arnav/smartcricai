@@ -58,7 +58,8 @@ export default function ExerciseSelector({ onSelect, onClose }) {
     return allExercises.filter(ex => 
       ex.name.toLowerCase().includes(query) ||
       ex.category.toLowerCase().includes(query) ||
-      ex.subCategory.toLowerCase().includes(query)
+      ex.subCategory.toLowerCase().includes(query) ||
+      (ex.difficulty || '').toLowerCase().includes(query)
     );
   }, [searchQuery, allExercises]);
 
