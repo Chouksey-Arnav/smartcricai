@@ -213,7 +213,23 @@ export default function AIWorkout() {
         });
       }
       localStorage.removeItem('workoutProgress');
-      return await base44.entities.Workout.update(activeWorkout.id, { status: 'completed' });
+      const updated = await base44.entities.Workout.update(activeWorkout.id, { status: 'completed' });
+      // Auto-check off in SkillPath if this workout was launched from one
+      const skillPathId = activeWorkout.skill_path_id;
+      const skillPathItemId = activeWorkout.skill_path_item_id;
+      if (skillPathId && skillPathItemId) {
+        try {
+          const paths = await base44.entities.SkillPath.filter({ id: skillPathId });
+          const path = paths[0];
+          if (path && !path.completed_items.includes(skillPathItemId)) {
+            await base44.entities.SkillPath.update(skillPathId, {
+              completed_items: [...path.completed_items, skillPathItemId],
+              xp: (path.xp || 0) + (activeWorkout.xp_value || 100),
+            });
+          }
+        } catch (e) { console.error('SkillPath update failed:', e); }
+      }
+      return updated;
     },
     onSuccess: () => {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -222,6 +238,7 @@ export default function AIWorkout() {
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       localStorage.removeItem('workoutProgress');
       setWorkoutCompleted(true);
       setSelectedWorkoutId(null);
