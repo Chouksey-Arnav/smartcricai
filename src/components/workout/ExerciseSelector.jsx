@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { BODYWEIGHT_EXERCISES, WEIGHTED_EXERCISES } from '@/components/fitness/exercisePools';
+import { CSV_EXERCISES } from '@/components/fitness/csvExercisePool';
 
 export default function ExerciseSelector({ onSelect, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
