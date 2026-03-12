@@ -159,7 +159,7 @@ export default function SkillPaths() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
-      toast.success('Item completed! 🎯');
+      toast.success('Item completed!');
     },
   });
 
