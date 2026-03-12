@@ -2,20 +2,31 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Trophy, CheckCircle, Lock, Zap, X, ChevronLeft, Dumbbell, Brain, Target, ExternalLink, Crosshair, Activity, Swords } from 'lucide-react';
+import { Trophy, CheckCircle, Lock, Zap, X, ChevronLeft, Dumbbell, Brain, Target, Activity, Swords, ShieldCheck, Crown, Play, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { skillPathsData, getPathData, getPathProgress, getNextLevel } from '@/components/skillPaths/SkillPathsDatabase';
 import Header from '@/components/common/Header';
+import { quickStartWorkouts } from '@/components/fitness/QuickStartWorkouts';
+import { ALL_MENTAL_ROUTINES } from '@/components/mental/MentalRoutinesData';
 
 const CATEGORY_CONFIG = {
-  batting:        { label: 'Batting Path',       Icon: Swords,   bg: 'from-blue-500 to-cyan-500',     btn: 'bg-blue-600 hover:bg-blue-700'    },
-  bowling:        { label: 'Bowling Path',        Icon: Activity, bg: 'from-green-500 to-emerald-500',  btn: 'bg-green-600 hover:bg-green-700'  },
-  wicket_keeping: { label: 'Wicket Keeping Path', Icon: Target,   bg: 'from-purple-500 to-indigo-500',  btn: 'bg-purple-600 hover:bg-purple-700' },
+  batting:        { label: 'Batting Path',       Icon: Swords,      bg: 'from-blue-500 to-cyan-500',     btn: 'bg-blue-600 hover:bg-blue-700'    },
+  bowling:        { label: 'Bowling Path',        Icon: Activity,    bg: 'from-green-500 to-emerald-500',  btn: 'bg-green-600 hover:bg-green-700'  },
+  wicket_keeping: { label: 'Wicket Keeping Path', Icon: ShieldCheck, bg: 'from-purple-500 to-indigo-500',  btn: 'bg-purple-600 hover:bg-purple-700' },
 };
+
+// Badge icon map
+const BADGE_ICON_MAP = { Target, Zap, Trophy, Crown };
+
+// Build lookup: workout name → workout data (for navigation)
+const WORKOUT_MAP = Object.fromEntries(quickStartWorkouts.map(w => [w.name, w]));
+
+// Build lookup: mental routine title → local index (for MentalRoutinePlayer)
+const MENTAL_MAP = Object.fromEntries(ALL_MENTAL_ROUTINES.map((r, i) => [r.title, i]));
 
 const LEVEL_CONFIG = {
   beginner:     { label: 'Beginner',     color: 'emerald', border: 'border-emerald-200', bg: 'bg-emerald-50' },
@@ -32,7 +43,8 @@ const ITEM_COLORS = {
 
 export default function SkillPaths() {
   const queryClient = useQueryClient();
-  const [selectedCategory, setSelectedCategory] = useState(null); // for pre-selection only
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
 
   const { data: user } = useQuery({
