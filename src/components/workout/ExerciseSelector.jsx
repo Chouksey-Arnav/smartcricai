@@ -92,7 +92,7 @@ export default function ExerciseSelector({ onSelect, onClose }) {
             className="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors border border-slate-200"
           >
             <h4 className="font-semibold text-slate-800 text-sm mb-1">{exercise.name}</h4>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className={`text-xs px-2 py-0.5 rounded-full ${
                 exercise.category === 'bodyweight' 
                   ? 'bg-blue-100 text-blue-700'
@@ -101,6 +101,13 @@ export default function ExerciseSelector({ onSelect, onClose }) {
                 {exercise.category === 'bodyweight' ? 'Bodyweight' : 'Weighted'}
               </span>
               <span className="text-xs text-slate-500">{exercise.subCategory}</span>
+              {exercise.difficulty && (
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  exercise.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
+                  exercise.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-red-100 text-red-700'
+                }`}>{exercise.difficulty}</span>
+              )}
             </div>
           </button>
         ))}
