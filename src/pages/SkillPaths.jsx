@@ -84,6 +84,37 @@ export default function SkillPaths() {
   const currentLevel = skillPath?.level || 'beginner';
   const currentPathData = skillPath ? getPathData(currentCategory, currentLevel) : null;
 
+  // Navigate to the correct activity page for a skill path item
+  const handleStartItem = (item) => {
+    if (item.type === 'drill') {
+      // Drills: navigate to Drills page with search hint (deep link by name not possible without entity ID lookup)
+      navigate(createPageUrl('Drills'));
+    } else if (item.type === 'mental') {
+      const mentalIndex = MENTAL_MAP[item.name];
+      if (mentalIndex !== undefined) {
+        navigate(createPageUrl(`MentalRoutinePlayer?id=local_${mentalIndex}&skillPathId=${skillPath?.id}&skillPathItemId=${item.id}`));
+      } else {
+        navigate(createPageUrl('MentalCoaching'));
+      }
+    } else if (item.type === 'workout') {
+      const workout = WORKOUT_MAP[item.name];
+      if (workout) {
+        // Store workout in localStorage so AIWorkout can pick it up
+        const workoutPayload = {
+          name: workout.name,
+          exercises: workout.exercises,
+          xp_value: workout.xp_value || 100,
+          skillPathId: skillPath?.id,
+          skillPathItemId: item.id,
+        };
+        localStorage.setItem('skillpath_pending_workout', JSON.stringify(workoutPayload));
+        navigate(createPageUrl('AIWorkout'));
+      } else {
+        navigate(createPageUrl('FitnessBuilder'));
+      }
+    }
+  };
+
   const createPath = useMutation({
     mutationFn: async ({ category, level }) => {
       return await base44.entities.SkillPath.create({
