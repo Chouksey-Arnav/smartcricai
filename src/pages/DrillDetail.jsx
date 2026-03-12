@@ -249,14 +249,28 @@ export default function DrillDetail() {
         related_id: drill.id
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Auto-check off drill in skill path if navigated from one
+      if (skillPathId && skillPathItemId) {
+        try {
+          const paths = await base44.entities.SkillPath.filter({ id: skillPathId });
+          const path = paths[0];
+          if (path && !path.completed_items.includes(skillPathItemId)) {
+            await base44.entities.SkillPath.update(skillPathId, {
+              completed_items: [...path.completed_items, skillPathItemId],
+              xp: (path.xp || 0) + (drill?.xp_value || 50),
+            });
+          }
+        } catch (e) { console.error('SkillPath update failed:', e); }
+      }
       queryClient.invalidateQueries(['userProgress']);
       queryClient.invalidateQueries(['leaderboard']);
       queryClient.invalidateQueries(['notifications']);
       queryClient.invalidateQueries(['workout', workoutId]);
       queryClient.invalidateQueries(['userGeneratedWorkouts']);
+      queryClient.invalidateQueries(['skillPath']);
       setIsCompleted(true);
-      toast.success('Drill completed! Great work! 🎉');
+      toast.success('Drill completed! Great work!');
     },
     onError: (error) => {
       console.error('Error completing drill:', error);

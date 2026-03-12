@@ -267,12 +267,26 @@ export default function MentalRoutinePlayer() {
         related_id: routine.id
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Auto-check off mental in skill path if navigated from one
+      if (skillPathId && skillPathItemId) {
+        try {
+          const paths = await base44.entities.SkillPath.filter({ id: skillPathId });
+          const path = paths[0];
+          if (path && !path.completed_items.includes(skillPathItemId)) {
+            await base44.entities.SkillPath.update(skillPathId, {
+              completed_items: [...path.completed_items, skillPathItemId],
+              xp: (path.xp || 0) + (routine?.xp_value || 75),
+            });
+          }
+        } catch (e) { console.error('SkillPath update failed:', e); }
+      }
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['completedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['homeStats'] });
+      queryClient.invalidateQueries({ queryKey: ['skillPath'] });
     },
   });
 
