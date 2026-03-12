@@ -269,6 +269,8 @@ export default function DrillDetail() {
       queryClient.invalidateQueries(['workout', workoutId]);
       queryClient.invalidateQueries(['userGeneratedWorkouts']);
       queryClient.invalidateQueries(['skillPath']);
+      // Notify SmartStart to check off this drill for today
+      window.dispatchEvent(new CustomEvent('smartstart_item_completed', { detail: { type: 'drill', id: drillId, title: drill?.title } }));
       setIsCompleted(true);
       toast.success('Drill completed! Great work!');
     },

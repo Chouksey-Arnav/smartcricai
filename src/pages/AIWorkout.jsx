@@ -239,6 +239,8 @@ export default function AIWorkout() {
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
+      // Notify SmartStart to check off this workout for today
+      window.dispatchEvent(new CustomEvent('smartstart_item_completed', { detail: { type: 'workout', id: activeWorkout?.name, title: activeWorkout?.name } }));
       localStorage.removeItem('workoutProgress');
       setWorkoutCompleted(true);
       setSelectedWorkoutId(null);
