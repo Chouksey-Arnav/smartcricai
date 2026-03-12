@@ -78,6 +78,8 @@ export default function DrillDetail() {
   const drillId = urlParams.get('id');
   const workoutId = urlParams.get('workoutId');
   const drillIndexInWorkout = urlParams.get('drillIndex');
+  const skillPathId = urlParams.get('skillPathId');
+  const skillPathItemId = urlParams.get('skillPathItemId');
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isStarted, setIsStarted] = useState(false);

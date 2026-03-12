@@ -165,6 +165,8 @@ export default function MentalRoutinePlayer() {
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const routineId = urlParams.get('id');
+  const skillPathId = urlParams.get('skillPathId');
+  const skillPathItemId = urlParams.get('skillPathItemId');
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
