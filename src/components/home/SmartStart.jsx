@@ -174,25 +174,43 @@ export default function SmartStart({ isDarkMode }) {
     }
   };
 
-  // Check if item was started from today's SmartStart AND is now completed
+  // Check if item was completed today (auto-detect, no need to have "started" it)
   const isCompleted = (item) => {
-    const key = getStartedKey();
-    const started = JSON.parse(localStorage.getItem(key) || '[]');
+    const today = new Date().toDateString();
+    const completedKey = `smartstart_completed_${today}_${guestEmail}`;
+    const completedToday = JSON.parse(localStorage.getItem(completedKey) || '[]');
     const itemKey = `${item.type}_${item.id}`;
-    if (!started.includes(itemKey)) return false;
-
+    // Also check backend progress for drills and mental
     if (item.type === 'drill') {
-      return (userProgress?.completed_drills || []).includes(item.id);
+      return completedToday.includes(itemKey) || (userProgress?.completed_drills || []).includes(item.id);
     }
     if (item.type === 'mental') {
       const effectiveId = `mental_${item.title.replace(/\s+/g, '_')}`;
-      return (userProgress?.completed_mental_routines || []).includes(effectiveId);
+      return completedToday.includes(itemKey) || (userProgress?.completed_mental_routines || []).includes(effectiveId);
     }
     if (item.type === 'workout') {
-      return completedWorkoutNames.includes(item.title);
+      return completedToday.includes(itemKey) || completedWorkoutNames.includes(item.title);
     }
     return false;
   };
+
+  // Mark item as completed for today in localStorage (called by activity pages via a global event)
+  React.useEffect(() => {
+    const handler = (e) => {
+      const { type, id, title } = e.detail || {};
+      if (!type) return;
+      const today = new Date().toDateString();
+      const completedKey = `smartstart_completed_${today}_${guestEmail}`;
+      const completedToday = JSON.parse(localStorage.getItem(completedKey) || '[]');
+      const itemKey = `${type}_${id}`;
+      if (!completedToday.includes(itemKey)) {
+        completedToday.push(itemKey);
+        localStorage.setItem(completedKey, JSON.stringify(completedToday));
+      }
+    };
+    window.addEventListener('smartstart_item_completed', handler);
+    return () => window.removeEventListener('smartstart_item_completed', handler);
+  }, [guestEmail]);
 
   const handleClick = (item) => {
     markStarted(item);
