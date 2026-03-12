@@ -220,7 +220,7 @@ export default function SmartStart({ isDarkMode }) {
       navigate(createPageUrl(`MentalRoutinePlayer?id=${item.id}`));
     } else if (item.type === 'workout') {
       if (item.isPremium && !isPremium) {
-        toast('This workout requires Premium!', { icon: '💎', duration: 3000 });
+        toast('This workout requires Premium! Upgrade to access.', { duration: 3000 });
         return;
       }
       startWorkoutMutation.mutate(item.workoutData);
