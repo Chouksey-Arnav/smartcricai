@@ -277,7 +277,7 @@ export default function SkillPaths() {
                             {levelData.weeks.length} weeks • {levelData.totalXP} XP to earn
                           </p>
                         </div>
-                        <span className="text-2xl">{levelData.badge.emoji}</span>
+                        {(() => { const BadgeIcon = BADGE_ICON_MAP[levelData.badge.lucideIcon] || Trophy; return <BadgeIcon className="w-6 h-6 text-amber-500" />; })()}
                       </div>
                       {!meetsXP && !isLocked && (
                         <p className="text-xs text-amber-600 font-semibold mb-2">
