@@ -272,7 +272,7 @@ export default function SmartStart({ isDarkMode }) {
               disabled={startWorkoutMutation.isPending}
               className={`w-full text-left p-4 rounded-xl backdrop-blur-sm transition-all border ${
                 done
-                  ? 'bg-white/40 border-white/60'
+                  ? 'bg-white/30 border-white/50'
                   : 'bg-white/20 hover:bg-white/30 border-white/30 active:scale-98'
               }`}
             >
@@ -285,12 +285,15 @@ export default function SmartStart({ isDarkMode }) {
                   <p className={`font-semibold text-sm truncate ${done ? 'line-through text-white/70' : 'text-white'}`}>
                     {rec.title}
                   </p>
-                  <p className={`text-xs capitalize ${done ? 'text-white/50' : getLabelColor(rec)}`}>
-                    {done ? 'Completed today' : `${rec.label} · ${rec.category}`}
+                  <p className={`text-xs capitalize ${done ? 'text-white/60' : getLabelColor(rec)}`}>
+                    {done ? 'Done today — tap to do again' : `${rec.label} · ${rec.category}`}
                   </p>
                 </div>
                 {rec.isPremium && !isPremium && !done && (
                   <Lock className="w-4 h-4 text-amber-300 flex-shrink-0" />
+                )}
+                {done && (
+                  <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full font-medium flex-shrink-0">Again</span>
                 )}
                 {startWorkoutMutation.isPending && rec.type === 'workout' && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin flex-shrink-0" />
