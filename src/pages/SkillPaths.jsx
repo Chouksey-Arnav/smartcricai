@@ -177,7 +177,7 @@ export default function SkillPaths() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       setSelectedWeek(1);
-      toast.success('Level unlocked! 🏆');
+      toast.success('Level unlocked!');
     },
   });
 
