@@ -412,35 +412,17 @@ export default function SkillPaths() {
                             <Zap className="w-3 h-3" />+{item.xp} XP
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <h4 className={`font-semibold text-sm ${isDone ? 'text-emerald-700 dark:text-emerald-300 line-through' : 'text-slate-800 dark:text-white'}`}>
-                            {item.name}
-                          </h4>
-                          {/* Deep link to the actual activity */}
-                          {item.type === 'drill' && (
-                            <Link to={createPageUrl('Drills')} className="text-blue-500 hover:text-blue-700">
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Link>
-                          )}
-                          {item.type === 'mental' && (
-                            <Link to={createPageUrl('MentalCoaching')} className="text-purple-500 hover:text-purple-700">
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Link>
-                          )}
-                          {item.type === 'workout' && (
-                            <Link to={createPageUrl('FitnessBuilder')} className="text-orange-500 hover:text-orange-700">
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Link>
-                          )}
-                        </div>
+                        <h4 className={`font-semibold text-sm ${isDone ? 'text-emerald-700 dark:text-emerald-300 line-through' : 'text-slate-800 dark:text-white'}`}>
+                          {item.name}
+                        </h4>
                       </div>
                       <Button
-                        onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp, itemName: item.name })}
+                        onClick={() => handleStartItem(item)}
                         disabled={completeItem.isPending}
                         size="sm"
-                        className={cn('shrink-0 text-xs', isDone ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300' : catConf.btn)}
+                        className={cn('shrink-0 text-xs flex items-center gap-1', isDone ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300' : catConf.btn)}
                       >
-                        {isDone ? 'Done ✓' : 'Complete'}
+                        {isDone ? <><RotateCcw className="w-3 h-3" /> Start Again</> : <><Play className="w-3 h-3" /> Start</>}
                       </Button>
                     </div>
                   </motion.div>
