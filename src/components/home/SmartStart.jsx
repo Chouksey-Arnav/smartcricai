@@ -174,24 +174,13 @@ export default function SmartStart({ isDarkMode }) {
     }
   };
 
-  // Check if item was completed today (auto-detect, no need to have "started" it)
+  // Check if item was completed today via SmartStart only (resets daily)
   const isCompleted = (item) => {
     const today = new Date().toDateString();
     const completedKey = `smartstart_completed_${today}_${guestEmail}`;
     const completedToday = JSON.parse(localStorage.getItem(completedKey) || '[]');
     const itemKey = `${item.type}_${item.id}`;
-    // Also check backend progress for drills and mental
-    if (item.type === 'drill') {
-      return completedToday.includes(itemKey) || (userProgress?.completed_drills || []).includes(item.id);
-    }
-    if (item.type === 'mental') {
-      const effectiveId = `mental_${item.title.replace(/\s+/g, '_')}`;
-      return completedToday.includes(itemKey) || (userProgress?.completed_mental_routines || []).includes(effectiveId);
-    }
-    if (item.type === 'workout') {
-      return completedToday.includes(itemKey) || completedWorkoutNames.includes(item.title);
-    }
-    return false;
+    return completedToday.includes(itemKey);
   };
 
   // Mark item as completed for today in localStorage (called by activity pages via a global event)
