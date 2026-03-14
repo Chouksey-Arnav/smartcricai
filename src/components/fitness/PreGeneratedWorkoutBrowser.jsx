@@ -39,16 +39,15 @@ export default function PreGeneratedWorkoutBrowser() {
     },
   });
 
+  const [savedIds, setSavedIds] = React.useState(new Set());
+
   const saveWorkoutMutation = useMutation({
     mutationFn: async (workout) => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
-      
-      // Parse exercises
       const exercisesArray = workout.exercises.split(' || ').map(ex => {
         const [name, setsReps] = ex.split(' — ');
         return { name, sets_reps: setsReps || '3x10' };
       });
-
       return await base44.entities.SavedWorkout.create({
         user_email: guestEmail,
         name: workout.workout_name,
@@ -57,9 +56,18 @@ export default function PreGeneratedWorkoutBrowser() {
         source: 'pre_generated'
       });
     },
+    onMutate: (workout) => {
+      // Optimistic: immediately show saved state
+      setSavedIds(prev => new Set([...prev, workout.id]));
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedWorkouts'] });
       toast.success('Workout saved! 💪');
+    },
+    onError: (_, workout) => {
+      // Rollback
+      setSavedIds(prev => { const next = new Set(prev); next.delete(workout.id); return next; });
+      toast.error('Failed to save. Please try again.');
     },
   });
 
