@@ -106,13 +106,15 @@ export default function MentalCoaching() {
     queryFn: async () => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
       const guestId = localStorage.getItem('smartcrick_guest_id') || guestEmail;
-      const all = await base44.entities.MentalRoutine.list('-created_date', 200);
-      // Match by user_email (explicitly set) OR created_by (set by platform for auth users)
+      const identities = new Set([guestEmail, guestId].filter(Boolean));
+      const all = await base44.entities.MentalRoutine.list('-created_date', 500);
+      // Only return routines explicitly saved by this user (has user_email set)
       return all.filter(r =>
-        (r.user_email && (r.user_email === guestEmail || r.user_email === guestId)) ||
-        (r.created_by && (r.created_by === guestEmail || r.created_by === guestId))
+        r.user_email && identities.has(r.user_email)
       );
     },
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const likeRoutineMutation = useMutation({
