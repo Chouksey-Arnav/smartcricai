@@ -63,17 +63,16 @@ export default function MentalTrainingCreator() {
   const saveMentalRoutineMutation = useMutation({
     mutationFn: async (routine) => {
       const guestId = getGuestId();
-      // Explicitly set user_email so MentalCoaching "My Routines" tab can find it
-      const data = {
+      return await base44.entities.MentalRoutine.create({
         ...routine,
         user_email: guestId,
-      };
-      return await base44.entities.MentalRoutine.create(data);
+        created_by: guestId,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
       queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
-      toast.success('Saved to My Routines!');
+      toast.success('Saved to My Routines! ✨');
       navigate(createPageUrl('MentalCoaching') + '?tab=saved');
     },
     onError: (err) => {
