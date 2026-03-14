@@ -319,7 +319,8 @@ export default function Home() {
         return null;
       }
     },
-    staleTime: 300000,
+    staleTime: 60000,
+    refetchOnMount: true,
     retry: 3,
   });
 
