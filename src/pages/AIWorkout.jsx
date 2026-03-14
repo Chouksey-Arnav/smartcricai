@@ -681,7 +681,7 @@ export default function AIWorkout() {
         </AnimatePresence>
 
         {/* Current Exercise */}
-        {!isResting && currentExercise && (
+        {!isResting && currentExercise && currentExercise.type !== 'rest' && (
           <motion.div
             key={currentExerciseIndex}
             initial={{ opacity: 0, x: 20 }}
@@ -689,10 +689,7 @@ export default function AIWorkout() {
             exit={{ opacity: 0, x: -20 }}
             className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8"
           >
-            {currentExercise.type === 'rest' ? (
-              // Rest blocks are handled by the isResting state / countdown above — show nothing here
-              null
-            ) : (
+            {(
               <>
                 <div className="text-center mb-6">
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
