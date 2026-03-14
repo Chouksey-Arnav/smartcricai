@@ -89,9 +89,9 @@ export default function DrillDetail() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => { try { return await base44.auth.me(); } catch { return null; } },
     staleTime: 300000,
-    retry: 3,
+    retry: 1,
   });
 
   const { data: drill, isLoading } = useQuery({

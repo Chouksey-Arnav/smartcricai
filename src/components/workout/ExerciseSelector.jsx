@@ -5,6 +5,8 @@ import { BODYWEIGHT_EXERCISES, WEIGHTED_EXERCISES } from '@/components/fitness/e
 import { CSV_EXERCISES } from '@/components/fitness/csvExercisePool';
 import { CSV_EXERCISES_BATCH3 } from '@/components/fitness/csvExercisePoolBatch3';
 import { CSV_EXERCISES_BATCH4 } from '@/components/fitness/csvExercisePoolBatch4';
+import { CSV_EXERCISES_BATCH5 } from '@/components/fitness/csvExercisePoolBatch5';
+import { CSV_EXERCISES_BATCH6 } from '@/components/fitness/csvExercisePoolBatch6';
 
 export default function ExerciseSelector({ onSelect, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
