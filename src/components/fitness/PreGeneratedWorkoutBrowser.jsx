@@ -196,21 +196,23 @@ export default function PreGeneratedWorkoutBrowser() {
                     </span>
                   </div>
                 </div>
-                <Button
-                  onClick={() => saveWorkoutMutation.mutate(workout)}
-                  disabled={saveWorkoutMutation.isPending}
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 shrink-0"
-                >
-                  {saveWorkoutMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-1" />
-                      Save
-                    </>
-                  )}
-                </Button>
+                <motion.div whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={() => saveWorkoutMutation.mutate(workout)}
+                    disabled={savedIds.has(workout.id)}
+                    size="sm"
+                    className={`shrink-0 ${savedIds.has(workout.id) ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+                  >
+                    {savedIds.has(workout.id) ? (
+                      <>✓ Saved</>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4 mr-1" />
+                        Save
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
               </div>
 
               <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
