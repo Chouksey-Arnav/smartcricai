@@ -739,8 +739,7 @@ export default function AIWorkout() {
                 >
                   {completeWorkoutMutation.isPending ? 'Finishing...' : '🏁 End Workout'}
                 </Button>
-              </>
-            )}
+            </>
           </motion.div>
         )}
       </div>
