@@ -87,12 +87,10 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
       </p>
       <div className="grid grid-cols-2 gap-3">
         {moods.map((mood) => (
-          <button
+          <motion.button
             key={mood.value}
-            onClick={() => {
-              setSelectedMood(mood);
-              checkInMutation.mutate(mood);
-            }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => checkInMutation.mutate(mood)}
             disabled={checkInMutation.isPending}
             className={`p-4 rounded-2xl transition-all flex flex-col items-center ${
               isDarkMode
@@ -104,7 +102,7 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
             <p className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               {mood.label}
             </p>
-          </button>
+          </motion.button>
         ))}
       </div>
     </motion.div>
