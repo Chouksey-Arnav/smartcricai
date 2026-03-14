@@ -42,7 +42,7 @@ export default function ExerciseSelector({ onSelect, onClose }) {
     });
 
     // Add CSV exercises (all 3 batches — ~3000 exercises total)
-    [...CSV_EXERCISES, ...CSV_EXERCISES_BATCH3, ...CSV_EXERCISES_BATCH4].forEach(ex => exercises.push({
+    [...CSV_EXERCISES, ...CSV_EXERCISES_BATCH3, ...CSV_EXERCISES_BATCH4, ...CSV_EXERCISES_BATCH5, ...CSV_EXERCISES_BATCH6].forEach(ex => exercises.push({
       name: ex.name,
       category: ex.category,
       subCategory: ex.subCategory,
