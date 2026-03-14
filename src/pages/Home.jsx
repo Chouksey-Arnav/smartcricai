@@ -426,7 +426,9 @@ export default function Home() {
       const profiles = await base44.entities.Profile.filter({ user_email: guestEmail });
       return profiles[0] || null;
     },
-    staleTime: 60000,
+    staleTime: 30000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const displayName = profile?.username || progress?.display_name || user?.full_name?.split(' ')[0] || 'Champ';
