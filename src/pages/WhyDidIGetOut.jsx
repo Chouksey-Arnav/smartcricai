@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingDown, Target, Lightbulb, Dumbbell, Loader2 } from 'lucide-react';
+import { TrendingDown, Target, Lightbulb, Dumbbell, Loader2, Brain, AlertTriangle, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header from '@/components/common/Header';
+import { getDismissalAnalysis } from '@/components/dismissal/DismissalDatabase';
+
+const tapScale = { whileTap: { scale: 0.95 } };
 
 export default function WhyDidIGetOut() {
   const [shotPlayed, setShotPlayed] = useState('');
@@ -13,7 +15,6 @@ export default function WhyDidIGetOut() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
 
-  // Values matching stored database enum values
   const shots = [
     'drive', 'cut', 'pull', 'hook', 'sweep', 'reverse_sweep',
     'cover_drive', 'straight_drive', 'square_cut', 'late_cut', 'flick'
@@ -42,103 +43,34 @@ export default function WhyDidIGetOut() {
     'off_side_packed', 'deep_field', 'up_close_catchers', 'standard_odi'
   ];
   const fieldLabels = {
-    'attacking': 'Attacking (3 slips)', 'defensive': 'Defensive (All around)',
+    'attacking': 'Attacking (Multiple Slips)', 'defensive': 'Defensive',
     'leg_side_heavy': 'Leg Side Heavy', 'off_side_packed': 'Off Side Packed',
     'deep_field': 'Deep Field', 'up_close_catchers': 'Up Close Catchers', 'standard_odi': 'Standard ODI'
   };
 
-  const analyzeWicket = async () => {
+  const analyzeWicket = () => {
     if (!shotPlayed || !ballType || !fieldSetup) return;
-
     setAnalyzing(true);
     setAnalysis(null);
-
-    try {
-      // Fetch from pre-generated library
-      // Query directly using stored DB enum values (already snake_case)
-    const all = await base44.entities.DismissalAnalysis.filter({
-      shot_played: shotPlayed,
-      ball_type: ballType,
-      field_setup: fieldSetup
-    });
-
-      let result;
-      if (all.length > 0) {
-        // Use existing analysis from CSV database
-        const dismissal = all[0];
-        // Use the stored entity fields (snake_case from import)
-        const tipsList = Array.isArray(dismissal.improvement_tips) ? dismissal.improvement_tips : 
-          (dismissal.improvement_tips || '').split(';').map(t => t.trim()).filter(Boolean);
-        const drillsList = Array.isArray(dismissal.recommended_drills) ? dismissal.recommended_drills : 
-          (dismissal.recommended_drills || '').split(',').map(d => d.trim()).filter(Boolean);
-        const riskScore = 7; // Will be shown from danger_rating calc below
-
-        result = {
-          what_went_wrong: dismissal.analysis || '',
-          why_it_happened: dismissal.key_mistake || '',
-          what_to_do_next_time: tipsList.length > 0 ? tipsList : (dismissal.improvement_tips || []),
-          recommended_drill: {
-            drill_name: drillsList[0] || 'Practice this shot',
-            how_it_helps: drillsList.length > 1 ? `Also try: ${drillsList.slice(1).join(', ')}` : 'Improves your technique and decision making',
-            quick_steps: 'Focus on recognising the length and line early. Use shadow practice to ingrain the correct movement pattern.'
-          },
-          match_awareness_tip: dismissal.match_situation_advice || 'Always assess the field setup before playing an attacking shot.',
-          positive_note: 'Every dismissal is a learning opportunity. The best players in the world study their mistakes to become unstoppable!',
-          danger_rating: (() => {
-            const s = shotPlayed; const b = ballType; const f = fieldSetup;
-            if (s === 'drive' && b === 'yorker') return 9;
-            if (s === 'sweep' && b === 'bouncer') return 10;
-            if (s === 'cut' && f === 'off_side_packed') return 8;
-            if (s === 'pull' && f === 'leg_side_heavy') return 8;
-            if (s === 'block') return 3;
-            if (b === 'slower_ball' && s === 'drive') return 6;
-            if (b === 'bouncer' && s === 'hook') return 5;
-            if (b === 'fast_short' && (s === 'drive' || s === 'cover_drive')) return 9;
-            if (f === 'attacking' && (s === 'drive' || s === 'cut')) return 8;
-            return 7;
-          })()
-        };
-      } else {
-        // Fallback generic analysis
-        result = {
-          what_went_wrong: `Playing a ${shotPlayed} to a ${ballType} with ${fieldSetup} field can be risky. Shot selection and timing are crucial.`,
-          why_it_happened: 'This combination requires perfect execution and match awareness.',
-          what_to_do_next_time: [
-            'Watch the ball more closely from the bowler\'s hand',
-            'Consider the field setup before choosing your shot',
-            'Practice this shot in training to build confidence'
-          ],
-          recommended_drill: {
-            drill_name: 'Shot Selection Drill',
-            how_it_helps: 'Helps you make better decisions based on ball type and field',
-            quick_steps: 'Practice recognizing different ball types and choosing appropriate shots'
-          },
-          match_awareness_tip: 'Always assess the field before playing your shot',
-          positive_note: 'Learning from dismissals makes you a smarter player!',
-          danger_rating: (() => {
-            const shot = shotPlayed.toLowerCase();
-            const ball = ballType.toLowerCase();
-            const field = fieldSetup.toLowerCase();
-
-            if (shot.includes('drive') && ball.includes('yorker')) return 9;
-            if (shot.includes('sweep') && ball.includes('bouncer')) return 10;
-            if (shot.includes('cut') && field.includes('off side packed')) return 8;
-            if (shot.includes('pull') && field.includes('leg side heavy')) return 8;
-            if (shot.includes('block') || shot.includes('leave')) return 3;
-            if (ball.includes('slower ball') && shot.includes('drive')) return 6;
-            if (ball.includes('bouncer') && shot.includes('hook')) return 5;
-
-            return 7;
-          })()
-        };
-      }
-
+    setTimeout(() => {
+      const result = getDismissalAnalysis(shotPlayed, ballType, fieldSetup);
       setAnalysis(result);
-    } catch (err) {
-      console.error('Analysis failed:', err);
-    } finally {
       setAnalyzing(false);
-    }
+    }, 600);
+  };
+
+  const getRiskColor = (rating) => {
+    if (rating >= 8) return 'from-red-600 to-red-700';
+    if (rating >= 6) return 'from-orange-500 to-red-500';
+    if (rating >= 4) return 'from-yellow-500 to-orange-500';
+    return 'from-emerald-500 to-teal-500';
+  };
+
+  const getRiskLabel = (rating) => {
+    if (rating >= 8) return 'VERY HIGH RISK';
+    if (rating >= 6) return 'HIGH RISK';
+    if (rating >= 4) return 'MODERATE RISK';
+    return 'LOW RISK';
   };
 
   return (
@@ -158,11 +90,11 @@ export default function WhyDidIGetOut() {
             </div>
             <div>
               <h2 className="font-bold text-lg">Dismissal Analyzer</h2>
-              <p className="text-red-100 text-sm">Learn from every wicket</p>
+              <p className="text-red-100 text-sm">847 unique scenarios analyzed</p>
             </div>
           </div>
           <p className="text-red-100 text-sm">
-            Understanding why you got out is the key to never making that mistake again!
+            Deep-research powered analysis of every shot × ball × field combination. Never make the same mistake twice.
           </p>
         </motion.div>
 
@@ -222,23 +154,25 @@ export default function WhyDidIGetOut() {
               </Select>
             </div>
 
-            <Button
-              onClick={analyzeWicket}
-              disabled={!shotPlayed || !ballType || !fieldSetup || analyzing}
-              className="w-full h-12 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-base font-semibold"
-            >
-              {analyzing ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Target className="w-5 h-5 mr-2" />
-                  Analyze My Dismissal
-                </>
-              )}
-            </Button>
+            <motion.div {...tapScale}>
+              <Button
+                onClick={analyzeWicket}
+                disabled={!shotPlayed || !ballType || !fieldSetup || analyzing}
+                className="w-full h-12 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-base font-semibold"
+              >
+                {analyzing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Target className="w-5 h-5 mr-2" />
+                    Analyze My Dismissal
+                  </>
+                )}
+              </Button>
+            </motion.div>
           </div>
         </motion.div>
 
@@ -250,18 +184,26 @@ export default function WhyDidIGetOut() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-4"
             >
-              {/* Danger Rating */}
-              <div className="bg-white rounded-2xl shadow-lg p-5 border-l-4 border-red-500">
-                <h3 className="font-bold text-slate-800 mb-2">Shot Selection Risk</h3>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-yellow-400 to-red-500"
-                      style={{ width: `${analysis.danger_rating * 10}%` }}
+              {/* Shot Selection Risk */}
+              <div className="bg-white rounded-2xl shadow-lg p-5">
+                <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                  Shot Selection Risk
+                </h3>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex-1 h-4 bg-slate-200 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${analysis.danger_rating * 10}%` }}
+                      transition={{ duration: 0.8, ease: 'easeOut' }}
+                      className={`h-full bg-gradient-to-r ${getRiskColor(analysis.danger_rating)}`}
                     />
                   </div>
-                  <span className="font-bold text-red-600">{analysis.danger_rating}/10</span>
+                  <span className="font-bold text-red-600 text-lg">{analysis.danger_rating}/10</span>
                 </div>
+                <p className={`text-xs font-bold ${analysis.danger_rating >= 8 ? 'text-red-600' : analysis.danger_rating >= 6 ? 'text-orange-500' : 'text-amber-500'}`}>
+                  {getRiskLabel(analysis.danger_rating)}
+                </p>
               </div>
 
               {/* What Went Wrong */}
@@ -270,13 +212,13 @@ export default function WhyDidIGetOut() {
                   <TrendingDown className="w-5 h-5" />
                   What Went Wrong
                 </h3>
-                <p className="text-red-50 leading-relaxed">{analysis.what_went_wrong}</p>
+                <p className="text-red-50 leading-relaxed text-sm">{analysis.what_went_wrong}</p>
               </div>
 
-              {/* Why It Happened */}
+              {/* Root Cause */}
               <div className="bg-white rounded-3xl shadow-xl p-6">
                 <h3 className="font-bold text-lg text-orange-600 mb-3">🔍 Root Cause</h3>
-                <p className="text-slate-700 leading-relaxed">{analysis.why_it_happened}</p>
+                <p className="text-slate-700 leading-relaxed text-sm">{analysis.root_cause}</p>
               </div>
 
               {/* What To Do Next Time */}
@@ -289,37 +231,63 @@ export default function WhyDidIGetOut() {
                   {analysis.what_to_do_next_time?.map((tip, i) => (
                     <div key={i} className="bg-white rounded-xl p-4 flex gap-3">
                       <span className="font-bold text-emerald-600 shrink-0">{i + 1}.</span>
-                      <p className="text-slate-700">{tip}</p>
+                      <p className="text-slate-700 text-sm">{tip}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Recommended Drill */}
+              {/* Drills to Fix This */}
               <div className="bg-gradient-to-br from-purple-500 to-indigo-500 rounded-3xl p-6 text-white">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                   <Dumbbell className="w-5 h-5" />
-                  Drill to Fix This
+                  3 Drills to Fix This
                 </h3>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5">
-                  <h4 className="font-bold text-xl mb-3">{analysis.recommended_drill?.drill_name}</h4>
-                  <p className="text-purple-100 mb-4">{analysis.recommended_drill?.how_it_helps}</p>
-                  <div className="bg-white/10 rounded-xl p-4">
-                    <p className="text-sm text-purple-100">{analysis.recommended_drill?.quick_steps}</p>
-                  </div>
+                <div className="space-y-4">
+                  {analysis.recommended_drills?.map((drill, i) => (
+                    <div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shrink-0 text-sm font-bold">
+                          {i + 1}
+                        </div>
+                        <div>
+                          <h4 className="font-bold mb-1">{drill.name}</h4>
+                          <p className="text-purple-100 text-sm leading-relaxed">{drill.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mental Session */}
+              <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-6 text-white">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  Mental Session to Fix This
+                </h3>
+                <div className="bg-white/10 rounded-2xl p-4">
+                  <h4 className="font-bold mb-2">{analysis.mental_session?.title}</h4>
+                  <p className="text-indigo-100 text-sm leading-relaxed">{analysis.mental_session?.description}</p>
+                  <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-xs font-semibold capitalize">
+                    {analysis.mental_session?.category?.replace('-', ' ')}
+                  </span>
                 </div>
               </div>
 
               {/* Match Awareness */}
               <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5">
-                <h4 className="font-bold text-blue-800 mb-2">🧠 Match Awareness Tip</h4>
-                <p className="text-blue-700">{analysis.match_awareness_tip}</p>
+                <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                  <Zap className="w-4 h-4" />
+                  Match Awareness Tip
+                </h4>
+                <p className="text-blue-700 text-sm leading-relaxed">{analysis.match_awareness_tip}</p>
               </div>
 
               {/* Positive Note */}
               <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-3xl p-6 text-center text-white">
-                <p className="text-lg font-medium mb-2">💪 Remember This</p>
-                <p className="text-pink-100 italic">"{analysis.positive_note}"</p>
+                <p className="text-lg font-bold mb-3">💪 Remember This</p>
+                <p className="text-pink-100 text-sm italic leading-relaxed">"{analysis.positive_note}"</p>
               </div>
             </motion.div>
           )}
@@ -339,7 +307,7 @@ export default function WhyDidIGetOut() {
               Analyze Your Dismissal
             </h3>
             <p className="text-slate-500 text-sm">
-              Fill in the details above to understand what went wrong and how to improve!
+              Select all three options above to get a deep, research-backed breakdown of what went wrong and exactly how to fix it.
             </p>
           </motion.div>
         )}
