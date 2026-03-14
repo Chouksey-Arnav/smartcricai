@@ -107,7 +107,7 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
     acc += phases[i].duration;
   }
 
-  const cx = 165, cy = 160, r = 140;
+  const cx = 180, cy = 175, r = 160;
   const pts = [
     { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
@@ -137,7 +137,7 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
           {phases[phaseIndex].label}
         </motion.p>
       </AnimatePresence>
-      <svg width={330} height={325}>
+      <svg width={375} height={370}>
         <defs>
           <linearGradient id="triGrad478" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={color} stopOpacity="0.22" />

@@ -365,8 +365,9 @@ export default function Home() {
 
       return currentProgress;
     },
-    staleTime: 60000,
+    staleTime: 30000,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 3,
   });
 
