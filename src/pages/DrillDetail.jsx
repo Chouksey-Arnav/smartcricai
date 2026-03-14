@@ -74,6 +74,7 @@ const levelColors = {
 export default function DrillDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const drillId = urlParams.get('id');
   const workoutId = urlParams.get('workoutId');
