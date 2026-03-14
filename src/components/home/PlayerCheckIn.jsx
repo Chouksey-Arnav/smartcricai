@@ -27,7 +27,6 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
 
   const checkInMutation = useMutation({
     mutationFn: async (mood) => {
-      // Always use local date so check-in logs to the user's actual day
       const now = new Date();
       const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || `guest_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
@@ -42,15 +41,25 @@ export default function PlayerCheckIn({ user, isDarkMode }) {
         activity_type: 'custom'
       });
     },
+    onMutate: (mood) => {
+      // Optimistic: immediately show checked-in state
+      setHasCheckedIn(true);
+      setSelectedMood(mood);
+    },
     onSuccess: (_, mood) => {
       const today = new Date().toDateString();
       localStorage.setItem('checkin_date', today);
-      setHasCheckedIn(true);
       toast.success(`Check-in logged to schedule! 📅`);
       queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
       setTimeout(() => {
         navigate(createPageUrl('ScheduleExtendedView'));
       }, 1000);
+    },
+    onError: () => {
+      // Rollback optimistic update on error
+      setHasCheckedIn(false);
+      setSelectedMood(null);
+      toast.error('Check-in failed. Please try again.');
     },
   });
 
