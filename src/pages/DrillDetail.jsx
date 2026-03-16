@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Lightbulb,
   Video,
-  Volume2
+  Volume2,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -99,13 +100,46 @@ export default function DrillDetail() {
   const prevDrill = currentIndex > 0 ? allDrills[currentIndex - 1] : null;
   const nextDrill = currentIndex >= 0 && currentIndex < allDrills.length - 1 ? allDrills[currentIndex + 1] : null;
 
-  const goToDrill = (targetDrill) => {
+  const goToDrill = (targetDrill, skipProCheck = false) => {
     if (!targetDrill) return;
+    // Block pro drills for non-premium users
+    if (!skipProCheck && targetDrill.skill_level === 'pro') {
+      const premiums = JSON.parse(localStorage.getItem('_premiumCache') || 'null');
+      // We'll handle in the button click handler instead
+    }
     setCurrentStep(0);
     setIsStarted(false);
     setIsCompleted(false);
     setYoutubeError(false);
     navigate(createPageUrl(`DrillDetail?id=${targetDrill.id}`));
+  };
+
+  const { data: premiumStatus } = useQuery({
+    queryKey: ['premiumStatus', user?.email || 'guest'],
+    queryFn: async () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
+      const subs = await base44.entities.PremiumSubscription.filter({ user_email: guestEmail });
+      return subs[0] || null;
+    },
+  });
+  const isPremium = premiumStatus?.is_premium || false;
+
+  const handleNavNext = () => {
+    if (!nextDrill) return;
+    if (nextDrill.skill_level === 'pro' && !isPremium) {
+      alert('🔒 This drill is locked.\n\nPro drills are available for Premium subscribers only.\n\nUpgrade to Premium to access all Pro-level content!');
+      return;
+    }
+    goToDrill(nextDrill);
+  };
+
+  const handleNavPrev = () => {
+    if (!prevDrill) return;
+    if (prevDrill.skill_level === 'pro' && !isPremium) {
+      alert('🔒 This drill is locked.\n\nPro drills are available for Premium subscribers only.\n\nUpgrade to Premium to access all Pro-level content!');
+      return;
+    }
+    goToDrill(prevDrill);
   };
 
   const completeDrillMutation = useMutation({
@@ -284,32 +318,37 @@ export default function DrillDetail() {
 
   return (
     <div className="min-h-screen bg-white pb-24">
+      {/* Floating Left Arrow (Prev Drill) */}
+      {prevDrill && (
+        <button
+          onClick={handleNavPrev}
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-10 h-16 bg-black/30 hover:bg-black/50 text-white rounded-r-2xl transition-all"
+          title="Previous drill"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      )}
+      {/* Floating Right Arrow (Next Drill) */}
+      {nextDrill && (
+        <button
+          onClick={handleNavNext}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-10 h-16 bg-black/30 hover:bg-black/50 text-white rounded-l-2xl transition-all"
+          title="Next drill"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      )}
+
       {/* Header */}
       <div className={cn("bg-gradient-to-r px-6 pt-8 pb-20", categoryColors[drill.category])}>
-        <div className="flex items-center justify-between mb-4">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-white/80 hover:text-white">
+        <div className="flex items-center mb-4">
+          <button
+            onClick={() => navigate(createPageUrl('Drills'))}
+            className="flex items-center gap-1 text-white/80 hover:text-white"
+          >
             <ChevronLeft className="w-5 h-5" />
-            <span>Back</span>
+            <span>Back to Drills</span>
           </button>
-          {/* Prev / Next drill navigation */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => goToDrill(prevDrill)}
-              disabled={!prevDrill}
-              className="flex items-center gap-1 text-white/80 hover:text-white disabled:opacity-30 text-sm"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Prev
-            </button>
-            <button
-              onClick={() => goToDrill(nextDrill)}
-              disabled={!nextDrill}
-              className="flex items-center gap-1 text-white/80 hover:text-white disabled:opacity-30 text-sm"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
         </div>
         
         <h1 className="text-2xl font-bold text-white mb-2">{drill.title}</h1>
