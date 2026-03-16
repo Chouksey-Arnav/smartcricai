@@ -65,23 +65,33 @@ export default function MiniMatch() {
         user_email: guestId
       });
 
-      // Update Match IQ on UserProgress and Leaderboard
-      const completions = await base44.entities.ScenarioCompletion.filter({ user_email: guestId });
-      const total = completions.length;
-      const correct = completions.filter(c => c.was_correct).length;
+      // Re-fetch ALL completions for this user to compute accurate match IQ
+      const allCompletions = await base44.entities.ScenarioCompletion.filter({ user_email: guestId });
+      const total = allCompletions.length;
+      const correct = allCompletions.filter(c => c.was_correct).length;
       const matchIQ = total > 0 ? Math.round((correct / total) * 100) : 50;
 
+      // Update UserProgress
       const progressResults = await base44.entities.UserProgress.filter({ user_email: guestId });
       if (progressResults[0]) {
         await base44.entities.UserProgress.update(progressResults[0].id, {
-          match_iq: matchIQ
+          match_iq: matchIQ,
+          total_xp: (progressResults[0].total_xp || 0) + (data.was_correct ? 10 : 2),
+        });
+      } else {
+        await base44.entities.UserProgress.create({
+          user_email: guestId,
+          match_iq: matchIQ,
+          total_xp: data.was_correct ? 10 : 2,
         });
       }
 
+      // Update Leaderboard
       const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestId });
       if (leaderboards[0]) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
-          match_iq: matchIQ
+          match_iq: matchIQ,
+          total_xp: (leaderboards[0].total_xp || 0) + (data.was_correct ? 10 : 2),
         });
       }
     },
