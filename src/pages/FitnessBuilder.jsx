@@ -161,13 +161,23 @@ export default function FitnessBuilder() {
         }
       });
 
-      return await base44.entities.Workout.create({
+      // Mark any in_progress workouts as not_started so the new one takes priority
+      const existingWorkouts = await base44.entities.Workout.filter({ user_email: guestEmail });
+      const inProgress = existingWorkouts.filter(w => w.status === 'in_progress');
+      await Promise.all(inProgress.map(w => base44.entities.Workout.update(w.id, { status: 'not_started' })));
+      // Clear saved progress so AIWorkout doesn't resume old one
+      localStorage.removeItem('workoutProgress');
+
+      const newWorkout = await base44.entities.Workout.create({
         user_email: guestEmail,
         name: workoutName,
         drills,
         status: 'not_started',
         xp_value: xpValue
       });
+      // Store the new workout id so AIWorkout opens it first
+      localStorage.setItem('fitnessbuilder_new_workout_id', newWorkout.id);
+      return newWorkout;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
