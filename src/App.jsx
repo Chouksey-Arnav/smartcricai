@@ -22,24 +22,30 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  // Only block rendering for a public-settings load, not for auth checks
+  // This prevents blank screens when auth is slow or unavailable
+  if (isLoadingPublicSettings) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+          <p className="text-sm text-slate-500">Loading SmartCrick...</p>
+        </div>
       </div>
     );
   }
 
-  // Handle authentication errors
+  // Handle authentication errors — but NOT for public apps where auth is optional
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
+      // Only redirect if auth is truly required (not just unavailable)
       navigateToLogin();
       return null;
     }
+    // For unknown errors on public apps, render the app anyway
+    // so guest users aren't blocked
   }
 
   // Render the main app
