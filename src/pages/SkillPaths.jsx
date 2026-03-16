@@ -81,6 +81,13 @@ export default function SkillPaths() {
     },
   });
 
+  // Preload drills so drill deep-linking works from skill paths
+  useQuery({
+    queryKey: ['drills'],
+    queryFn: () => base44.entities.Drill.list(),
+    staleTime: 300000,
+  });
+
   const isPremium = premiumStatus?.is_premium || false;
   const completedItems = skillPath?.completed_items || [];
   const currentCategory = skillPath?.category || 'batting';
