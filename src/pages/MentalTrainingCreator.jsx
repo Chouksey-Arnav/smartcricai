@@ -63,11 +63,12 @@ export default function MentalTrainingCreator() {
   const saveMentalRoutineMutation = useMutation({
     mutationFn: async (routine) => {
       const guestId = getGuestId();
-      return await base44.entities.MentalRoutine.create({
+      // Ensure user_email matches what MentalCoaching queries (by user_email)
+      const result = await base44.entities.MentalRoutine.create({
         ...routine,
         user_email: guestId,
-        created_by: guestId,
       });
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
