@@ -42,7 +42,8 @@ export default function AIWorkout() {
       const results = await base44.entities.UserProgress.filter({ user_email: guestId });
       return results[0] || null;
     },
-    staleTime: 10000,
+    staleTime: 0,
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
 
