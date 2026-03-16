@@ -68,6 +68,9 @@ export default function SkillPaths() {
       const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const { data: premiumStatus } = useQuery({
