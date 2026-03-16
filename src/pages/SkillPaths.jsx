@@ -153,15 +153,22 @@ export default function SkillPaths() {
 
   const completeItem = useMutation({
     mutationFn: async ({ itemId, xp, itemName }) => {
-      if (!skillPath || !userProgress) throw new Error('No skill path or progress');
+      if (!skillPath) throw new Error('No skill path');
       const alreadyDone = completedItems.includes(itemId);
       const newCompleted = alreadyDone ? [...completedItems] : [...completedItems, itemId];
       const earnedXP = alreadyDone ? 0 : xp;
 
       if (!alreadyDone) {
-        await base44.entities.UserProgress.update(userProgress.id, {
-          total_xp: (userProgress.total_xp || 0) + earnedXP,
-        });
+        if (userProgress?.id) {
+          await base44.entities.UserProgress.update(userProgress.id, {
+            total_xp: (userProgress.total_xp || 0) + earnedXP,
+          });
+        } else {
+          await base44.entities.UserProgress.create({
+            user_email: guestEmail,
+            total_xp: earnedXP,
+          });
+        }
         const leaderboards = await base44.entities.Leaderboard.filter({ user_email: guestEmail });
         if (leaderboards.length > 0) {
           await base44.entities.Leaderboard.update(leaderboards[0].id, {
