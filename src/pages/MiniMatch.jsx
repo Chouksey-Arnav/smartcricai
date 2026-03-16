@@ -201,10 +201,14 @@ export default function MiniMatch() {
                       <Zap className="w-5 h-5 text-orange-500" />
                       Real-Time Decision Mode
                     </h3>
-                    <Switch
-                      checked={timerEnabled}
-                      onCheckedChange={setTimerEnabled}
-                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-slate-500">{timerEnabled ? 'ON' : 'OFF'}</span>
+                      <Switch
+                        checked={timerEnabled}
+                        onCheckedChange={setTimerEnabled}
+                        className={timerEnabled ? 'bg-orange-500' : 'bg-slate-300'}
+                      />
+                    </div>
                   </div>
                   <p className="text-sm text-slate-600 mb-3">
                     Choose your challenge level. No pausing, no undo. Simulates real match pressure.
@@ -282,13 +286,25 @@ export default function MiniMatch() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-6"
             >
-              <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
-                <Zap className="w-8 h-8 text-orange-500" />
-                Mini-Match Situations
-              </h1>
-              <p className="text-slate-600 dark:text-white">
-                Face realistic cricket moments and make smart decisions!
-              </p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                    <Zap className="w-8 h-8 text-orange-500" />
+                    Mini-Match Situations
+                  </h1>
+                  <p className="text-slate-600 dark:text-white">
+                    Face realistic cricket moments and make smart decisions!
+                  </p>
+                </div>
+                <Button
+                  onClick={() => { setGameStarted(false); setCurrentScenario(null); setSelectedOption(null); setShowResult(false); }}
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0 border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4 mr-1" /> Exit
+                </Button>
+              </div>
             </motion.div>
 
             {/* Stats & Timer */}
