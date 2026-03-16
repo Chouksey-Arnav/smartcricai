@@ -90,8 +90,16 @@ export default function SkillPaths() {
   // Navigate to the correct activity page for a skill path item
   const handleStartItem = (item) => {
     if (item.type === 'drill') {
-      // Drills: navigate to Drills page with search hint (deep link by name not possible without entity ID lookup)
-      navigate(createPageUrl('Drills'));
+      // Try to find drill by name in allDrills cache for deep-linking
+      const drillsCache = queryClient.getQueryData(['drills']);
+      const matchedDrill = drillsCache?.find(d =>
+        d.title?.toLowerCase().trim() === item.name?.toLowerCase().trim()
+      );
+      if (matchedDrill) {
+        navigate(createPageUrl(`DrillDetail?id=${matchedDrill.id}&skillPathId=${skillPath?.id}&skillPathItemId=${item.id}`));
+      } else {
+        navigate(createPageUrl('Drills'));
+      }
     } else if (item.type === 'mental') {
       const mentalIndex = MENTAL_MAP[item.name];
       if (mentalIndex !== undefined) {
