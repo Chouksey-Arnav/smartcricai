@@ -1,11 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Suspense, lazy } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import BottomNav from '@/components/common/BottomNav';
-import Sidebar from '@/components/common/Sidebar';
 import NotificationBar from '@/components/common/NotificationBar';
 import FloatingTimer from '@/components/common/FloatingTimer';
-import ThirtyDayNotifications from '@/components/common/ThirtyDayNotifications';
+
+// Lazy-load heavy components to reduce initial bundle size
+const Sidebar = lazy(() => import('@/components/common/Sidebar'));
+const ThirtyDayNotifications = lazy(() => import('@/components/common/ThirtyDayNotifications'));
 
 const pagesWithoutNav = ['Onboarding', 'DrillDetail', 'MentalRoutinePlayer', 'QuizPlayer'];
 const pagesWithLightBg = ['HeadCoach', 'NinetyDayChallenge', 'ThirtyDayChallenge', 'Coach', 'DrillYouTubeFinder', 'AIDrillRecommendation'];
@@ -15,12 +17,20 @@ function RelevanceAIChatbot() {
   useEffect(() => {
     if (ref.current) return;
     ref.current = true;
-    const script = document.createElement('script');
-    script.defer = true;
-    script.src = 'https://app.relevanceai.com/embed/chat-bubble.js';
-    script.setAttribute('data-relevanceai-share-id', 'bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064');
-    script.setAttribute('data-share-styles', 'hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false');
-    document.body.appendChild(script);
+    // Defer chatbot script until after page load to not block rendering
+    const load = () => {
+      const script = document.createElement('script');
+      script.defer = true;
+      script.src = 'https://app.relevanceai.com/embed/chat-bubble.js';
+      script.setAttribute('data-relevanceai-share-id', 'bcbe5a/e5e3eeef-250d-4d16-8d49-ebcf5906ce75/796ea726-3ea3-4505-87cc-0efc3338f064');
+      script.setAttribute('data-share-styles', 'hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Enter+whatever+drill+you+want+here...&hide_logo=false&hide_description=false');
+      document.body.appendChild(script);
+    };
+    if (document.readyState === 'complete') {
+      load();
+    } else {
+      window.addEventListener('load', load, { once: true });
+    }
   }, []);
   return null;
 }
@@ -30,6 +40,7 @@ export default function Layout({ children, currentPageName }) {
   const isHomePage = currentPageName === 'Home';
   const forceLightBg = pagesWithLightBg.includes(currentPageName);
 
+  // Use a non-blocking query — never stalls rendering
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
@@ -39,6 +50,8 @@ export default function Layout({ children, currentPageName }) {
         return null;
       }
     },
+    retry: false,
+    staleTime: 300000,
   });
 
   // Auto-detect system dark mode preference
@@ -53,12 +66,21 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className={forceLightBg ? "min-h-screen bg-white dark:bg-white" : "min-h-screen bg-slate-50"}>
-      <Sidebar />
+      {/* Sidebar is lazy-loaded — won't block initial render */}
+      <Suspense fallback={null}>
+        <Sidebar />
+      </Suspense>
+
       <div className="fixed top-4 right-4 z-50 flex items-start gap-2">
         <NotificationBar />
         <FloatingTimer />
       </div>
-      <ThirtyDayNotifications user={user} />
+
+      {/* ThirtyDayNotifications is lazy-loaded */}
+      <Suspense fallback={null}>
+        <ThirtyDayNotifications user={user} />
+      </Suspense>
+
       <style>{`
         :root {
           --primary: 16 185 129;
@@ -106,8 +128,6 @@ export default function Layout({ children, currentPageName }) {
           background: #059669;
         }
 
-
-
         /* Page content padding for notification bar and timer + safe areas */
         .page-content-wrapper {
           padding-top: max(${isHomePage ? '0' : '100px'}, env(safe-area-inset-top));
@@ -143,52 +163,22 @@ export default function Layout({ children, currentPageName }) {
           background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
         }
 
-        html.dark .text-slate-800 {
-          color: #f1f5f9 !important;
-        }
-
-        html.dark .text-slate-700 {
-          color: #e2e8f0 !important;
-        }
-
-        html.dark .text-slate-600 {
-          color: #cbd5e1 !important;
-        }
-
-        html.dark .text-slate-500 {
-          color: #94a3b8 !important;
-        }
-
-        html.dark .text-slate-200 {
-          color: #f1f5f9 !important;
-        }
-
-        html.dark .text-slate-100 {
-          color: #f8fafc !important;
-        }
-
-        html.dark .border-slate-200 {
-          border-color: #475569 !important;
-        }
-
-        html.dark .border-slate-100 {
-          border-color: #334155 !important;
-        }
-
-        html.dark .bg-slate-50 {
-          background-color: #1e293b !important;
-        }
-
-        html.dark .bg-slate-100 {
-          background-color: #334155 !important;
-        }
+        html.dark .text-slate-800 { color: #f1f5f9 !important; }
+        html.dark .text-slate-700 { color: #e2e8f0 !important; }
+        html.dark .text-slate-600 { color: #cbd5e1 !important; }
+        html.dark .text-slate-500 { color: #94a3b8 !important; }
+        html.dark .text-slate-200 { color: #f1f5f9 !important; }
+        html.dark .text-slate-100 { color: #f8fafc !important; }
+        html.dark .border-slate-200 { border-color: #475569 !important; }
+        html.dark .border-slate-100 { border-color: #334155 !important; }
+        html.dark .bg-slate-50 { background-color: #1e293b !important; }
+        html.dark .bg-slate-100 { background-color: #334155 !important; }
 
         html.dark .shadow-lg {
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+          box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.3) !important;
         }
-
         html.dark .shadow-xl {
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3) !important;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.3) !important;
         }
 
         html.dark input, html.dark textarea, html.dark select {
@@ -197,21 +187,10 @@ export default function Layout({ children, currentPageName }) {
           border-color: #475569 !important;
         }
 
-        html.dark button {
-          color-scheme: dark;
-        }
-
-        html.dark label {
-          color: #cbd5e1 !important;
-        }
-
-        html.dark .text-slate-400 {
-          color: #cbd5e1 !important;
-        }
-
-        html.dark .text-slate-300 {
-          color: #94a3b8 !important;
-        }
+        html.dark button { color-scheme: dark; }
+        html.dark label { color: #cbd5e1 !important; }
+        html.dark .text-slate-400 { color: #cbd5e1 !important; }
+        html.dark .text-slate-300 { color: #94a3b8 !important; }
 
         /* Force light mode for specific pages */
         .force-light-mode,
@@ -219,17 +198,20 @@ export default function Layout({ children, currentPageName }) {
           background-color: white !important;
           color: #000 !important;
         }
+
+        /* Lazy image loading */
+        img {
+          loading: lazy;
+        }
         `}</style>
 
-        <div className={isHomePage ? '' : 'page-content-wrapper'} style={{ overscrollBehavior: 'contain' }}>
+      <div className={isHomePage ? '' : 'page-content-wrapper'} style={{ overscrollBehavior: 'contain' }}>
         {children}
-        </div>
-      
-
+      </div>
 
       {showNav && <BottomNav />}
 
-      {/* Relevance AI Chatbot - Global */}
+      {/* Relevance AI Chatbot - deferred until after page load */}
       <RelevanceAIChatbot />
     </div>
   );
