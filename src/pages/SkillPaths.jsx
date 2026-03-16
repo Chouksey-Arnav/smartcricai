@@ -218,8 +218,10 @@ export default function SkillPaths() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
+                    whileHover={{ scale: 1.04, boxShadow: '0 8px 30px rgba(0,0,0,0.18)' }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => setSelectedCategory(catKey)}
-                    className={`w-full bg-gradient-to-r ${conf.bg} rounded-2xl p-6 text-white text-left shadow-lg hover:scale-105 transition-transform`}
+                    className={`w-full bg-gradient-to-r ${conf.bg} rounded-2xl p-6 text-white text-left shadow-lg transition-shadow`}
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
@@ -258,6 +260,12 @@ export default function SkillPaths() {
                   const meetsXP = (userProgress?.total_xp || 0) >= levelData.unlockXP;
                   const canStart = !isLocked && meetsXP;
 
+                  const handleStartEarly = () => {
+                    if (confirm(`⚠️ Start Early?\n\nThis path requires ${levelData.unlockXP.toLocaleString()} XP but you only have ${(userProgress?.total_xp || 0).toLocaleString()} XP.\n\nStarting early means this path will be more challenging. Are you sure you're ready to push yourself?\n\nTap OK to start early anyway.`)) {
+                      createPath.mutate({ category: selectedCategory, level: levelKey });
+                    }
+                  };
+
                   return (
                     <motion.div
                       key={levelKey}
@@ -289,13 +297,25 @@ export default function SkillPaths() {
                           <Lock className="w-3 h-3" /> Premium required
                         </p>
                       )}
-                      <Button
-                        onClick={() => canStart && createPath.mutate({ category: selectedCategory, level: levelKey })}
-                        disabled={!canStart || createPath.isPending}
-                        className={`w-full ${canStart ? catConfig.btn : 'bg-slate-300 cursor-not-allowed'}`}
-                      >
-                        {isLocked ? 'Premium Only' : !meetsXP ? 'Need More XP' : createPath.isPending ? 'Starting...' : 'Start This Path'}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => canStart && createPath.mutate({ category: selectedCategory, level: levelKey })}
+                          disabled={isLocked || createPath.isPending}
+                          className={`flex-1 ${canStart ? catConfig.btn : isLocked ? 'bg-slate-300 cursor-not-allowed' : catConfig.btn}`}
+                        >
+                          {isLocked ? 'Premium Only' : createPath.isPending ? 'Starting...' : 'Start This Path'}
+                        </Button>
+                        {!isLocked && !meetsXP && (
+                          <Button
+                            onClick={handleStartEarly}
+                            disabled={createPath.isPending}
+                            variant="outline"
+                            className="text-xs border-amber-400 text-amber-600 hover:bg-amber-50"
+                          >
+                            Start Early
+                          </Button>
+                        )}
+                      </div>
                     </motion.div>
                   );
                 })}
