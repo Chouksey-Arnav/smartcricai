@@ -1600,6 +1600,28 @@ const BASE_MENTAL_ROUTINES = [
   },
 ];
 
-export const ALL_MENTAL_ROUTINES = [...BASE_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES_2, ...EXTRA_MENTAL_ROUTINES_3];
+const BOX_BREATHING_ROUTINE = {
+  title: "Box Breathing",
+  category: "focus",
+  duration_seconds: 480,
+  description: "A powerful 4-count box breathing exercise to calm nerves and sharpen focus instantly.",
+  difficulty: "beginner",
+  is_premium: false,
+  xp_value: 60,
+  calming_sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8e1c1ab.mp3",
+  steps: [
+    { instruction: "Sit upright. Close your eyes. Relax your shoulders.", duration_seconds: 20 },
+    { instruction: "Inhale slowly through your nose for 4 counts.", duration_seconds: 30 },
+    { instruction: "Hold your breath for 4 counts. Stay relaxed.", duration_seconds: 30 },
+    { instruction: "Exhale fully through your mouth for 4 counts.", duration_seconds: 30 },
+    { instruction: "Hold empty for 4 counts. Then begin again.", duration_seconds: 30 },
+    { instruction: "Repeat the box: Inhale 4 — Hold 4 — Exhale 4 — Hold 4.", duration_seconds: 160 },
+    { instruction: "Notice your heart rate slowing. Your mind growing quiet.", duration_seconds: 60 },
+    { instruction: "Final round: breathe in deeply, hold, release all tension.", duration_seconds: 60 },
+    { instruction: "Open your eyes. You are calm, focused, and ready.", duration_seconds: 30 },
+  ]
+};
+
+export const ALL_MENTAL_ROUTINES = [BOX_BREATHING_ROUTINE, ...BASE_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES, ...EXTRA_MENTAL_ROUTINES_2, ...EXTRA_MENTAL_ROUTINES_3];
 
 export default ALL_MENTAL_ROUTINES;
