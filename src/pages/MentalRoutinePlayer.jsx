@@ -84,12 +84,12 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   );
 }
 
-// 4-7-8 Breathing Triangle Visualizer — large, fading top label, no vertex labels
+// 4-7-8 Breathing Triangle Visualizer — blue=inhale, red=hold, green=exhale
 function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const phases = [
-    { label: 'Inhale', duration: 4, color: '#34d399' },
-    { label: 'Hold', duration: 7, color: '#60a5fa' },
-    { label: 'Exhale', duration: 8, color: '#f472b6' },
+    { label: 'Inhale', duration: 4, color: '#60a5fa' },   // blue
+    { label: 'Hold',   duration: 7, color: '#f87171' },   // red
+    { label: 'Exhale', duration: 8, color: '#34d399' },   // green
   ];
   const totalCycle = 19;
   const elapsed = stepDuration - stepTimeRemaining;
@@ -107,20 +107,23 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
     acc += phases[i].duration;
   }
 
-  const cx = 180, cy = 175, r = 160;
+  const svgW = 340, svgH = 320;
+  const cx = svgW / 2, cy = svgH / 2 + 10, r = 130;
   const pts = [
     { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx, y: cy - r },
   ];
 
+  // edges: 0→2 (inhale), 2→1 (hold), 1→0 (exhale)
   const edgePairs = [[0, 2], [2, 1], [1, 0]];
   const [sIdx, eIdx] = edgePairs[phaseIndex];
   const dotX = pts[sIdx].x + (pts[eIdx].x - pts[sIdx].x) * phaseProgress;
   const dotY = pts[sIdx].y + (pts[eIdx].y - pts[sIdx].y) * phaseProgress;
-  const secondsLeft = phases[phaseIndex].duration - Math.floor(cyclePos - acc);
+  const secondsLeft = Math.max(1, phases[phaseIndex].duration - Math.floor(cyclePos - acc));
   const triPoints = pts.map(p => `${p.x},${p.y}`).join(' ');
   const color = phases[phaseIndex].color;
+  const nextColor = phases[(phaseIndex + 1) % 3].color;
 
   return (
     <div className="flex flex-col items-center">
@@ -131,31 +134,45 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.35 }}
-          className="text-3xl font-bold mb-3"
+          className="text-3xl font-bold mb-2"
           style={{ color }}
         >
           {phases[phaseIndex].label}
         </motion.p>
       </AnimatePresence>
-      <svg width={375} height={370}>
+      <svg width={svgW} height={svgH}>
         <defs>
           <linearGradient id="triGrad478" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.22" />
-            <stop offset="100%" stopColor={phases[(phaseIndex + 1) % 3].color} stopOpacity="0.06" />
+            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={nextColor} stopOpacity="0.08" />
           </linearGradient>
+          <radialGradient id="dotGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.7" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </radialGradient>
         </defs>
-        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color} strokeWidth={4} strokeLinejoin="round" opacity={0.9} />
+        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color} strokeWidth={5} strokeLinejoin="round" opacity={0.95} />
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r={7} fill={color} opacity={0.7} />
+          <circle key={i} cx={p.x} cy={p.y} r={8} fill={phases[i].color} opacity={0.85} />
         ))}
+        {/* Glow halo around dot */}
         <motion.circle
-          cx={dotX} cy={dotY} r={17}
-          fill={color}
+          cx={dotX} cy={dotY} r={28}
+          fill="url(#dotGlow)"
           animate={{ cx: dotX, cy: dotY }}
-          transition={{ duration: 1.0, ease: 'linear' }}
+          transition={{ duration: 0.5, ease: 'linear' }}
+        />
+        {/* Main dot */}
+        <motion.circle
+          cx={dotX} cy={dotY} r={16}
+          fill={color}
+          stroke="white"
+          strokeWidth={2.5}
+          animate={{ cx: dotX, cy: dotY }}
+          transition={{ duration: 0.5, ease: 'linear' }}
         />
       </svg>
-      <p className="text-white/60 text-sm mt-1">{Math.max(1, secondsLeft)}s</p>
+      <p className="text-white/60 text-sm mt-1">{secondsLeft}s</p>
     </div>
   );
 }
