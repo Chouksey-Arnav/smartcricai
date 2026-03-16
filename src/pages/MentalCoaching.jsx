@@ -144,10 +144,11 @@ export default function MentalCoaching() {
   const deleteAllRoutinesMutation = useMutation({
     mutationFn: async () => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
-      const routinesToDelete = await base44.entities.MentalRoutine.filter({ created_by: guestEmail });
-      await Promise.all(
-        routinesToDelete.map(routine => base44.entities.MentalRoutine.delete(routine.id))
-      );
+      const guestId = localStorage.getItem('smartcrick_guest_id') || guestEmail;
+      const byEmail = await base44.entities.MentalRoutine.filter({ user_email: guestEmail });
+      const byGuestId = guestId !== guestEmail ? await base44.entities.MentalRoutine.filter({ user_email: guestId }) : [];
+      const all = [...byEmail, ...byGuestId];
+      await Promise.all(all.map(routine => base44.entities.MentalRoutine.delete(routine.id)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
