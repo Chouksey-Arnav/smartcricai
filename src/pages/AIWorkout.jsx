@@ -108,15 +108,31 @@ export default function AIWorkout() {
       } catch (e) { console.error(e); }
       return;
     }
+    // Auto-select workout created from FitnessBuilder
+    const newWorkoutId = localStorage.getItem('fitnessbuilder_new_workout_id');
+    if (newWorkoutId) {
+      localStorage.removeItem('fitnessbuilder_new_workout_id');
+      const workout = workouts.find(w => w.id === newWorkoutId);
+      if (workout) {
+        setSelectedWorkoutId(newWorkoutId);
+        setWorkoutStarted(false);
+        setCurrentExerciseIndex(0);
+        setCompletedSets({});
+        return;
+      }
+    }
+
     const savedProgress = localStorage.getItem('workoutProgress');
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       const workout = workouts.find(w => w.id === progress.workoutId);
-      if (workout) {
+      if (workout && workout.status !== 'completed') {
         setSelectedWorkoutId(progress.workoutId);
-        setCurrentExerciseIndex(progress.currentExerciseIndex);
-        setCompletedSets(progress.completedSets);
+        setCurrentExerciseIndex(progress.currentExerciseIndex || 0);
+        setCompletedSets(progress.completedSets || {});
         setWorkoutStarted(true);
+      } else {
+        localStorage.removeItem('workoutProgress');
       }
     }
   }, [workouts]);
