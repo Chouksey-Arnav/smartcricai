@@ -419,13 +419,22 @@ export default function MiniMatch() {
 
                     {/* Submit Button */}
                     {!showResult && (
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={!selectedOption}
-                        className="w-full mt-6 h-12 bg-purple-600 hover:bg-purple-700"
-                      >
-                        Submit Answer
-                      </Button>
+                      <div className="flex gap-3 mt-6">
+                        <Button
+                          onClick={() => { setGameStarted(false); setCurrentScenario(null); setSelectedOption(null); setShowResult(false); }}
+                          variant="outline"
+                          className="border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={handleSubmit}
+                          disabled={!selectedOption}
+                          className="flex-1 h-12 bg-purple-600 hover:bg-purple-700"
+                        >
+                          Submit Answer
+                        </Button>
+                      </div>
                     )}
                   </div>
 
