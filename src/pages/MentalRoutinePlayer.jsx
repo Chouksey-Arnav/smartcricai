@@ -304,6 +304,7 @@ export default function MentalRoutinePlayer() {
       queryClient.invalidateQueries({ queryKey: ['completedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['homeStats'] });
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
+      queryClient.refetchQueries({ queryKey: ['userProgress'] });
       // Notify SmartStart to check off this mental session for today
       window.dispatchEvent(new CustomEvent('smartstart_item_completed', { detail: { type: 'mental', id: routineId, title: routine?.title } }));
     },
