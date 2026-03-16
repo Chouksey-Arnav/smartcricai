@@ -252,9 +252,11 @@ export default function AIWorkout() {
       toast.success('Workout completed! Amazing job!');
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['aiProgress'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
+      queryClient.refetchQueries({ queryKey: ['userProgress'] });
       // Notify SmartStart to check off this workout for today
       window.dispatchEvent(new CustomEvent('smartstart_item_completed', { detail: { type: 'workout', id: activeWorkout?.name, title: activeWorkout?.name } }));
       localStorage.removeItem('workoutProgress');
