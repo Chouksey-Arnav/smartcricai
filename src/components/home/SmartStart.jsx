@@ -192,7 +192,7 @@ export default function SmartStart({ isDarkMode }) {
   };
 
   // Mark item as completed for today in localStorage (called by activity pages via a global event)
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = (e) => {
       const { type, id } = e.detail || {};
       if (!type) return;
