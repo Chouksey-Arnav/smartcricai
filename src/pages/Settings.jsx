@@ -207,19 +207,55 @@ export default function Settings() {
         </p>
       </div>
 
-      {/* Delete Account Confirmation */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+      {/* Delete Account Confirmation — Multi-Step */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={handleCloseDeleteDialog}>
+        <AlertDialogContent className="sm:max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Account?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. All your data, progress, workouts, and achievements will be permanently deleted.
+            <AlertDialogTitle className="text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              {deleteStep === 1 ? 'Delete Account?' : 'Confirm Account Deletion'}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                {deleteStep === 1 ? (
+                  <>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">
+                      ⚠️ This action is <strong>permanent and irreversible.</strong>
+                    </p>
+                    <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                      <li>All your XP, streaks, and progress will be deleted</li>
+                      <li>All your saved workouts and drills will be removed</li>
+                      <li>Your leaderboard ranking will disappear</li>
+                      <li>Your mental training history will be erased</li>
+                    </ul>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-slate-700 dark:text-slate-300 text-sm">
+                      To confirm, please type your email address:
+                      <strong className="block text-slate-800 dark:text-white mt-1">{user?.email}</strong>
+                    </p>
+                    <input
+                      type="email"
+                      value={deleteEmailInput}
+                      onChange={(e) => setDeleteEmailInput(e.target.value)}
+                      placeholder="Enter your email to confirm"
+                      aria-label="Confirm your email to delete account"
+                      className="w-full px-4 py-3 border-2 border-red-300 rounded-xl text-sm focus:outline-none focus:border-red-500 dark:bg-slate-800 dark:text-white"
+                    />
+                  </>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700">
-              Yes, Delete My Account
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel aria-label="Cancel account deletion">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              className="bg-red-600 hover:bg-red-700 min-h-[44px]"
+              aria-label={deleteStep === 1 ? 'Continue to confirm deletion' : 'Permanently delete my account'}
+            >
+              {deleteStep === 1 ? 'Continue →' : 'Delete My Account Forever'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
