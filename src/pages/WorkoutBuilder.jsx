@@ -117,19 +117,38 @@ export default function WorkoutBuilder() {
     setExercises(items);
   };
 
-  // Build drills array for saving — each exercise stored with full set count
-  // so AIWorkout can correctly show "Set 1 of 3", "Set 2 of 3" etc.
+  // Build drills array for saving — expands each exercise into individual set entries
+  // with rest blocks inserted ONLY where explicitly configured by the user.
   const buildDrillsArray = () => {
-    return exercises.map(ex => ({
-      drill_id: ex.id,
-      drill_title: ex.name,
-      sets: ex.sets,
-      reps: ex.reps,
-      completed_sets: 0,
-      type: 'exercise',
-      category: ex.category || 'fitness',
-      rest_seconds: 60,
-    }));
+    const drills = [];
+    exercises.forEach(ex => {
+      for (let s = 1; s <= ex.sets; s++) {
+        drills.push({
+          drill_id: `${ex.id}_set${s}`,
+          drill_title: `${ex.name} — Set ${s}`,
+          sets: 1,
+          reps: ex.reps,
+          completed_sets: 0,
+          type: 'exercise',
+          category: ex.category || 'fitness',
+          rest_seconds: ex.rests?.[s]?.duration || 60,
+        });
+        // Only add rest block if the user explicitly toggled one after this set
+        const hasRest = ex.rests?.[s];
+        if (hasRest && s < ex.sets) {
+          drills.push({
+            drill_id: `rest_${ex.id}_set${s}`,
+            drill_title: 'Rest Period',
+            sets: 1,
+            reps: hasRest.duration,
+            completed_sets: 0,
+            type: 'rest',
+            rest_seconds: hasRest.duration,
+          });
+        }
+      }
+    });
+    return drills;
   };
 
   const saveWorkoutMutation = useMutation({
