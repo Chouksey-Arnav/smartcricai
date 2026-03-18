@@ -207,7 +207,7 @@ export default function SkillPaths() {
   });
 
   // Listen for activity completion events dispatched by DrillDetail, MentalRoutinePlayer, AIWorkout
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = (e) => {
       const { type, id, title } = e.detail || {};
       if (!skillPath || !type) return;
