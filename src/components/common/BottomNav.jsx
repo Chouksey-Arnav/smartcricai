@@ -41,8 +41,9 @@ export default function BottomNav() {
       {/* Collapse/Expand Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
+        aria-label={isCollapsed ? 'Show navigation' : 'Hide navigation'}
         className={cn(
-          "absolute left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 rounded-t-xl px-4 py-2 shadow-lg border border-b-0 border-emerald-100 dark:border-slate-700 transition-all",
+          "absolute left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 rounded-t-xl px-4 py-2 shadow-lg border border-b-0 border-emerald-100 dark:border-slate-700 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center",
           isCollapsed ? "-top-10" : "-top-10"
         )}
       >
@@ -61,8 +62,10 @@ export default function BottomNav() {
               key={item.name}
               href={createPageUrl(item.page)}
               onClick={(e) => handleNavClick(e, item)}
+              aria-label={`Navigate to ${item.name}`}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
-                "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300",
+                "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 min-h-[52px] min-w-[52px] justify-center",
                 isActive 
                   ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" 
                   : "text-slate-400 dark:text-slate-500 hover:text-emerald-500 dark:hover:text-emerald-400"
