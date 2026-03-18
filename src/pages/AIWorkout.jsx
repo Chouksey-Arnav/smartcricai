@@ -35,12 +35,13 @@ export default function AIWorkout() {
     },
   });
 
-  const { data: aiProgress } = useQuery({
-    queryKey: ['userProgress', user?.email || 'guest'],
+  const { data: completedWorkoutsData } = useQuery({
+    queryKey: ['completedWorkoutsXP', user?.email || 'guest'],
     queryFn: async () => {
       const guestId = user?.email || 'guest@smartcrick.app';
-      const results = await base44.entities.UserProgress.filter({ user_email: guestId });
-      return results[0] || null;
+      const completed = await base44.entities.Workout.filter({ user_email: guestId, status: 'completed' });
+      const totalXP = completed.reduce((sum, w) => sum + (w.xp_value || 0), 0);
+      return { totalXP, count: completed.length };
     },
     staleTime: 0,
     refetchOnMount: true,

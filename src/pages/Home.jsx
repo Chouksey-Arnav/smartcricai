@@ -366,7 +366,7 @@ export default function Home() {
 
       return currentProgress;
     },
-    staleTime: 30000,
+    staleTime: 0,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     retry: 3,
