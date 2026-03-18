@@ -206,6 +206,27 @@ export default function SkillPaths() {
     },
   });
 
+  // Listen for activity completion events dispatched by DrillDetail, MentalRoutinePlayer, AIWorkout
+  React.useEffect(() => {
+    const handler = (e) => {
+      const { type, id, title } = e.detail || {};
+      if (!skillPath || !type) return;
+      // Find matching item in current path by title/name or id
+      const allItems = currentPathData?.weeks.flatMap(w => w.items) || [];
+      const matchedItem = allItems.find(item => {
+        if (type === 'drill') return item.type === 'drill' && (item.name?.toLowerCase() === title?.toLowerCase());
+        if (type === 'mental') return item.type === 'mental' && (item.name?.toLowerCase() === title?.toLowerCase());
+        if (type === 'workout') return item.type === 'workout' && (item.name?.toLowerCase() === title?.toLowerCase());
+        return false;
+      });
+      if (matchedItem && !completedItems.includes(matchedItem.id)) {
+        completeItem.mutate({ itemId: matchedItem.id, xp: matchedItem.xp || 50, itemName: matchedItem.name });
+      }
+    };
+    window.addEventListener('smartstart_item_completed', handler);
+    return () => window.removeEventListener('smartstart_item_completed', handler);
+  }, [skillPath, currentPathData, completedItems]);
+
   const resetPath = useMutation({
     mutationFn: async () => {
       if (!skillPath?.id) throw new Error('No path');
