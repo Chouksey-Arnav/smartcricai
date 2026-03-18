@@ -128,6 +128,28 @@ export default function Layout({ children, currentPageName }) {
           background: #059669;
         }
 
+        /* Minimum 44px tap targets for all interactive elements (mobile WebView) */
+        button, [role="button"], a, .nav-item, input[type="checkbox"], input[type="radio"] {
+          min-height: 44px;
+          min-width: 44px;
+        }
+
+        /* Bottom-sheet modal style for mobile screens */
+        @media (max-width: 640px) {
+          [role="dialog"] > div, .radix-dialog-content {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: auto !important;
+            border-radius: 24px 24px 0 0 !important;
+            max-height: 92vh !important;
+            overflow-y: auto !important;
+            transform: none !important;
+            translate: none !important;
+          }
+        }
+
         /* Page content padding for notification bar and timer + safe areas */
         .page-content-wrapper {
           padding-top: max(${isHomePage ? '0' : '100px'}, env(safe-area-inset-top));
