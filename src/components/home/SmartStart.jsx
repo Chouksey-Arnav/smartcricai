@@ -174,19 +174,23 @@ export default function SmartStart({ isDarkMode }) {
     }
   };
 
-  // Check if item was completed today via SmartStart only (resets daily)
+  // Check if item was completed today — reads from state for instant re-render
   const isCompleted = (item) => {
-    const today = new Date().toDateString();
-    const completedKey = `smartstart_completed_${today}_${guestEmail}`;
-    const completedToday = JSON.parse(localStorage.getItem(completedKey) || '[]');
     const itemKey = `${item.type}_${item.id}`;
-    return completedToday.includes(itemKey);
+    return completedKeys.includes(itemKey);
   };
+
+  // Track completed items in state so UI re-renders immediately on completion
+  const [completedKeys, setCompletedKeys] = useState(() => {
+    const today = new Date().toDateString();
+    const key = `smartstart_completed_${today}_${guestEmail}`;
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  });
 
   // Mark item as completed for today in localStorage (called by activity pages via a global event)
   React.useEffect(() => {
     const handler = (e) => {
-      const { type, id, title } = e.detail || {};
+      const { type, id } = e.detail || {};
       if (!type) return;
       const today = new Date().toDateString();
       const completedKey = `smartstart_completed_${today}_${guestEmail}`;
@@ -195,6 +199,7 @@ export default function SmartStart({ isDarkMode }) {
       if (!completedToday.includes(itemKey)) {
         completedToday.push(itemKey);
         localStorage.setItem(completedKey, JSON.stringify(completedToday));
+        setCompletedKeys([...completedToday]);
       }
     };
     window.addEventListener('smartstart_item_completed', handler);
