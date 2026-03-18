@@ -54,6 +54,15 @@ export default function Settings() {
   };
 
   const handleDeleteAccount = async () => {
+    if (deleteStep === 1) {
+      setDeleteStep(2);
+      return;
+    }
+    // Step 2: verify email matches
+    if (user?.email && deleteEmailInput.trim().toLowerCase() !== user.email.toLowerCase()) {
+      toast.error('Email does not match. Please try again.');
+      return;
+    }
     try {
       await base44.auth.deleteUser();
       toast.success('Account deleted successfully');
@@ -65,6 +74,14 @@ export default function Settings() {
       toast.error('Failed to delete account. Please try again or contact support.');
       setShowDeleteConfirm(false);
     }
+  };
+
+  const handleCloseDeleteDialog = (open) => {
+    if (!open) {
+      setDeleteStep(1);
+      setDeleteEmailInput('');
+    }
+    setShowDeleteConfirm(open);
   };
 
   const [showPrivacy, setShowPrivacy] = useState(false);
