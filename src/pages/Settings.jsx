@@ -16,6 +16,8 @@ export default function Settings() {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteStep, setDeleteStep] = useState(1); // 1 = warn, 2 = confirm email
+  const [deleteEmailInput, setDeleteEmailInput] = useState('');
 
   useEffect(() => {
     const isDark = localStorage.getItem('theme') === 'dark';
