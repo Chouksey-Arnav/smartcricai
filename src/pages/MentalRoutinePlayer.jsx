@@ -116,9 +116,9 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
 // 4-7-8 Breathing Triangle Visualizer — blue=inhale, red=hold, green=exhale
 function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   const phases = [
-    { label: 'Inhale', duration: 4, color: '#60a5fa' },   // blue
-    { label: 'Hold',   duration: 7, color: '#f87171' },   // red
-    { label: 'Exhale', duration: 8, color: '#34d399' },   // green
+    { label: 'Inhale',  sublabel: '4 counts',  duration: 4, color: '#60a5fa' },
+    { label: 'Hold',    sublabel: '7 counts',  duration: 7, color: '#f87171' },
+    { label: 'Exhale',  sublabel: '8 counts',  duration: 8, color: '#34d399' },
   ];
   const totalCycle = 19;
   const elapsed = stepDuration - stepTimeRemaining;
@@ -136,8 +136,8 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
     acc += phases[i].duration;
   }
 
-  const svgW = 340, svgH = 320;
-  const cx = svgW / 2, cy = svgH / 2 + 10, r = 130;
+  const svgW = 400, svgH = 380;
+  const cx = svgW / 2, cy = svgH / 2 + 14, r = 158;
   const pts = [
     { x: cx - r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
     { x: cx + r * Math.sin(Math.PI * 2 / 3), y: cy + r * Math.cos(Math.PI * 2 / 3) },
@@ -157,51 +157,81 @@ function BreathingTriangleVisualizer({ stepTimeRemaining, stepDuration }) {
   return (
     <div className="flex flex-col items-center">
       <AnimatePresence mode="wait">
-        <motion.p
+        <motion.div
           key={phases[phaseIndex].label}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.35 }}
-          className="text-3xl font-bold mb-2"
-          style={{ color }}
+          initial={{ opacity: 0, y: -12, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.9 }}
+          transition={{ duration: 0.3 }}
+          className="text-center mb-2"
         >
-          {phases[phaseIndex].label}
-        </motion.p>
+          <p className="text-4xl font-black tracking-wide" style={{ color }}>{phases[phaseIndex].label}</p>
+          <p className="text-white/50 text-sm mt-1 font-medium">{phases[phaseIndex].sublabel}</p>
+        </motion.div>
       </AnimatePresence>
-      <svg width={svgW} height={svgH}>
+      <svg width={svgW} height={svgH} style={{ overflow: 'visible' }}>
         <defs>
           <linearGradient id="triGrad478" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={nextColor} stopOpacity="0.08" />
+            <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={nextColor} stopOpacity="0.1" />
           </linearGradient>
-          <radialGradient id="dotGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.7" />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          <filter id="triGlow">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="dotGlow478">
+            <feGaussianBlur stdDeviation="10" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <radialGradient id="cornerGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
           </radialGradient>
         </defs>
-        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color} strokeWidth={5} strokeLinejoin="round" opacity={0.95} />
+        {/* Outer glow polygon */}
+        <polygon points={triPoints} fill="none" stroke={color}
+          strokeWidth={2} strokeOpacity={0.2} strokeLinejoin="round"
+          style={{ transform: 'scale(1.04)', transformOrigin: `${cx}px ${cy}px` }} />
+        {/* Main triangle */}
+        <polygon points={triPoints} fill="url(#triGrad478)" stroke={color}
+          strokeWidth={6} strokeLinejoin="round" filter="url(#triGlow)" opacity={0.98} />
+        {/* Corner label circles */}
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r={8} fill={phases[i].color} opacity={0.85} />
+          <g key={i}>
+            <circle cx={p.x} cy={p.y} r={22} fill={phases[i].color} opacity={0.25} />
+            <circle cx={p.x} cy={p.y} r={13} fill={phases[i].color} opacity={0.9} />
+            <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize="8"
+              fontWeight="bold" fill="white" opacity={0.95}>
+              {phases[i].label.slice(0,3).toUpperCase()}
+            </text>
+          </g>
         ))}
-        {/* Glow halo around dot */}
-        <motion.circle
-          cx={dotX} cy={dotY} r={28}
-          fill="url(#dotGlow)"
+        {/* Outer glow halo */}
+        <motion.circle cx={dotX} cy={dotY} r={44}
+          fill={color} opacity={0.12}
+          animate={{ cx: dotX, cy: dotY }}
+          transition={{ duration: 0.5, ease: 'linear' }}
+        />
+        {/* Inner glow */}
+        <motion.circle cx={dotX} cy={dotY} r={28}
+          fill={color} opacity={0.22}
           animate={{ cx: dotX, cy: dotY }}
           transition={{ duration: 0.5, ease: 'linear' }}
         />
         {/* Main dot */}
-        <motion.circle
-          cx={dotX} cy={dotY} r={16}
-          fill={color}
-          stroke="white"
-          strokeWidth={2.5}
+        <motion.circle cx={dotX} cy={dotY} r={19}
+          fill={color} stroke="white" strokeWidth={3}
+          filter="url(#dotGlow478)"
           animate={{ cx: dotX, cy: dotY }}
           transition={{ duration: 0.5, ease: 'linear' }}
         />
       </svg>
-      <p className="text-white/60 text-sm mt-1">{secondsLeft}s</p>
+      <motion.p
+        key={secondsLeft}
+        initial={{ scale: 1.3, opacity: 0.6 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="text-white/70 text-xl font-bold mt-2"
+      >{secondsLeft}s</motion.p>
     </div>
   );
 }
