@@ -179,7 +179,7 @@ export default function SmartStart({ isDarkMode }) {
   const [completedKeys, setCompletedKeys] = useState([]);
 
   // Sync completedKeys from localStorage whenever guestEmail is resolved
-  React.useEffect(() => {
+  useEffect(() => {
     const today = new Date().toDateString();
     const key = `smartstart_completed_${today}_${guestEmail}`;
     setCompletedKeys(JSON.parse(localStorage.getItem(key) || '[]'));
