@@ -379,11 +379,11 @@ export default function AIWorkout() {
           >
             <div>
               <p className="text-xs text-emerald-100">AI Workout XP Earned</p>
-              <p className="text-3xl font-bold">{(aiProgress?.total_xp || 0).toLocaleString()}</p>
+              <p className="text-3xl font-bold">{(completedWorkoutsData?.totalXP || 0).toLocaleString()}</p>
             </div>
             <div className="text-right">
               <p className="text-xs text-emerald-100">Completed Workouts</p>
-              <p className="text-2xl font-bold">{workouts?.filter(w => w.status === 'completed').length || 0}</p>
+              <p className="text-2xl font-bold">{completedWorkoutsData?.count || 0}</p>
             </div>
           </motion.div>
 
@@ -504,11 +504,11 @@ export default function AIWorkout() {
           >
             <div>
               <p className="text-xs text-emerald-100">AI Workout XP Earned</p>
-              <p className="text-3xl font-bold">{(aiProgress?.total_xp || 0).toLocaleString()}</p>
+              <p className="text-3xl font-bold">{(completedWorkoutsData?.totalXP || 0).toLocaleString()}</p>
             </div>
             <div className="text-right">
               <p className="text-xs text-emerald-100">Completed Workouts</p>
-              <p className="text-2xl font-bold">0</p>
+              <p className="text-2xl font-bold">{completedWorkoutsData?.count || 0}</p>
             </div>
           </motion.div>
           <div className="text-center">
