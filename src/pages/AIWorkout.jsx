@@ -286,26 +286,16 @@ export default function AIWorkout() {
   };
 
   const handleCompleteSet = () => {
-    const exerciseId = currentExercise.drill_id || currentExerciseIndex;
-    const currentSets = completedSets[exerciseId] || 0;
-    const newSets = currentSets + 1;
-    const totalSets = currentExercise.sets || 3;
-
-    if (newSets >= totalSets) {
-      if (isLastExercise) {
-        // Last set of last exercise — auto-finish
-        handleFinishWorkout();
-      } else {
-        toast.success(`${currentExercise.drill_title} complete! Next exercise!`);
-        setCurrentExerciseIndex(currentExerciseIndex + 1);
-        setCompletedSets({ ...completedSets, [exerciseId]: 0 });
-      }
+    // Each set is its own drill entry (sets: 1). Just advance to next entry.
+    // Rest blocks between sets are their own drill entries (type: 'rest') — handled by auto-advance effect.
+    if (isLastExercise) {
+      handleFinishWorkout();
     } else {
-      setCompletedSets({ ...completedSets, [exerciseId]: newSets });
-      const restSeconds = currentExercise.rest_seconds || 60;
-      setRestTime(restSeconds);
-      setIsResting(true);
-      toast.success(`Set ${newSets}/${totalSets} complete! Rest up!`);
+      const nextIdx = currentExerciseIndex + 1;
+      const nextEx = exercises[nextIdx];
+      toast.success(`Set complete! ${nextEx?.type === 'rest' ? 'Rest time! ⏱️' : 'Next exercise! 💪'}`);
+      setCurrentExerciseIndex(nextIdx);
+      setCompletedSets({});
     }
   };
 
