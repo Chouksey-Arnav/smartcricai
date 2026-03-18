@@ -20,6 +20,50 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
   : <>{children}</>;
 
+const pageVariants = {
+  initial: { opacity: 0, x: 18 },
+  in:      { opacity: 1, x: 0 },
+  out:     { opacity: 0, x: -18 },
+};
+const pageTransition = { type: 'tween', ease: 'easeInOut', duration: 0.22 };
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        initial="initial"
+        animate="in"
+        exit="out"
+        variants={pageVariants}
+        transition={pageTransition}
+        style={{ position: 'relative', width: '100%' }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={
+            <LayoutWrapper currentPageName={mainPageKey}>
+              <MainPage />
+            </LayoutWrapper>
+          } />
+          {Object.entries(Pages).map(([path, Page]) => (
+            <Route
+              key={path}
+              path={`/${path}`}
+              element={
+                <LayoutWrapper currentPageName={path}>
+                  <Page />
+                </LayoutWrapper>
+              }
+            />
+          ))}
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
 
