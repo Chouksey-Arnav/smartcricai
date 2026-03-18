@@ -175,12 +175,14 @@ export default function SmartStart({ isDarkMode }) {
   };
 
   // Track completed items in state so UI re-renders immediately on completion
-  const [completedKeys, setCompletedKeys] = useState(() => {
+  const [completedKeys, setCompletedKeys] = useState([]);
+
+  // Sync completedKeys from localStorage whenever guestEmail is resolved
+  React.useEffect(() => {
     const today = new Date().toDateString();
-    const email = localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
-    const key = `smartstart_completed_${today}_${email}`;
-    return JSON.parse(localStorage.getItem(key) || '[]');
-  });
+    const key = `smartstart_completed_${today}_${guestEmail}`;
+    setCompletedKeys(JSON.parse(localStorage.getItem(key) || '[]'));
+  }, [guestEmail]);
 
   // Check if item was completed today — reads from state for instant re-render
   const isCompleted = (item) => {
