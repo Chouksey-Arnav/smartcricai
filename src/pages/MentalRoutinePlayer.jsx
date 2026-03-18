@@ -15,19 +15,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-// Box Breathing Visualizer - large, clean square, fading top label
+// Box Breathing Visualizer - large, immersive square with glow effects
 function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
   const totalCycleDuration = 16;
   const phases = ['Inhale', 'Hold', 'Exhale', 'Hold'];
   const phaseColors = ['#34d399', '#60a5fa', '#f472b6', '#a78bfa'];
+  const phaseLabels = ['Breathe In', 'Hold', 'Breathe Out', 'Hold'];
   const elapsed = stepDuration - stepTimeRemaining;
   const cyclePos = elapsed % totalCycleDuration;
   const phaseIndex = Math.floor(cyclePos / 4);
   const phaseTime = cyclePos % 4;
 
-  const size = 300;
-  const pad = 36;
-  const r = 28;
+  const size = 360;
+  const pad = 44;
+  const r = 36;
 
   const distAlongPerimeter = (cyclePos / totalCycleDuration) * (size * 4);
   const segLen = size;
@@ -45,41 +46,69 @@ function BoxBreathingVisualizer({ stepTimeRemaining, stepDuration }) {
 
   const color = phaseColors[phaseIndex];
   const secondsLeft = Math.max(1, 4 - Math.floor(phaseTime));
+  const svgW = size + pad * 2;
 
   return (
     <div className="flex flex-col items-center">
       <AnimatePresence mode="wait">
-        <motion.p
+        <motion.div
           key={phases[phaseIndex]}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.35 }}
-          className="text-3xl font-bold mb-3"
-          style={{ color }}
+          initial={{ opacity: 0, y: -12, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.9 }}
+          transition={{ duration: 0.3 }}
+          className="text-center mb-2"
         >
-          {phases[phaseIndex]}
-        </motion.p>
+          <p className="text-4xl font-black tracking-wide" style={{ color }}>{phaseLabels[phaseIndex]}</p>
+          <p className="text-white/50 text-sm mt-1 font-medium">4 counts each side</p>
+        </motion.div>
       </AnimatePresence>
-      <svg width={size + pad * 2} height={size + pad * 2}>
+      <svg width={svgW} height={svgW} style={{ overflow: 'visible' }}>
         <defs>
           <radialGradient id="boxFill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.18" />
+            <stop offset="0%" stopColor={color} stopOpacity="0.22" />
             <stop offset="100%" stopColor={color} stopOpacity="0.04" />
           </radialGradient>
+          <filter id="boxGlow">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="dotGlowBox">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
         </defs>
-        <rect x={pad} y={pad} width={size} height={size} rx={r} fill="url(#boxFill)" stroke={color} strokeWidth={4} strokeOpacity={0.8} />
+        {/* Outer glow rect */}
+        <rect x={pad - 6} y={pad - 6} width={size + 12} height={size + 12} rx={r + 8}
+          fill="none" stroke={color} strokeWidth={2} strokeOpacity={0.18} />
+        {/* Main square */}
+        <rect x={pad} y={pad} width={size} height={size} rx={r}
+          fill="url(#boxFill)" stroke={color} strokeWidth={5} strokeOpacity={0.9}
+          filter="url(#boxGlow)" />
+        {/* Corner circles */}
         {[[pad,pad],[pad+size,pad],[pad+size,pad+size],[pad,pad+size]].map(([cx,cy],i) => (
-          <circle key={i} cx={cx} cy={cy} r={7} fill={color} opacity={0.7} />
+          <circle key={i} cx={cx} cy={cy} r={10} fill={phaseColors[i]} opacity={0.85} />
         ))}
-        <motion.circle
-          cx={dotX} cy={dotY} r={16}
-          fill={color}
+        {/* Glow halo */}
+        <motion.circle cx={dotX} cy={dotY} r={34}
+          fill={color} opacity={0.18}
+          animate={{ cx: dotX, cy: dotY }}
+          transition={{ duration: 1.0, ease: 'linear' }}
+        />
+        {/* Main dot */}
+        <motion.circle cx={dotX} cy={dotY} r={20}
+          fill={color} stroke="white" strokeWidth={3}
+          filter="url(#dotGlowBox)"
           animate={{ cx: dotX, cy: dotY }}
           transition={{ duration: 1.0, ease: 'linear' }}
         />
       </svg>
-      <p className="text-white/60 text-sm mt-1">{secondsLeft}s</p>
+      <motion.p
+        key={secondsLeft}
+        initial={{ scale: 1.3, opacity: 0.6 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="text-white/70 text-xl font-bold mt-2"
+      >{secondsLeft}s</motion.p>
     </div>
   );
 }
