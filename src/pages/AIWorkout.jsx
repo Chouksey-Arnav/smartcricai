@@ -706,9 +706,6 @@ export default function AIWorkout() {
                   <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
                     {currentExercise.drill_title}
                   </h2>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    Set {currentSets + 1} of {currentExercise.sets || 3}
-                  </p>
                 </div>
 
             <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6 mb-6">
