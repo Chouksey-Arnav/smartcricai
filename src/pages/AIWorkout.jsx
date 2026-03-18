@@ -735,7 +735,7 @@ export default function AIWorkout() {
                   className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
                 >
                   <CheckCircle className="w-6 h-6 mr-2" />
-                  Complete Set {(completedSets[currentExercise.drill_id || currentExerciseIndex] || 0) + 1}/{currentExercise.sets || 3}
+                  Complete Set ✓
                 </Button>
                 <Button
                   onClick={handleFinishWorkout}
