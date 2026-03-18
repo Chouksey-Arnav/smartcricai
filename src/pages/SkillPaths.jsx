@@ -482,14 +482,26 @@ export default function SkillPaths() {
                           {item.name}
                         </h4>
                       </div>
-                      <Button
-                        onClick={() => handleStartItem(item)}
-                        disabled={completeItem.isPending}
-                        size="sm"
-                        className={cn('shrink-0 text-xs flex items-center gap-1', isDone ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300' : catConf.btn)}
-                      >
-                        {isDone ? <><RotateCcw className="w-3 h-3" /> Start Again</> : <><Play className="w-3 h-3" /> Start</>}
-                      </Button>
+                      <div className="flex flex-col gap-1 shrink-0">
+                        <Button
+                          onClick={() => handleStartItem(item)}
+                          disabled={completeItem.isPending}
+                          size="sm"
+                          className={cn('text-xs flex items-center gap-1', isDone ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300' : catConf.btn)}
+                        >
+                          {isDone ? <><RotateCcw className="w-3 h-3" /> Again</> : <><Play className="w-3 h-3" /> Start</>}
+                        </Button>
+                        {!isDone && (
+                          <button
+                            onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp || 50, itemName: item.name })}
+                            disabled={completeItem.isPending}
+                            className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5 justify-center"
+                            aria-label={`Mark ${item.name} as complete`}
+                          >
+                            <CheckCircle className="w-3 h-3" /> Done
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );
