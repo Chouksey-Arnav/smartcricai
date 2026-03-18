@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun, Trash2 } from 'lucide-react';
+import { Settings as SettingsIcon, User, Bell, Shield, LogOut, ChevronRight, Moon, Sun, Trash2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import Header from '@/components/common/Header';
