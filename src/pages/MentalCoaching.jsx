@@ -103,6 +103,16 @@ export default function MentalCoaching() {
   const mentalSessionsCount = userProgress?.completed_mental_routines?.length || 0;
   const mentalXP = mentalSessionsCount * 75;
 
+  // Refetch userProgress whenever a mental session is completed
+  React.useEffect(() => {
+    const handler = () => {
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
+    };
+    window.addEventListener('smartstart_item_completed', handler);
+    return () => window.removeEventListener('smartstart_item_completed', handler);
+  }, [queryClient]);
+
   const { data: savedRoutines = [] } = useQuery({
     queryKey: ['savedMentalRoutines', user?.email || 'guest'],
     queryFn: async () => {
