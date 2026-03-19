@@ -263,13 +263,17 @@ export default function AIWorkout() {
     onSuccess: () => {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       toast.success('Workout completed! Amazing job!');
+      const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', guestId] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', 'guest'] });
       queryClient.invalidateQueries({ queryKey: ['completedWorkoutsXP'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.refetchQueries({ queryKey: ['userProgress'] });
+      queryClient.refetchQueries({ queryKey: ['userProgress', guestId] });
       window.dispatchEvent(new CustomEvent('smartstart_item_completed', {
         detail: { type: 'workout', id: activeWorkout?.name, title: activeWorkout?.name }
       }));
