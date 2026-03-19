@@ -184,8 +184,11 @@ export default function SkillPaths() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', guestEmail] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', 'guest'] });
       queryClient.refetchQueries({ queryKey: ['skillPath', guestEmail] });
       queryClient.refetchQueries({ queryKey: ['userProgress', guestEmail] });
+      queryClient.refetchQueries({ queryKey: ['userProgress'] });
       toast.success('Item completed! ✅');
     },
   });
