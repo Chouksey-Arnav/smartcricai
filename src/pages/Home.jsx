@@ -437,6 +437,15 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Refetch userProgress whenever any activity is completed anywhere in the app
+  useEffect(() => {
+    const handler = () => {
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+    };
+    window.addEventListener('smartstart_item_completed', handler);
+    return () => window.removeEventListener('smartstart_item_completed', handler);
+  }, [queryClient]);
+
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
