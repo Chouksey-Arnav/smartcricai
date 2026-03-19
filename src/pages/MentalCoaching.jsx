@@ -104,7 +104,7 @@ export default function MentalCoaching() {
   const mentalXP = mentalSessionsCount * 75;
 
   // Refetch userProgress whenever a mental session is completed
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = () => {
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
