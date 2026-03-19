@@ -190,7 +190,7 @@ export default function MentalCoaching() {
           </div>
           <div className="text-right">
             <p className="text-xs text-purple-100">Sessions Completed</p>
-            <p className="text-2xl font-bold">{userProgress?.completed_mental_routines?.length || 0}</p>
+            <p className="text-2xl font-bold">{mentalSessionsCount}</p>
           </div>
         </motion.div>
 
