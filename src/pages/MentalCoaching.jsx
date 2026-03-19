@@ -99,7 +99,8 @@ export default function MentalCoaching() {
     refetchOnWindowFocus: true,
   });
 
-  const mentalXP = (userProgress?.completed_mental_routines?.length || 0) * 75;
+  const mentalSessionsCount = userProgress?.completed_mental_routines?.length || 0;
+  const mentalXP = mentalSessionsCount * 75;
 
   const { data: savedRoutines = [] } = useQuery({
     queryKey: ['savedMentalRoutines', user?.email || 'guest'],
