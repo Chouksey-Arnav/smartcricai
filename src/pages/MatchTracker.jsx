@@ -71,7 +71,10 @@ export default function MatchTracker() {
       });
     },
     onSuccess: () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       queryClient.invalidateQueries({ queryKey: ['matches'] });
+      queryClient.invalidateQueries({ queryKey: ['matches', guestEmail] });
+      queryClient.invalidateQueries({ queryKey: ['matches', 'guest'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['scheduledActivities'] });
       toast.success('Match saved! 🏏');

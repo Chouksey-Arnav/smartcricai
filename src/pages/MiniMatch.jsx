@@ -216,7 +216,7 @@ export default function MiniMatch() {
                       <Switch
                         checked={timerEnabled}
                         onCheckedChange={setTimerEnabled}
-                        className={timerEnabled ? 'bg-orange-500' : 'bg-slate-300'}
+                        className={timerEnabled ? 'bg-orange-500' : 'bg-slate-400 dark:bg-slate-500'}
                       />
                     </div>
                   </div>

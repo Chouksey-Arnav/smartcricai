@@ -71,8 +71,11 @@ export default function MentalTrainingCreator() {
       return result;
     },
     onSuccess: () => {
+      const guestId = getGuestId();
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
-      queryClient.invalidateQueries({ queryKey: ['mentalRoutines'] });
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines', guestId] });
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines', 'guest'] });
+      queryClient.refetchQueries({ queryKey: ['savedMentalRoutines'] });
       toast.success('Saved to My Routines! ✨');
       navigate(createPageUrl('MentalCoaching') + '?tab=saved');
     },

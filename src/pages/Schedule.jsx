@@ -102,8 +102,8 @@ export default function Schedule() {
       const guestEmail = user?.email || 'guest@smartcrick.app';
       return await base44.entities.ChecklistItem.create({
         user_email: guestEmail,
-        task: newTask,
-        completed: false
+        title: newTask,
+        is_completed: false
       });
     },
     onSuccess: () => {
@@ -114,7 +114,7 @@ export default function Schedule() {
   });
 
   const toggleTaskMutation = useMutation({
-    mutationFn: ({ id, completed }) => base44.entities.ChecklistItem.update(id, { completed }),
+    mutationFn: ({ id, is_completed }) => base44.entities.ChecklistItem.update(id, { is_completed }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['checklistItems'] });
     },
@@ -241,17 +241,17 @@ export default function Schedule() {
                 className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
               >
                 <button
-                  onClick={() => toggleTaskMutation.mutate({ id: item.id, completed: !item.completed })}
+                  onClick={() => toggleTaskMutation.mutate({ id: item.id, is_completed: !item.is_completed })}
                   className="shrink-0"
                 >
-                  {item.completed ? (
+                  {item.is_completed ? (
                     <CheckCircle className="w-6 h-6 text-emerald-500" />
                   ) : (
                     <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600" />
                   )}
                 </button>
-                <span className={`flex-1 ${item.completed ? 'line-through text-slate-400' : 'text-slate-800 dark:text-white'}`}>
-                  {item.task}
+                <span className={`flex-1 ${item.is_completed ? 'line-through text-slate-400' : 'text-slate-800 dark:text-white'}`}>
+                  {item.title}
                 </span>
                 <button
                   onClick={() => deleteTaskMutation.mutate(item.id)}
