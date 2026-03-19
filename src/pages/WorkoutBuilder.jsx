@@ -117,12 +117,13 @@ export default function WorkoutBuilder() {
     setExercises(items);
   };
 
-  // Build drills array for saving — expands each exercise into individual set entries
-  // with rest blocks inserted ONLY where explicitly configured by the user.
+  // Build drills array — each set is its own drill entry.
+  // Rest blocks are inserted between sets: if user toggled a rest, use that duration; otherwise default 60s.
   const buildDrillsArray = () => {
     const drills = [];
     exercises.forEach(ex => {
       for (let s = 1; s <= ex.sets; s++) {
+        const restDuration = ex.rests?.[s]?.duration || 60;
         drills.push({
           drill_id: `${ex.id}_set${s}`,
           drill_title: `${ex.name} — Set ${s}`,
@@ -131,19 +132,18 @@ export default function WorkoutBuilder() {
           completed_sets: 0,
           type: 'exercise',
           category: ex.category || 'fitness',
-          rest_seconds: ex.rests?.[s]?.duration || 60,
+          rest_seconds: restDuration,
         });
-        // Only add rest block if the user explicitly toggled one after this set
-        const hasRest = ex.rests?.[s];
-        if (hasRest && s < ex.sets) {
+        // Always add a rest block between sets (not after the last set)
+        if (s < ex.sets) {
           drills.push({
             drill_id: `rest_${ex.id}_set${s}`,
             drill_title: 'Rest Period',
             sets: 1,
-            reps: hasRest.duration,
+            reps: restDuration,
             completed_sets: 0,
             type: 'rest',
-            rest_seconds: hasRest.duration,
+            rest_seconds: restDuration,
           });
         }
       }
