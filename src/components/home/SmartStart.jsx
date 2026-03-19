@@ -58,23 +58,46 @@ export default function SmartStart({ isDarkMode }) {
 
   const startWorkoutMutation = useMutation({
     mutationFn: async (workout) => {
-      return await base44.entities.Workout.create({
+      // Build interleaved drills + rest blocks (same structure as FitnessBuilder)
+      const drills = [];
+      (workout.exercises || []).forEach(ex => {
+        const sets = ex.sets || 3;
+        const restSec = ex.rest_seconds || 60;
+        for (let s = 1; s <= sets; s++) {
+          drills.push({
+            drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}_set${s}`,
+            drill_title: `${ex.name} — Set ${s}`,
+            sets: 1,
+            reps: ex.reps || 10,
+            completed_sets: 0,
+            type: 'exercise',
+            category: 'fitness',
+            instructions: ex.instructions || '',
+            rest_seconds: restSec,
+          });
+          if (s < sets) {
+            drills.push({
+              drill_id: `rest_${Math.random().toString(36).substr(2, 9)}_${s}`,
+              drill_title: 'Rest Period',
+              sets: 1,
+              reps: restSec,
+              completed_sets: 0,
+              type: 'rest',
+              rest_seconds: restSec,
+            });
+          }
+        }
+      });
+      localStorage.removeItem('workoutProgress');
+      const newWorkout = await base44.entities.Workout.create({
         user_email: guestEmail,
         name: workout.name,
-        drills: workout.exercises.map(ex => ({
-          drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}`,
-          drill_title: ex.name,
-          sets: ex.sets,
-          reps: ex.reps,
-          completed_sets: 0,
-          type: 'exercise',
-          category: 'fitness',
-          instructions: ex.instructions || '',
-          rest_seconds: ex.rest_seconds || 60
-        })),
+        drills,
         status: 'not_started',
         xp_value: workout.xp_value || 100
       });
+      localStorage.setItem('fitnessbuilder_new_workout_id', newWorkout.id);
+      return newWorkout;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
