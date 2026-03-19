@@ -493,16 +493,6 @@ export default function SkillPaths() {
                         >
                           {isDone ? <><RotateCcw className="w-3 h-3" /> Again</> : <><Play className="w-3 h-3" /> Start</>}
                         </Button>
-                        {!isDone && (
-                          <button
-                            onClick={() => completeItem.mutate({ itemId: item.id, xp: item.xp || 50, itemName: item.name })}
-                            disabled={completeItem.isPending}
-                            className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5 justify-center"
-                            aria-label={`Mark ${item.name} as complete`}
-                          >
-                            <CheckCircle className="w-3 h-3" /> Done
-                          </button>
-                        )}
                       </div>
                     </div>
                   </motion.div>
