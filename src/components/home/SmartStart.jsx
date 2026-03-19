@@ -44,7 +44,9 @@ export default function SmartStart({ isDarkMode }) {
       const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    staleTime: 10000,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const { data: completedWorkoutNames = [] } = useQuery({
