@@ -427,6 +427,7 @@ export default function MentalRoutinePlayer() {
     } else {
       setIsPlaying(false);
       setIsCompleted(true);
+      completeMutation.mutate();
     }
   };
 
