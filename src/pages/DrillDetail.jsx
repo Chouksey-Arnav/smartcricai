@@ -272,9 +272,14 @@ export default function DrillDetail() {
           }
         } catch (e) { console.error('SkillPath update failed:', e); }
       }
-      queryClient.invalidateQueries(['userProgress']);
-      queryClient.invalidateQueries(['leaderboard']);
-      queryClient.invalidateQueries(['notifications']);
+      const gId = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
+      queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', gId] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', 'guest'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.refetchQueries({ queryKey: ['userProgress'] });
+      queryClient.refetchQueries({ queryKey: ['userProgress', gId] });
       queryClient.invalidateQueries(['workout', workoutId]);
       queryClient.invalidateQueries(['userGeneratedWorkouts']);
       queryClient.invalidateQueries(['skillPath']);
