@@ -357,13 +357,17 @@ export default function MentalRoutinePlayer() {
           }
         } catch (e) { console.error('SkillPath update failed:', e); }
       }
+      const guestId = user?.email || localStorage.getItem('smartcrick_guest_id') || 'guest@smartcrick.app';
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', guestId] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', 'guest'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       queryClient.invalidateQueries({ queryKey: ['completedWorkouts'] });
       queryClient.invalidateQueries({ queryKey: ['homeStats'] });
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.refetchQueries({ queryKey: ['userProgress'] });
+      queryClient.refetchQueries({ queryKey: ['userProgress', guestId] });
       // Dispatch with BOTH the local id and the title so SmartStart & SkillPaths can match
       window.dispatchEvent(new CustomEvent('smartstart_item_completed', {
         detail: { type: 'mental', id: routineId, title: routine?.title }
