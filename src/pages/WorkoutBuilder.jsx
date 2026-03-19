@@ -188,16 +188,18 @@ export default function WorkoutBuilder() {
   const loadSavedWorkoutMutation = useMutation({
     mutationFn: async (savedWorkout) => {
       const guestEmail = user?.email || 'guest@smartcrick.app';
-      // Check if there's already an active workout with this name
-      const existing = await base44.entities.Workout.filter({ user_email: guestEmail, name: savedWorkout.name });
-      if (existing.length > 0) return existing[0];
-      return await base44.entities.Workout.create({
+      // Always create a fresh workout so it becomes the "new" one to open in AIWorkout
+      localStorage.removeItem('workoutProgress');
+      const workout = await base44.entities.Workout.create({
         user_email: guestEmail,
         name: savedWorkout.name,
         drills: savedWorkout.exercises,
         status: 'not_started',
         xp_value: 120
       });
+      // Tell AIWorkout to select this workout immediately
+      localStorage.setItem('fitnessbuilder_new_workout_id', workout.id);
+      return workout;
     },
     onMutate: () => {
       toast.success('Starting workout now!');
