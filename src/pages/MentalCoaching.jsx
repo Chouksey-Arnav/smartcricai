@@ -132,6 +132,7 @@ export default function MentalCoaching() {
     staleTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const likeRoutineMutation = useMutation({
