@@ -21,17 +21,11 @@ export default function AIWorkout() {
   const [finishLocked, setFinishLocked] = useState(false);
   const [restTime, setRestTime] = useState(0);
   const [isResting, setIsResting] = useState(false);
-  const [completedSets, setCompletedSets] = useState({});
-  const [restBlockTime, setRestBlockTime] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
-      try {
-        return await base44.auth.me();
-      } catch {
-        return null;
-      }
+      try { return await base44.auth.me(); } catch { return null; }
     },
   });
 
@@ -57,47 +51,77 @@ export default function AIWorkout() {
     },
   });
 
-  const activeWorkout = selectedWorkoutId 
-    ? workouts?.find(w => w.id === selectedWorkoutId) 
+  const activeWorkout = selectedWorkoutId
+    ? workouts?.find(w => w.id === selectedWorkoutId)
     : null;
   const exercises = activeWorkout?.drills || [];
   const currentExercise = exercises[currentExerciseIndex];
 
-  React.useEffect(() => {
+  // When user navigates AWAY from this page (component unmounts during a workout), reset state
+  useEffect(() => {
+    return () => {
+      // On unmount: clear any in-progress workout state so returning shows the list
+      localStorage.removeItem('workoutProgress');
+    };
+  }, []);
+
+  // Save progress while workout is active
+  useEffect(() => {
     if (workoutStarted && activeWorkout) {
       const progress = {
         workoutId: activeWorkout.id,
         currentExerciseIndex,
-        completedSets,
         timestamp: new Date().toISOString()
       };
       localStorage.setItem('workoutProgress', JSON.stringify(progress));
     }
-  }, [workoutStarted, currentExerciseIndex, completedSets, activeWorkout]);
+  }, [workoutStarted, currentExerciseIndex, activeWorkout]);
 
-  React.useEffect(() => {
+  // Handle pending workouts from SkillPaths or FitnessBuilder
+  useEffect(() => {
     if (!workouts) return;
+
     // Check if coming from SkillPaths with a pending workout
     const pendingRaw = localStorage.getItem('skillpath_pending_workout');
     if (pendingRaw) {
       try {
         const pending = JSON.parse(pendingRaw);
         localStorage.removeItem('skillpath_pending_workout');
+        localStorage.removeItem('workoutProgress'); // clear old progress
         const guestId = user?.email || 'guest@smartcrick.app';
+        const drills = [];
+        (pending.exercises || []).forEach(ex => {
+          const sets = ex.sets || 3;
+          const restSec = ex.rest_seconds || 60;
+          for (let s = 1; s <= sets; s++) {
+            drills.push({
+              drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}_set${s}`,
+              drill_title: `${ex.name} — Set ${s}`,
+              sets: 1,
+              reps: ex.reps || 10,
+              completed_sets: 0,
+              type: 'exercise',
+              category: 'fitness',
+              instructions: '',
+              rest_seconds: restSec,
+            });
+            if (s < sets) {
+              drills.push({
+                drill_id: `rest_${Math.random().toString(36).substr(2, 9)}_${s}`,
+                drill_title: 'Rest Period',
+                sets: 1,
+                reps: restSec,
+                completed_sets: 0,
+                type: 'rest',
+                rest_seconds: restSec,
+              });
+            }
+          }
+        });
         base44.entities.Workout.create({
           user_email: guestId,
           name: pending.name,
-          drills: (pending.exercises || []).map(ex => ({
-            drill_id: `fitness_${Math.random().toString(36).substr(2, 9)}`,
-            drill_title: ex.name,
-            sets: ex.sets || 3,
-            reps: ex.reps || '12 reps',
-            completed_sets: 0,
-            type: 'exercise',
-            category: 'fitness',
-            instructions: '',
-            rest_seconds: ex.rest_seconds || 60,
-          })),
+          drills,
           status: 'not_started',
           xp_value: pending.xp_value || 100,
           skill_path_id: pending.skillPathId || null,
@@ -105,42 +129,33 @@ export default function AIWorkout() {
         }).then(newWorkout => {
           queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
           setSelectedWorkoutId(newWorkout.id);
+          setCurrentExerciseIndex(0);
           setWorkoutStarted(false);
         }).catch(console.error);
       } catch (e) { console.error(e); }
       return;
     }
+
     // Auto-select workout created from FitnessBuilder
     const newWorkoutId = localStorage.getItem('fitnessbuilder_new_workout_id');
     if (newWorkoutId) {
       localStorage.removeItem('fitnessbuilder_new_workout_id');
+      localStorage.removeItem('workoutProgress');
       const workout = workouts.find(w => w.id === newWorkoutId);
       if (workout) {
         setSelectedWorkoutId(newWorkoutId);
         setWorkoutStarted(false);
         setCurrentExerciseIndex(0);
-        setCompletedSets({});
         return;
       }
     }
 
-    const savedProgress = localStorage.getItem('workoutProgress');
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress);
-      const workout = workouts.find(w => w.id === progress.workoutId);
-      if (workout && workout.status !== 'completed') {
-        setSelectedWorkoutId(progress.workoutId);
-        setCurrentExerciseIndex(progress.currentExerciseIndex || 0);
-        setCompletedSets(progress.completedSets || {});
-        setWorkoutStarted(true);
-      } else {
-        localStorage.removeItem('workoutProgress');
-      }
-    }
+    // Do NOT auto-resume from localStorage — user should always choose their workout
+    localStorage.removeItem('workoutProgress');
   }, [workouts]);
 
-  // Auto-start countdown when landing on a rest-block exercise item
-  React.useEffect(() => {
+  // Auto-start rest countdown when landing on a rest-block entry
+  useEffect(() => {
     if (!workoutStarted) return;
     const ex = exercises[currentExerciseIndex];
     if (!ex) return;
@@ -151,16 +166,17 @@ export default function AIWorkout() {
     }
   }, [currentExerciseIndex, workoutStarted]);
 
-  React.useEffect(() => {
+  // Rest countdown timer
+  useEffect(() => {
     if (!isResting) return;
     if (restTime <= 0) {
       setIsResting(false);
       const ex = exercises[currentExerciseIndex];
-      // Only auto-advance if this was a dedicated rest-block exercise
       if (ex?.type === 'rest') {
-        if (currentExerciseIndex < exercises.length - 1) {
-          setCurrentExerciseIndex(prev => prev + 1);
-          setCompletedSets({});
+        // Auto-advance past the rest block to the next exercise
+        const nextIdx = currentExerciseIndex + 1;
+        if (nextIdx < exercises.length) {
+          setCurrentExerciseIndex(nextIdx);
         }
         toast.success('Rest complete — keep going!');
       } else {
@@ -168,9 +184,7 @@ export default function AIWorkout() {
       }
       return;
     }
-    const timer = setTimeout(() => {
-      setRestTime(prev => prev - 1);
-    }, 1000);
+    const timer = setTimeout(() => setRestTime(prev => prev - 1), 1000);
     return () => clearTimeout(timer);
   }, [isResting, restTime]);
 
@@ -186,13 +200,11 @@ export default function AIWorkout() {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
-        
         let newStreak = userProgressData[0].current_streak || 0;
         if (lastPractice !== today) {
           newStreak = lastPractice === yesterdayStr ? newStreak + 1 : 1;
         }
         const longestStreak = Math.max(newStreak, userProgressData[0].longest_streak || 0);
-        
         await base44.entities.UserProgress.update(userProgressData[0].id, {
           total_xp: (userProgressData[0].total_xp || 0) + xpEarned,
           last_practice_date: today,
@@ -215,8 +227,6 @@ export default function AIWorkout() {
       if (leaderboards.length > 0) {
         await base44.entities.Leaderboard.update(leaderboards[0].id, {
           total_xp: (leaderboards[0].total_xp || 0) + xpEarned,
-          current_streak: userProgressData[0] ? (userProgressData[0].current_streak || 1) : 1,
-          highest_streak: userProgressData[0] ? (userProgressData[0].longest_streak || 1) : 1,
           weekly_minutes: (leaderboards[0].weekly_minutes || 0) + 25
         });
       }
@@ -230,9 +240,10 @@ export default function AIWorkout() {
           related_id: activeWorkout.id
         });
       }
-      localStorage.removeItem('workoutProgress');
+
       const updated = await base44.entities.Workout.update(activeWorkout.id, { status: 'completed' });
-      // Auto-check off in SkillPath if this workout was launched from one
+
+      // Auto-check off in SkillPath if launched from one
       const skillPathId = activeWorkout.skill_path_id;
       const skillPathItemId = activeWorkout.skill_path_item_id;
       if (skillPathId && skillPathItemId) {
@@ -259,8 +270,9 @@ export default function AIWorkout() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['skillPath'] });
       queryClient.refetchQueries({ queryKey: ['userProgress'] });
-      // Notify SmartStart to check off this workout for today
-      window.dispatchEvent(new CustomEvent('smartstart_item_completed', { detail: { type: 'workout', id: activeWorkout?.name, title: activeWorkout?.name } }));
+      window.dispatchEvent(new CustomEvent('smartstart_item_completed', {
+        detail: { type: 'workout', id: activeWorkout?.name, title: activeWorkout?.name }
+      }));
       localStorage.removeItem('workoutProgress');
       setWorkoutCompleted(true);
       setSelectedWorkoutId(null);
@@ -276,26 +288,20 @@ export default function AIWorkout() {
       return;
     }
     if (currentExerciseIndex > 0) {
-      const prevIdx = currentExerciseIndex - 1;
-      setCurrentExerciseIndex(prevIdx);
-      const prevEx = exercises[prevIdx];
-      setCompletedSets(prev => ({ ...prev, [prevEx?.drill_id]: 0 }));
+      setCurrentExerciseIndex(prev => prev - 1);
     } else {
       setWorkoutStarted(false);
     }
   };
 
   const handleCompleteSet = () => {
-    // Each set is its own drill entry (sets: 1). Just advance to next entry.
-    // Rest blocks between sets are their own drill entries (type: 'rest') — handled by auto-advance effect.
     if (isLastExercise) {
       handleFinishWorkout();
     } else {
       const nextIdx = currentExerciseIndex + 1;
       const nextEx = exercises[nextIdx];
-      toast.success(`Set complete! ${nextEx?.type === 'rest' ? 'Rest time! ⏱️' : 'Next exercise! 💪'}`);
+      toast.success(nextEx?.type === 'rest' ? 'Set complete! Rest time! ⏱️' : 'Set complete! Next exercise! 💪');
       setCurrentExerciseIndex(nextIdx);
-      setCompletedSets({});
     }
   };
 
@@ -308,13 +314,19 @@ export default function AIWorkout() {
   const skipRest = () => {
     setIsResting(false);
     setRestTime(0);
+    // Advance past the rest block
+    const ex = exercises[currentExerciseIndex];
+    if (ex?.type === 'rest') {
+      const nextIdx = currentExerciseIndex + 1;
+      if (nextIdx < exercises.length) {
+        setCurrentExerciseIndex(nextIdx);
+      }
+    }
   };
 
   const deleteAllWorkoutsMutation = useMutation({
     mutationFn: async () => {
-      await Promise.all(
-        workouts.map(w => base44.entities.Workout.delete(w.id))
-      );
+      await Promise.all(workouts.map(w => base44.entities.Workout.delete(w.id)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userGeneratedWorkouts'] });
@@ -347,26 +359,20 @@ export default function AIWorkout() {
     },
   });
 
+  // ── Workout Selection List ────────────────────────────────────────────────
   if (!selectedWorkoutId && workouts && workouts.length > 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-6 max-w-lg mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white mb-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white mb-4">
             <h2 className="font-bold text-2xl mb-2">Your Saved Workouts</h2>
             <p className="text-purple-100">Choose a workout to begin</p>
           </motion.div>
 
-          {/* XP Tracker */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white flex items-center justify-between mb-4"
-          >
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white flex items-center justify-between mb-4">
             <div>
               <p className="text-xs text-emerald-100">AI Workout XP Earned</p>
               <p className="text-3xl font-bold">{(completedWorkoutsData?.totalXP || 0).toLocaleString()}</p>
@@ -378,24 +384,13 @@ export default function AIWorkout() {
           </motion.div>
 
           <div className="space-y-4 mb-4">
-            <Button
-              onClick={() => navigate(createPageUrl('WorkoutBuilder'))}
-              variant="outline"
-              className="w-full border-2 border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30"
-            >
+            <Button onClick={() => navigate(createPageUrl('WorkoutBuilder'))} variant="outline"
+              className="w-full border-2 border-purple-500 text-purple-600 hover:bg-purple-50">
               + Create New Workout
             </Button>
             {workouts.length > 0 && (
-              <Button
-                onClick={() => {
-                  if (confirm('Delete ALL saved workouts? This cannot be undone.')) {
-                    deleteAllWorkoutsMutation.mutate();
-                  }
-                }}
-                disabled={deleteAllWorkoutsMutation.isPending}
-                variant="destructive"
-                className="w-full bg-red-500 hover:bg-red-600"
-              >
+              <Button onClick={() => { if (confirm('Delete ALL saved workouts? This cannot be undone.')) deleteAllWorkoutsMutation.mutate(); }}
+                disabled={deleteAllWorkoutsMutation.isPending} variant="destructive" className="w-full bg-red-500 hover:bg-red-600">
                 <Trash2 className="w-5 h-5 mr-2" />
                 {deleteAllWorkoutsMutation.isPending ? 'Deleting...' : 'Delete All Workouts'}
               </Button>
@@ -404,17 +399,11 @@ export default function AIWorkout() {
 
           <div className="space-y-4">
             {workouts.map((workout, index) => (
-              <motion.div
-                key={workout.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+              <motion.div key={workout.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`rounded-2xl shadow-lg p-5 ${
-                  workout.status === 'completed'
-                    ? 'bg-emerald-50 dark:bg-emerald-900/30 border-2 border-emerald-300 dark:border-emerald-700'
-                    : 'bg-white dark:bg-slate-800'
-                }`}
-              >
+                className={`rounded-2xl shadow-lg p-5 ${workout.status === 'completed'
+                  ? 'bg-emerald-50 dark:bg-emerald-900/30 border-2 border-emerald-300 dark:border-emerald-700'
+                  : 'bg-white dark:bg-slate-800'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="font-bold text-slate-800 dark:text-white text-lg capitalize flex items-center gap-2">
@@ -422,54 +411,36 @@ export default function AIWorkout() {
                       {workout.status === 'completed' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                      {workout.drills?.length || 0} exercises
-                      {workout.status === 'completed' && ' • Completed'}
+                      {workout.drills?.length || 0} exercises{workout.status === 'completed' && ' • Completed'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      workout.status === 'completed'
-                        ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
-                        : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                    }`}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${workout.status === 'completed'
+                      ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                      : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'}`}>
                       +{workout.xp_value || 100} XP
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        likeWorkoutMutation.mutate({ workoutId: workout.id, liked: !workout.liked, workoutName: workout.name });
-                      }}
-                      className="p-2 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-colors"
-                    >
+                    <button onClick={(e) => { e.stopPropagation(); likeWorkoutMutation.mutate({ workoutId: workout.id, liked: !workout.liked, workoutName: workout.name }); }}
+                      className="p-2 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-colors">
                       <Heart className={`w-5 h-5 transition-colors ${workout.liked ? 'text-pink-500 fill-pink-500' : 'text-slate-400'}`} />
                     </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (confirm('Delete this workout?')) {
-                          deleteWorkoutMutation.mutate(workout.id);
-                        }
-                      }}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                    >
+                    <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this workout?')) deleteWorkoutMutation.mutate(workout.id); }}
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </button>
                   </div>
                 </div>
-                <Button
-                  onClick={() => {
-                    setSelectedWorkoutId(workout.id);
-                    setWorkoutStarted(false);
-                    setWorkoutCompleted(false);
-                    setCurrentExerciseIndex(0);
-                    setCompletedSets({});
-                  }}
-                  className={`w-full ${
-                    workout.status === 'completed'
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-                      : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
-                  }`}
-                >
+                <Button onClick={() => {
+                  setSelectedWorkoutId(workout.id);
+                  setWorkoutStarted(false);
+                  setWorkoutCompleted(false);
+                  setCurrentExerciseIndex(0);
+                  setIsResting(false);
+                  setRestTime(0);
+                  setFinishLocked(false);
+                }} className={`w-full ${workout.status === 'completed'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
+                  : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'}`}>
                   <Play className="w-5 h-5 mr-2" />
                   {workout.status === 'completed' ? 'Start Again' : 'Select Workout'}
                 </Button>
@@ -481,17 +452,14 @@ export default function AIWorkout() {
     );
   }
 
+  // ── Empty State ───────────────────────────────────────────────────────────
   if (!workouts || workouts.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-6 max-w-lg mx-auto">
-          {/* XP Tracker always visible */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white flex items-center justify-between mb-6"
-          >
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 text-white flex items-center justify-between mb-6">
             <div>
               <p className="text-xs text-emerald-100">AI Workout XP Earned</p>
               <p className="text-3xl font-bold">{(completedWorkoutsData?.totalXP || 0).toLocaleString()}</p>
@@ -502,11 +470,8 @@ export default function AIWorkout() {
             </div>
           </motion.div>
           <div className="text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8"
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8">
               <Sparkles className="w-16 h-16 text-purple-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">No Saved Workouts</h2>
               <p className="text-slate-600 dark:text-slate-400 mb-6">Create a workout from the Fitness Builder to get started!</p>
@@ -520,38 +485,24 @@ export default function AIWorkout() {
     );
   }
 
+  // ── Workout Completed Screen ──────────────────────────────────────────────
   if (workoutCompleted) {
-    const xpEarned = activeWorkout?.xp_value || 90;
     return (
       <div className="min-h-screen bg-gradient-to-b from-emerald-900 to-teal-900 pb-24 flex flex-col items-center justify-center px-6">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', bounce: 0.4 }}
-          className="w-full max-w-lg text-center"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: [0, 1.3, 1] }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="w-32 h-32 bg-white/20 rounded-full mx-auto mb-6 flex items-center justify-center"
-          >
+        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', bounce: 0.4 }} className="w-full max-w-lg text-center">
+          <motion.div initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ delay: 0.2, duration: 0.6 }}
+            className="w-32 h-32 bg-white/20 rounded-full mx-auto mb-6 flex items-center justify-center">
             <CheckCircle className="w-20 h-20 text-white" />
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <h2 className="text-4xl font-bold text-white mb-2">🏆 Crushed It!</h2>
             <p className="text-emerald-200 text-lg mb-4">You're an absolute beast. Keep it up!</p>
-            <div className="bg-amber-400 rounded-2xl px-8 py-4 inline-block mb-6 shadow-xl">
-              <p className="text-amber-900 font-black text-2xl">+{xpEarned} XP Earned! ⚡</p>
+            <div className="bg-amber-400 rounded-2xl px-8 py-4 inline-block mb-8 shadow-xl">
+              <p className="text-amber-900 font-black text-2xl">Workout Complete! ⚡</p>
             </div>
-            <div className="bg-white/10 rounded-2xl p-4 mb-8 text-left">
-              <p className="text-white font-semibold mb-1">🔥 Workout Complete</p>
-              <p className="text-emerald-200 text-sm">Streak updated • Leaderboard synced • Keep going tomorrow!</p>
-            </div>
-            <Button 
-              onClick={() => { setWorkoutCompleted(false); setSelectedWorkoutId(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              className="w-full h-14 bg-white text-emerald-700 hover:bg-emerald-50 text-lg font-bold"
-            >
+            <Button onClick={() => { setWorkoutCompleted(false); setSelectedWorkoutId(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="w-full h-14 bg-white text-emerald-700 hover:bg-emerald-50 text-lg font-bold">
               Back to My Workouts
             </Button>
           </motion.div>
@@ -560,37 +511,34 @@ export default function AIWorkout() {
     );
   }
 
+  // ── Workout Overview (before start) ──────────────────────────────────────
   if (!workoutStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-slate-900 dark:to-slate-950 pb-24">
         <Header title="AI Workout" showSettings={false} />
         <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white"
-          >
-            <h2 className="font-bold text-2xl mb-2">{activeWorkout.name}</h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white">
+            <h2 className="font-bold text-2xl mb-2">{activeWorkout?.name}</h2>
             <p className="text-purple-100">{exercises.length} exercises</p>
           </motion.div>
 
           <div className="space-y-3">
             {exercises.map((exercise, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-5"
-              >
+              <motion.div key={index} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className={`rounded-2xl shadow-lg p-5 ${exercise.type === 'rest' ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-white dark:bg-slate-800'}`}>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
-                    <span className="font-bold text-purple-600 dark:text-purple-400">{index + 1}</span>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${exercise.type === 'rest' ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-purple-100 dark:bg-purple-900/30'}`}>
+                    {exercise.type === 'rest'
+                      ? <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      : <span className="font-bold text-purple-600 dark:text-purple-400">{index + 1}</span>
+                    }
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-slate-800 dark:text-white">{exercise.drill_title}</h4>
                     <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                      {exercise.type === 'rest' ? `Rest for ${exercise.reps}s` : `${exercise.sets || 3} sets × ${exercise.reps || 10} reps`}
+                      {exercise.type === 'rest' ? `Rest: ${exercise.rest_seconds || exercise.reps}s` : `${exercise.reps || 10} reps`}
                     </p>
                   </div>
                 </div>
@@ -599,17 +547,9 @@ export default function AIWorkout() {
           </div>
 
           <div className="flex gap-3">
-            <Button
-              onClick={() => setSelectedWorkoutId(null)}
-              variant="outline"
-              className="flex-1"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={() => setWorkoutStarted(true)}
-              className="flex-1 h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-bold"
-            >
+            <Button onClick={() => setSelectedWorkoutId(null)} variant="outline" className="flex-1">Back</Button>
+            <Button onClick={() => { setWorkoutStarted(true); setCurrentExerciseIndex(0); setIsResting(false); setRestTime(0); setFinishLocked(false); }}
+              className="flex-1 h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-bold">
               <Play className="w-6 h-6 mr-2" />
               Start Workout
             </Button>
@@ -619,66 +559,50 @@ export default function AIWorkout() {
     );
   }
 
+  // ── Active Workout ────────────────────────────────────────────────────────
   const progress = (currentExerciseIndex / Math.max(exercises.length, 1)) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-slate-900 dark:via-slate-950 dark:to-black pb-24">
       <Header title="AI Workout" showSettings={false} />
-      
+
       <div className="px-6 py-6 max-w-lg mx-auto space-y-6">
-        {/* Back / Next navigation */}
+        {/* Navigation */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={handleGoBack}
-            className="flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
-          >
+          <button onClick={handleGoBack}
+            className="flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors">
             <ChevronLeft className="w-5 h-5" />
             <span className="text-sm font-medium">{currentExerciseIndex === 0 && !isResting ? 'Back to Overview' : 'Previous'}</span>
           </button>
           {currentExerciseIndex < exercises.length - 1 && (
-            <button
-              onClick={() => {
-                setIsResting(false);
-                setRestTime(0);
-                setCurrentExerciseIndex(prev => prev + 1);
-                setCompletedSets({});
-              }}
-              className="flex items-center gap-1 text-purple-500 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors text-sm font-medium"
-            >
-              <span>Next Exercise</span>
+            <button onClick={() => {
+              setIsResting(false);
+              setRestTime(0);
+              setCurrentExerciseIndex(prev => prev + 1);
+            }} className="flex items-center gap-1 text-purple-500 hover:text-purple-700 dark:text-purple-400 transition-colors text-sm font-medium">
+              <span>Skip</span>
               <ChevronLeft className="w-5 h-5" style={{ transform: 'rotate(180deg)' }} />
             </button>
           )}
         </div>
 
-        {/* Progress */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4"
-        >
+        {/* Progress Bar */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4">
           <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400 mb-2">
-            <span>Exercise {currentExerciseIndex + 1} of {exercises.length}</span>
+            <span>Step {currentExerciseIndex + 1} of {exercises.length}</span>
             <span>{Math.round(progress)}%</span>
           </div>
           <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-            />
+            <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }}
+              className="h-full bg-gradient-to-r from-purple-500 to-pink-500" />
           </div>
-        </motion.div>
+        </div>
 
         {/* Rest Timer */}
         <AnimatePresence>
           {isResting && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl p-8 text-center text-white shadow-2xl"
-            >
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl p-8 text-center text-white shadow-2xl">
               <Clock className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-2">Rest Time</h3>
               <div className="text-6xl font-bold mb-4">{restTime}s</div>
@@ -691,34 +615,24 @@ export default function AIWorkout() {
 
         {/* Current Exercise */}
         {!isResting && currentExercise && currentExercise.type !== 'rest' && (
-          <motion.div
-            key={currentExerciseIndex}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8"
-          >
-            <>
-                <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="w-10 h-10 text-white" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                    {currentExercise.drill_title}
-                  </h2>
-                </div>
+          <motion.div key={currentExerciseIndex} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">{currentExercise.drill_title}</h2>
+            </div>
 
             <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6 mb-6">
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Target</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Reps Target</p>
                   <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{currentExercise.reps || 10}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">reps</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Rest After</p>
-                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{currentExercise.rest_seconds || 60}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">seconds</p>
+                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{currentExercise.rest_seconds || 60}s</p>
                 </div>
               </div>
             </div>
@@ -730,22 +644,15 @@ export default function AIWorkout() {
               </div>
             )}
 
-                <Button
-                  onClick={handleCompleteSet}
-                  className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold"
-                >
-                  <CheckCircle className="w-6 h-6 mr-2" />
-                  Complete Set ✓
-                </Button>
-                <Button
-                  onClick={handleFinishWorkout}
-                  disabled={finishLocked || completeWorkoutMutation.isPending}
-                  variant="outline"
-                  className="w-full h-12 border-2 border-red-400 text-red-600 hover:bg-red-50 font-semibold"
-                >
-                  {completeWorkoutMutation.isPending ? 'Finishing...' : '🏁 End Workout'}
-                </Button>
-            </>
+            <Button onClick={handleCompleteSet}
+              className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-xl font-bold mb-3">
+              <CheckCircle className="w-6 h-6 mr-2" />
+              {isLastExercise ? 'Complete Workout ✓' : 'Complete Set ✓'}
+            </Button>
+            <Button onClick={handleFinishWorkout} disabled={finishLocked || completeWorkoutMutation.isPending}
+              variant="outline" className="w-full h-12 border-2 border-red-400 text-red-600 hover:bg-red-50 font-semibold">
+              {completeWorkoutMutation.isPending ? 'Finishing...' : '🏁 End Workout Early'}
+            </Button>
           </motion.div>
         )}
       </div>
