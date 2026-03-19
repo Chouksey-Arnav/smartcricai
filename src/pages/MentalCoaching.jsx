@@ -106,12 +106,16 @@ export default function MentalCoaching() {
   // Refetch userProgress whenever a mental session is completed
   useEffect(() => {
     const handler = () => {
+      const guestEmail = user?.email || 'guest@smartcrick.app';
       queryClient.invalidateQueries({ queryKey: ['userProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['userProgress', guestEmail] });
       queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines'] });
+      queryClient.invalidateQueries({ queryKey: ['savedMentalRoutines', guestEmail] });
+      queryClient.refetchQueries({ queryKey: ['userProgress', guestEmail] });
     };
     window.addEventListener('smartstart_item_completed', handler);
     return () => window.removeEventListener('smartstart_item_completed', handler);
-  }, [queryClient]);
+  }, [queryClient, user?.email]);
 
   const { data: savedRoutines = [] } = useQuery({
     queryKey: ['savedMentalRoutines', user?.email || 'guest'],
