@@ -95,8 +95,9 @@ export default function MentalCoaching() {
       const results = await base44.entities.UserProgress.filter({ user_email: guestEmail });
       return results[0] || null;
     },
-    staleTime: 10000,
+    staleTime: 0,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const mentalSessionsCount = userProgress?.completed_mental_routines?.length || 0;
