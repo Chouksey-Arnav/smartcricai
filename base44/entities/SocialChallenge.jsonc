@@ -1,0 +1,61 @@
+{
+  "name": "SocialChallenge",
+  "type": "object",
+  "properties": {
+    "creator_email": {
+      "type": "string",
+      "description": "Challenge creator"
+    },
+    "challenger_email": {
+      "type": "string",
+      "description": "Person being challenged"
+    },
+    "challenge_type": {
+      "type": "string",
+      "enum": [
+        "drill_race",
+        "quiz_battle",
+        "streak_challenge",
+        "mini_match"
+      ],
+      "description": "Type of challenge"
+    },
+    "target": {
+      "type": "number",
+      "description": "Target to reach (e.g., 5 drills)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "completed"
+      ],
+      "default": "pending",
+      "description": "Challenge status"
+    },
+    "winner_email": {
+      "type": "string",
+      "description": "Winner's email"
+    },
+    "creator_progress": {
+      "type": "number",
+      "default": 0
+    },
+    "challenger_progress": {
+      "type": "number",
+      "default": 0
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Challenge deadline"
+    }
+  },
+  "required": [
+    "creator_email",
+    "challenger_email",
+    "challenge_type",
+    "target"
+  ]
+}

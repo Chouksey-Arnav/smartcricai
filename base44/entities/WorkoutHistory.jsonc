@@ -1,0 +1,49 @@
+{
+  "name": "WorkoutHistory",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "workout_name": {
+      "type": "string",
+      "description": "Name of completed workout"
+    },
+    "workout_type": {
+      "type": "string",
+      "enum": [
+        "custom",
+        "ai_generated",
+        "pre_generated"
+      ],
+      "description": "Type of workout"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "List of exercises performed"
+    },
+    "xp_earned": {
+      "type": "number",
+      "description": "XP earned from this workout"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Time taken to complete"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the workout was completed"
+    }
+  },
+  "required": [
+    "user_email",
+    "workout_name",
+    "xp_earned",
+    "completed_date"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "Exercise",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Exercise name"
+    },
+    "base": {
+      "type": "string",
+      "description": "Base movement pattern"
+    },
+    "variation": {
+      "type": "string",
+      "description": "Variation of the base exercise"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "bodyweight",
+        "weighted"
+      ],
+      "description": "Exercise category"
+    },
+    "equipment": {
+      "type": "string",
+      "description": "Equipment needed"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the exercise"
+    },
+    "custom_weight_allowed": {
+      "type": "boolean",
+      "description": "Whether user can customize weight per set",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "category"
+  ]
+}

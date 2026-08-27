@@ -1,0 +1,61 @@
+{
+  "name": "ActivityFeed",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User who did the activity"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "completed_drill",
+        "new_pb",
+        "match_summary",
+        "milestone",
+        "streak",
+        "badge_earned"
+      ],
+      "description": "Type of activity"
+    },
+    "title": {
+      "type": "string",
+      "description": "Activity title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Activity details"
+    },
+    "reactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_email": {
+            "type": "string"
+          },
+          "reaction_type": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Reactions from followers"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "followers",
+        "private"
+      ],
+      "default": "followers",
+      "description": "Who can see this"
+    }
+  },
+  "required": [
+    "user_email",
+    "activity_type",
+    "title"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "Leaderboard",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "username": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "total_xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Total experience points"
+    },
+    "drills_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Total drills completed"
+    },
+    "quizzes_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Total quizzes completed"
+    },
+    "current_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current practice streak"
+    },
+    "highest_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Highest streak achieved"
+    },
+    "match_iq": {
+      "type": "number",
+      "default": 50,
+      "description": "Mini match IQ score (accuracy %)"
+    },
+    "weekly_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Practice minutes this week"
+    },
+    "mental_sessions_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Mental training sessions completed"
+    }
+  },
+  "required": [
+    "user_email",
+    "username"
+  ]
+}

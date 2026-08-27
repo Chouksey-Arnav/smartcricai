@@ -1,0 +1,33 @@
+{
+  "name": "ScenarioCompletion",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "scenario_id": {
+      "type": "string",
+      "description": "ID of completed scenario"
+    },
+    "choice_made": {
+      "type": "string",
+      "description": "The choice the player made"
+    },
+    "was_correct": {
+      "type": "boolean",
+      "description": "Whether the choice was optimal"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When completed"
+    }
+  },
+  "required": [
+    "user_email",
+    "scenario_id",
+    "choice_made",
+    "was_correct"
+  ]
+}

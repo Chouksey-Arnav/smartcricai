@@ -1,0 +1,85 @@
+{
+  "name": "DismissalAnalysis",
+  "type": "object",
+  "properties": {
+    "shot_played": {
+      "type": "string",
+      "enum": [
+        "drive",
+        "cut",
+        "pull",
+        "hook",
+        "sweep",
+        "reverse_sweep",
+        "cover_drive",
+        "straight_drive",
+        "square_cut",
+        "late_cut",
+        "flick"
+      ],
+      "description": "Type of shot played"
+    },
+    "ball_type": {
+      "type": "string",
+      "enum": [
+        "fast_full",
+        "fast_short",
+        "yorker",
+        "bouncer",
+        "off_spin",
+        "leg_spin",
+        "googly",
+        "doosra",
+        "in_swinger",
+        "out_swinger",
+        "slower_ball"
+      ],
+      "description": "Type of delivery"
+    },
+    "field_setup": {
+      "type": "string",
+      "enum": [
+        "attacking",
+        "defensive",
+        "leg_side_heavy",
+        "off_side_packed",
+        "deep_field",
+        "up_close_catchers",
+        "standard_odi"
+      ],
+      "description": "Field placement"
+    },
+    "analysis": {
+      "type": "string",
+      "description": "Detailed analysis of why the dismissal occurred"
+    },
+    "key_mistake": {
+      "type": "string",
+      "description": "Primary technical or tactical error"
+    },
+    "improvement_tips": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Actionable tips to avoid this dismissal"
+    },
+    "recommended_drills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific drills to practice"
+    },
+    "match_situation_advice": {
+      "type": "string",
+      "description": "Context-specific advice for similar situations"
+    }
+  },
+  "required": [
+    "shot_played",
+    "ball_type",
+    "field_setup",
+    "analysis"
+  ]
+}

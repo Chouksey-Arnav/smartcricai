@@ -1,0 +1,87 @@
+{
+  "name": "MentalRoutine",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Name of the routine"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "focus",
+        "confidence",
+        "pressure",
+        "recovery",
+        "match-day-calm",
+        "visualization",
+        "pro-mental"
+      ],
+      "description": "Type of mental exercise"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Duration in seconds"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "instruction": {
+            "type": "string"
+          },
+          "duration_seconds": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Guided steps with timing"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier"
+    },
+    "calming_sound": {
+      "type": "string",
+      "description": "Audio track URL for meditation"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "pro"
+      ],
+      "description": "Mental training difficulty level"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this routine requires premium subscription"
+    },
+    "xp_value": {
+      "type": "number",
+      "default": 75,
+      "description": "XP points earned for completing this routine"
+    },
+    "liked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has liked/favourited this routine"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "duration_seconds",
+    "steps",
+    "calming_sound",
+    "difficulty"
+  ]
+}

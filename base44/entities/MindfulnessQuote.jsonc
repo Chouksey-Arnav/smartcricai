@@ -1,0 +1,25 @@
+{
+  "name": "MindfulnessQuote",
+  "type": "object",
+  "properties": {
+    "quote": {
+      "type": "string",
+      "description": "The mindfulness quote text"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "confidence",
+        "focus",
+        "resilience",
+        "motivation",
+        "presence"
+      ],
+      "description": "Quote category"
+    }
+  },
+  "required": [
+    "quote",
+    "category"
+  ]
+}

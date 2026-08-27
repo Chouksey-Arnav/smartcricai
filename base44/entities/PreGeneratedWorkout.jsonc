@@ -1,0 +1,68 @@
+{
+  "name": "PreGeneratedWorkout",
+  "type": "object",
+  "properties": {
+    "workout_name": {
+      "type": "string",
+      "description": "Full name of the workout"
+    },
+    "target": {
+      "type": "string",
+      "description": "Target muscle group"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "pro"
+      ],
+      "description": "Difficulty level"
+    },
+    "goal": {
+      "type": "string",
+      "description": "Fitness goal (e.g., lose weight, build muscle)"
+    },
+    "duration": {
+      "type": "string",
+      "description": "Duration bucket (e.g., <10, 10-15, 15-20, 20-25, 25+)"
+    },
+    "variant": {
+      "type": "string",
+      "description": "Variant number"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sets_reps": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "List of exercises with sets/reps"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional workout notes"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this workout requires premium subscription"
+    }
+  },
+  "required": [
+    "workout_name",
+    "target",
+    "level",
+    "goal",
+    "duration",
+    "exercises"
+  ]
+}

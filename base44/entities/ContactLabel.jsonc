@@ -1,0 +1,39 @@
+{
+  "name": "ContactLabel",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User who created the label"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Person being labeled"
+    },
+    "label": {
+      "type": "string",
+      "enum": [
+        "mom",
+        "dad",
+        "parent",
+        "coach",
+        "teammate",
+        "friend",
+        "best_friend",
+        "practice_buddy",
+        "inspiration",
+        "other"
+      ],
+      "description": "Relationship label"
+    },
+    "custom_label": {
+      "type": "string",
+      "description": "Custom label text if 'other' selected"
+    }
+  },
+  "required": [
+    "user_email",
+    "contact_email",
+    "label"
+  ]
+}

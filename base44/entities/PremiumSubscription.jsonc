@@ -1,0 +1,44 @@
+{
+  "name": "PremiumSubscription",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has premium access"
+    },
+    "subscription_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription started"
+    },
+    "subscription_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription ends"
+    },
+    "stripe_customer_id": {
+      "type": "string",
+      "description": "Stripe customer ID"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription ID"
+    },
+    "plan_type": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "description": "Subscription plan type"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

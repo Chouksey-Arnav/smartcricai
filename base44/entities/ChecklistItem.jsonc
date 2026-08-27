@@ -1,0 +1,23 @@
+{
+  "name": "ChecklistItem",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "title": {
+      "type": "string",
+      "description": "Task title"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether task is completed"
+    }
+  },
+  "required": [
+    "user_email",
+    "title"
+  ]
+}

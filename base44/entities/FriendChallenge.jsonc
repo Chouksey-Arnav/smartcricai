@@ -1,0 +1,63 @@
+{
+  "name": "FriendChallenge",
+  "type": "object",
+  "properties": {
+    "challenger_email": {
+      "type": "string",
+      "description": "Who created the challenge"
+    },
+    "challenged_email": {
+      "type": "string",
+      "description": "Who is being challenged"
+    },
+    "challenge_type": {
+      "type": "string",
+      "enum": [
+        "score_runs",
+        "take_wickets",
+        "complete_drills",
+        "practice_streak",
+        "accuracy_challenge"
+      ],
+      "description": "Type of challenge"
+    },
+    "target": {
+      "type": "number",
+      "description": "Goal to achieve"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined",
+        "completed",
+        "expired"
+      ],
+      "default": "pending"
+    },
+    "challenger_result": {
+      "type": "number",
+      "default": 0
+    },
+    "challenged_result": {
+      "type": "number",
+      "default": 0
+    },
+    "winner_email": {
+      "type": "string",
+      "description": "Winner's email"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Challenge ends"
+    }
+  },
+  "required": [
+    "challenger_email",
+    "challenged_email",
+    "challenge_type",
+    "target"
+  ]
+}

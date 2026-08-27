@@ -1,0 +1,44 @@
+{
+  "name": "Reaction",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User who reacted"
+    },
+    "target_email": {
+      "type": "string",
+      "description": "User who received reaction"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "drill",
+        "quiz",
+        "challenge",
+        "match"
+      ],
+      "description": "What was reacted to"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the item"
+    },
+    "reaction_type": {
+      "type": "string",
+      "enum": [
+        "respect",
+        "fire",
+        "strong"
+      ],
+      "description": "Type of reaction"
+    }
+  },
+  "required": [
+    "user_email",
+    "target_email",
+    "target_type",
+    "target_id",
+    "reaction_type"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Badge name"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the badge represents"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji or icon for badge"
+    },
+    "requirement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "xp",
+            "drills",
+            "quizzes",
+            "streak",
+            "workouts",
+            "mental_routines",
+            "matches"
+          ]
+        },
+        "threshold": {
+          "type": "number"
+        }
+      },
+      "description": "Requirement to earn badge"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "description": "Badge rarity level"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "icon",
+    "requirement",
+    "rarity"
+  ]
+}

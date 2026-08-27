@@ -1,0 +1,68 @@
+{
+  "name": "Quiz",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Quiz title"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "rules",
+        "techniques",
+        "history",
+        "strategy",
+        "tactics",
+        "match-awareness",
+        "decision-making"
+      ],
+      "description": "Quiz category"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard",
+        "pro"
+      ],
+      "description": "Difficulty level"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number"
+          },
+          "explanation": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Array of quiz questions"
+    },
+    "passing_score": {
+      "type": "number",
+      "description": "Minimum score to pass (percentage)"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "difficulty",
+    "questions",
+    "passing_score"
+  ]
+}

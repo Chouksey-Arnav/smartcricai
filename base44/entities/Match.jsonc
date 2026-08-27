@@ -1,0 +1,111 @@
+{
+  "name": "Match",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "match_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of match"
+    },
+    "match_type": {
+      "type": "string",
+      "enum": [
+        "practice",
+        "friendly",
+        "tournament",
+        "school",
+        "club"
+      ],
+      "description": "Type of match"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "won",
+        "lost",
+        "tied",
+        "no_result"
+      ],
+      "description": "Match result"
+    },
+    "batting_stats": {
+      "type": "object",
+      "properties": {
+        "runs": {
+          "type": "number"
+        },
+        "balls": {
+          "type": "number"
+        },
+        "fours": {
+          "type": "number"
+        },
+        "sixes": {
+          "type": "number"
+        },
+        "how_out": {
+          "type": "string"
+        }
+      },
+      "description": "Batting statistics"
+    },
+    "bowling_stats": {
+      "type": "object",
+      "properties": {
+        "overs": {
+          "type": "number"
+        },
+        "wickets": {
+          "type": "number"
+        },
+        "runs_conceded": {
+          "type": "number"
+        },
+        "maidens": {
+          "type": "number"
+        },
+        "economy": {
+          "type": "number"
+        }
+      },
+      "description": "Bowling statistics"
+    },
+    "fielding_stats": {
+      "type": "object",
+      "properties": {
+        "catches": {
+          "type": "number"
+        },
+        "stumpings": {
+          "type": "number"
+        },
+        "run_outs": {
+          "type": "number"
+        },
+        "dropped_catches": {
+          "type": "number"
+        }
+      },
+      "description": "Fielding statistics"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Personal notes about the match"
+    },
+    "confidence_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Self-rated confidence during match"
+    }
+  },
+  "required": [
+    "user_email",
+    "match_date",
+    "match_type"
+  ]
+}

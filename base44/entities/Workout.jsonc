@@ -1,0 +1,45 @@
+{
+  "name": "Workout",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email reference"
+    },
+    "name": {
+      "type": "string",
+      "description": "Workout name"
+    },
+    "drills": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "List of drills with sets/reps"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "description": "Workout completion status"
+    },
+    "xp_value": {
+      "type": "number",
+      "default": 100,
+      "description": "XP points earned for completing this workout"
+    },
+    "liked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has liked/favourited this workout"
+    }
+  },
+  "required": [
+    "user_email",
+    "name",
+    "drills"
+  ]
+}

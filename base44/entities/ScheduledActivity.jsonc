@@ -1,0 +1,44 @@
+{
+  "name": "ScheduledActivity",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "title": {
+      "type": "string",
+      "description": "Activity title"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Activity date"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "confidence_checkin",
+        "training",
+        "match",
+        "custom",
+        "30_day_challenge"
+      ],
+      "default": "custom",
+      "description": "Type of activity"
+    },
+    "day_number": {
+      "type": "number",
+      "description": "Day number for 30-day challenge (1-30)"
+    }
+  },
+  "required": [
+    "user_email",
+    "title",
+    "date"
+  ]
+}

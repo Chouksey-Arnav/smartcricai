@@ -1,0 +1,55 @@
+{
+  "name": "SkillPath",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "batting",
+        "bowling",
+        "wicket_keeping"
+      ],
+      "description": "Skill path category",
+      "default": "batting"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "pro"
+      ],
+      "description": "Current skill level"
+    },
+    "completed_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of completed checklist item IDs",
+      "default": []
+    },
+    "badges_earned": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Badges earned from skill paths",
+      "default": []
+    },
+    "xp": {
+      "type": "number",
+      "description": "Experience points",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_email",
+    "level"
+  ]
+}

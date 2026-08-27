@@ -1,0 +1,34 @@
+{
+  "name": "SavedWorkout",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "name": {
+      "type": "string",
+      "description": "Workout name"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "List of exercises with sets/reps"
+    },
+    "total_exercises": {
+      "type": "number",
+      "description": "Number of exercises"
+    },
+    "estimated_duration": {
+      "type": "number",
+      "description": "Estimated minutes"
+    }
+  },
+  "required": [
+    "user_email",
+    "name",
+    "exercises"
+  ]
+}

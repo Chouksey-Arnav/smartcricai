@@ -1,0 +1,121 @@
+{
+  "name": "UserProgress",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email reference"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "User's display name"
+    },
+    "skill_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "description": "User's skill level"
+    },
+    "age_range": {
+      "type": "string",
+      "enum": [
+        "11-12",
+        "13-14",
+        "15+"
+      ],
+      "description": "Age range"
+    },
+    "completed_drills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of completed drills"
+    },
+    "completed_quizzes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of completed quizzes"
+    },
+    "completed_mental_routines": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of completed mental routines",
+      "default": []
+    },
+    "total_practice_minutes": {
+      "type": "number",
+      "description": "Total minutes practiced",
+      "default": 0
+    },
+    "current_streak": {
+      "type": "number",
+      "description": "Current day streak",
+      "default": 0
+    },
+    "longest_streak": {
+      "type": "number",
+      "description": "Longest streak achieved",
+      "default": 0
+    },
+    "last_practice_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last date of practice"
+    },
+    "badges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Earned badge IDs"
+    },
+    "onboarding_complete": {
+      "type": "boolean",
+      "description": "Whether onboarding is complete"
+    },
+    "quiz_scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "quiz_id": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Quiz score history"
+    },
+    "total_xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Total experience points"
+    },
+    "match_iq": {
+      "type": "number",
+      "default": 50,
+      "description": "Mini match IQ score (accuracy %)"
+    },
+    "weekly_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Practice minutes this week"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "Team",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Team name"
+    },
+    "coach_email": {
+      "type": "string",
+      "description": "Coach's email address"
+    },
+    "join_code": {
+      "type": "string",
+      "description": "Unique code to join team"
+    },
+    "member_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of team member emails",
+      "default": []
+    },
+    "assigned_drills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "drill_name": {
+            "type": "string"
+          },
+          "assigned_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "description": "Drills assigned by coach",
+      "default": []
+    },
+    "announcements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Team announcements",
+      "default": []
+    }
+  },
+  "required": [
+    "name",
+    "coach_email",
+    "join_code"
+  ]
+}

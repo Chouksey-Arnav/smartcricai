@@ -1,0 +1,46 @@
+{
+  "name": "DailyChallenge",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Challenge title"
+    },
+    "description": {
+      "type": "string",
+      "description": "What to do"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "batting",
+        "bowling",
+        "fielding",
+        "fitness",
+        "mental",
+        "skill"
+      ],
+      "description": "Challenge category"
+    },
+    "xp_value": {
+      "type": "number",
+      "default": 25,
+      "description": "XP earned for completing"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "description": "Challenge difficulty"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "category",
+    "difficulty"
+  ]
+}

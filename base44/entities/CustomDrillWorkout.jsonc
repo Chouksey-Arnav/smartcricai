@@ -1,0 +1,89 @@
+{
+  "name": "CustomDrillWorkout",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email reference"
+    },
+    "workout_name": {
+      "type": "string",
+      "description": "Name of the custom workout"
+    },
+    "skill_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "pro"
+      ],
+      "description": "Skill level of the workout"
+    },
+    "drills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "drill_id": {
+            "type": "string"
+          },
+          "drill_title": {
+            "type": "string"
+          },
+          "is_existing": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "List of drills in the workout",
+      "default": []
+    },
+    "num_drills": {
+      "type": "number",
+      "description": "Total number of drills in the workout"
+    },
+    "saved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the workout is saved by the user"
+    },
+    "liked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the workout is liked/hearted by the user"
+    },
+    "completed_drill_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of drills completed within this workout session"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Completion status of the workout"
+    },
+    "target_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Skills to improve"
+    }
+  },
+  "required": [
+    "user_email",
+    "workout_name",
+    "skill_level",
+    "num_drills"
+  ]
+}

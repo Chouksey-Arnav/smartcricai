@@ -1,0 +1,51 @@
+{
+  "name": "UserPreferences",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "favorite_teams": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's favorite cricket teams",
+      "default": []
+    },
+    "favorite_players": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's favorite players",
+      "default": []
+    },
+    "notification_preferences": {
+      "type": "object",
+      "properties": {
+        "wickets": {
+          "type": "boolean",
+          "default": true
+        },
+        "milestones": {
+          "type": "boolean",
+          "default": true
+        },
+        "match_results": {
+          "type": "boolean",
+          "default": true
+        },
+        "match_reminders": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "default": {}
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

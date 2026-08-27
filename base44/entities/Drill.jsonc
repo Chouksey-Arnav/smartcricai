@@ -1,0 +1,91 @@
+{
+  "name": "Drill",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Name of the drill"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "batting",
+        "bowling",
+        "fielding",
+        "fitness"
+      ],
+      "description": "Category of the drill"
+    },
+    "skill_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "pro"
+      ],
+      "description": "Difficulty level"
+    },
+    "target_skill": {
+      "type": "string",
+      "description": "Target skill (e.g. footwork, accuracy, power)"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Estimated duration in minutes"
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Equipment needed"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Step by step instructions"
+    },
+    "target_metric": {
+      "type": "string",
+      "description": "What to aim for"
+    },
+    "tips": {
+      "type": "string",
+      "description": "Pro tips for the drill"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "YouTube video tutorial URL"
+    },
+    "soundtrack_url": {
+      "type": "string",
+      "description": "Background music/soundtrack for drill"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this drill requires premium subscription"
+    },
+    "xp_value": {
+      "type": "number",
+      "default": 50,
+      "description": "XP points earned for completing this drill"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "skill_level",
+    "target_skill",
+    "duration_minutes",
+    "steps",
+    "video_url"
+  ]
+}

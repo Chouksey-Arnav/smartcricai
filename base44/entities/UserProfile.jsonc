@@ -1,0 +1,109 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "cricket_role": {
+      "type": "string",
+      "enum": [
+        "batsman",
+        "bowler",
+        "all_rounder",
+        "wicket_keeper"
+      ],
+      "description": "Primary cricket role"
+    },
+    "batting_style": {
+      "type": "string",
+      "enum": [
+        "right_handed",
+        "left_handed"
+      ],
+      "description": "Batting preference"
+    },
+    "bowling_style": {
+      "type": "string",
+      "enum": [
+        "fast",
+        "medium",
+        "spin",
+        "none"
+      ],
+      "description": "Bowling type"
+    },
+    "experience_years": {
+      "type": "number",
+      "description": "Years playing cricket"
+    },
+    "training_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "3-4_times_week",
+        "1-2_times_week",
+        "occasional"
+      ],
+      "description": "How often they train"
+    },
+    "main_goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Cricket training goals",
+      "default": []
+    },
+    "weak_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas needing improvement",
+      "default": []
+    },
+    "preferred_formats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Favorite cricket formats",
+      "default": []
+    },
+    "biggest_challenge": {
+      "type": "string",
+      "description": "Main challenge in cricket"
+    },
+    "preferred_training_time": {
+      "type": "string",
+      "description": "Preferred time to train"
+    },
+    "motivation": {
+      "type": "string",
+      "description": "What motivates the player"
+    },
+    "match_iq_rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated match IQ score"
+    },
+    "quiz_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Has completed get to know you quiz"
+    },
+    "coach_memory_notes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Notes saved by AI coach for personalization"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}
